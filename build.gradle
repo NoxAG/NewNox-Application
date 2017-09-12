@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+jar {
+	manifest {
+	    attributes 'Main-Class': 'com.noxag.application.NewNox'
+	}
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+      compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.7'
+      compile group: 'org.apache.pdfbox', name: 'xmpbox', version: '2.0.7'
+      testCompile "junit:junit:4.12"
+}
