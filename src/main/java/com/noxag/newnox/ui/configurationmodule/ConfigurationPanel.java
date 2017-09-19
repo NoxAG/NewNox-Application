@@ -12,6 +12,6 @@ public class ConfigurationPanel extends JPanel {
     }
 
     private void initializePanelComponents() {
-
+        // TODO
     }
 }
