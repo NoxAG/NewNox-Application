@@ -9,6 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.noxag.newnox.textanalyzer.TextlogicFacade;
 import com.noxag.newnox.ui.configurationmodule.ConfigurationPanel;
 import com.noxag.newnox.ui.pdfmodule.PDFPanel;
 import com.noxag.newnox.ui.statisticmodule.StatisticPanel;
@@ -17,6 +18,8 @@ public class NewNoxWindow extends JFrame {
 
     private static final long serialVersionUID = 668695870448644732L;
 
+    private TextlogicFacade textlogicFacade;
+
     private ConfigurationPanel configPanel;
     private PDFPanel pdfPanel;
     private StatisticPanel statisticPanel;
@@ -24,6 +27,12 @@ public class NewNoxWindow extends JFrame {
     private JPanel leftSidePanel;
 
     public NewNoxWindow() {
+        this(null);
+    }
+
+    public NewNoxWindow(TextlogicFacade textlogicFacade) {
+        this.textlogicFacade = textlogicFacade;
+
         initializeWindowAppearance();
         initializeWindowComponents();
         initializeWindowBehaviour();
@@ -43,7 +52,7 @@ public class NewNoxWindow extends JFrame {
     private void initializeWindowComponents() {
         this.setLayout(new GridLayout(1, 2));
 
-        instaziateComponentes();
+        instanziateComponentes();
         initalizeLeftSidePanel();
 
         addComponentColors();
@@ -54,8 +63,8 @@ public class NewNoxWindow extends JFrame {
 
     }
 
-    private void instaziateComponentes() {
-        configPanel = new ConfigurationPanel();
+    private void instanziateComponentes() {
+        configPanel = new ConfigurationPanel(this.textlogicFacade.getTextanayzerUINames());
         pdfPanel = new PDFPanel();
         statisticPanel = new StatisticPanel();
         leftSidePanel = new JPanel();

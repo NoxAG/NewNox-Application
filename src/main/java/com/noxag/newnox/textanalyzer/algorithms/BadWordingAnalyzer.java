@@ -36,4 +36,8 @@ public class BadWordingAnalyzer implements TextanalyzerAlgorithm {
         return null;
     }
 
+    public static String getUIName() {
+        return BadWordingAnalyzer.class.getSimpleName();
+    }
+
 }
