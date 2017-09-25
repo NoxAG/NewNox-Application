@@ -16,6 +16,10 @@ public class AlgorithmChooserPanel extends JPanel {
 
     private void initializePanelComponents(List<String> textanayzerUINames) {
         this.setLayout(new GridLayout(0, 2));
+        setTextanalyzerAlgorithms(textanayzerUINames);
+    }
+
+    public void setTextanalyzerAlgorithms(List<String> textanayzerUINames) {
         for (String uiName : textanayzerUINames) {
             this.add(new JCheckBox(uiName));
         }

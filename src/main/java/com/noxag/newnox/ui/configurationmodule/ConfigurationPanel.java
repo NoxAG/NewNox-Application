@@ -26,6 +26,10 @@ public class ConfigurationPanel extends JPanel {
         initializePanelComponents(textanayzerUINames);
     }
 
+    public void setTextanalyzerAlgorithms(List<String> textanayzerUINames) {
+        this.algorithmChooserPanel.setTextanalyzerAlgorithms(textanayzerUINames);
+    }
+
     private void initializePanelComponents(List<String> textanayzerUINames) {
         this.setLayout(new GridBagLayout());
 
