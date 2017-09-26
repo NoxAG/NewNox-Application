@@ -110,7 +110,7 @@ public class MainController {
             List<TextanalyzerAlgorithm> algorithms) {
         return algorithms.stream().reduce(new ArrayList<Function<PDDocument, List<Finding>>>(),
                 (runMethodes, algorithm) -> {
-                    runMethodes.add(getRunMethodeFromAlgorithm(algorithm));
+                    runMethodes.add(getRunMethodFromAlgorithm(algorithm));
                     return runMethodes;
                 }, (runMethodes, missingRunMethodes) -> {
                     runMethodes.addAll(missingRunMethodes);
@@ -118,7 +118,7 @@ public class MainController {
                 });
     }
 
-    private Function<PDDocument, List<Finding>> getRunMethodeFromAlgorithm(TextanalyzerAlgorithm algorithm) {
+    private Function<PDDocument, List<Finding>> getRunMethodFromAlgorithm(TextanalyzerAlgorithm algorithm) {
         return algorithm::run;
     }
 
