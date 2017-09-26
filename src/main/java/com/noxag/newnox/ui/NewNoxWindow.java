@@ -42,8 +42,8 @@ public class NewNoxWindow extends JFrame {
         // analyzePDFCallback.accept(algorithmList);
     }
 
-    public void setTextanalyzerAlgorithms(List<String> algorithms) {
-
+    public void setTextanalyzerAlgorithms(List<String> textanayzerUINames) {
+        this.configPanel.setTextanalyzerAlgorithms(textanayzerUINames);
     }
 
     public void updatePDFView(List<BufferedImage> pdfImages) {
