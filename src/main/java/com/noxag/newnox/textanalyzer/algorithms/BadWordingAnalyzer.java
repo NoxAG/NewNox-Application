@@ -1,5 +1,6 @@
 package com.noxag.newnox.textanalyzer.algorithms;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.data.Finding;
+import com.noxag.newnox.textanalyzer.data.TextPositionSequence;
+import com.noxag.newnox.textanalyzer.util.TextanalyzerUtil;
 
 public class BadWordingAnalyzer implements TextanalyzerAlgorithm {
 
@@ -33,6 +36,13 @@ public class BadWordingAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public List<Finding> run(PDDocument doc) {
+        try {
+            List<TextPositionSequence> findings = TextanalyzerUtil.findInDocument(doc, "word",
+                    TextanalyzerUtil::findWordOnPage);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return null;
     }
 

@@ -10,7 +10,7 @@ public class NewNox {
 
         mainWindow.registerOpenPDFEvent(mainController::openPDFDocument);
         mainWindow.registerAnalyzeEvent(mainController::analyzePDFDocument);
-        mainWindow.setTextanalyzerAlgorithms(mainController.getTextanayzerUINames());
+        mainWindow.setTextanalyzerAlgorithms(mainController.getTextanalyzerUINames());
         mainWindow.setBounds(600, 150, 800, 600);
         mainWindow.setVisible(true);
     }

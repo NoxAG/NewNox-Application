@@ -71,7 +71,7 @@ public class MainController {
         updateStatisticViewCallbacks.accept(statisticImages);
     }
 
-    public List<String> getTextanayzerUINames() {
+    public List<String> getTextanalyzerUINames() {
         return new ArrayList<String>(this.allTextanalyzerAlgorithms.keySet());
     }
 

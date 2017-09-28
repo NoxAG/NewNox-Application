@@ -6,11 +6,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 
@@ -26,7 +21,7 @@ public class TextanalyzerUtil {
      * Searches through the whole document using the given finder function.
      * <p>
      * To be used like this:<br>
-     * {@code findInDocument(pdfDoc, "word", TextanalyzerUtil::findWordOnPage)}
+     * {@code TextanalyzerUtil.findInDocument(pdfDoc, "word", TextanalyzerUtil::findWordOnPage)}
      * </p>
      * 
      * @param document
@@ -46,7 +41,8 @@ public class TextanalyzerUtil {
      *          document
      */
     public static List<TextPositionSequence> findInDocument(PDDocument document, String searchTerm,
-            com.noxag.newnox.textanalyzer.util.Function<PDDocument, Integer, String, List<TextPositionSequence>> finder) {
+            com.noxag.newnox.textanalyzer.util.Function<PDDocument, Integer, String, List<TextPositionSequence>> finder)
+            throws IOException {
         List<TextPositionSequence> allHits = new ArrayList<>();
 
         for (int pageNum = 1; pageNum <= document.getNumberOfPages(); pageNum++) {
@@ -144,28 +140,6 @@ public class TextanalyzerUtil {
         };
         runTextStripper(stripper, document, page);
         return hits;
-    }
-
-    /**
-     * Adds an Annotation to the document to highlights the given text sequence
-     * 
-     * @param doc
-     * @param annotationPosition
-     * @throws IOException
-     */
-    public static void addTextMarkupAnnotation(PDDocument doc, TextPositionSequence annotationPosition)
-            throws IOException {
-        List<PDAnnotation> pageAnnotations = doc.getPage(annotationPosition.getPageNum() - 1).getAnnotations();
-        pageAnnotations.add(generateTextMarkupAnnotation(annotationPosition));
-    }
-
-    private static PDAnnotation generateTextMarkupAnnotation(TextPositionSequence annotationPosition) {
-        PDAnnotationTextMarkup txtMark = new PDAnnotationTextMarkup(PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
-        txtMark.setColor(new PDColor(new float[] { 1, 1, 0 }, PDDeviceRGB.INSTANCE));
-        txtMark.setConstantOpacity((float) 0.5);
-        txtMark.setRectangle(new PDRectangle(annotationPosition.getX(), annotationPosition.getY(),
-                annotationPosition.getWidth(), annotationPosition.getHeight()));
-        return txtMark;
     }
 
     private static void runTextStripper(PDFTextStripper stripper, PDDocument document, int page) throws IOException {
