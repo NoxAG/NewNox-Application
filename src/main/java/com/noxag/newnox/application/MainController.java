@@ -24,6 +24,14 @@ import com.noxag.newnox.textlogic.ChartGenerator;
 import com.noxag.newnox.textlogic.PDFHighlighter;
 import com.noxag.newnox.ui.pdfmodule.PDFPageDrawer;
 
+/**
+ * This class handles inputs of the userinterface via an event listener
+ * interface and serves as mediator between the userinterface and the text
+ * processing
+ * 
+ * @author Tobias.Schmidt@de.ibm.com
+ *
+ */
 public class MainController {
     private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
 
@@ -36,11 +44,25 @@ public class MainController {
         initTextanalyzerAlgorithms();
     }
 
+    /**
+     * This method reads a PDF document from a file and generates images of this
+     * PDF to be display in the userinterface
+     * 
+     * @param path
+     *            the path to the file that is supposed to be opened
+     */
     public void openPDFDocument(String path) {
         this.pdfDoc = readPDFFromFile(path);
         triggerPDFViewUpdateEvent(renderPDFImages());
     }
 
+    /**
+     * This method analyzes the PDF document and processes the results so they
+     * can be displayed in the userinterface
+     * 
+     * @param textAnalyzerUINames
+     *            the textanalyzer algorithms to be run referenced by name
+     */
     public void analyzePDFDocument(List<String> textAnalyzerUINames) {
         Textanalyzer textanalyzer = new Textanalyzer(
                 getRunMethodesFromAlgorithms(getTextanalyzerAlgorithmFromName(textAnalyzerUINames)));
@@ -55,22 +77,63 @@ public class MainController {
         triggerStatisticViewUpdateEvent(ChartGenerator.generateChartImages(statisticFindings));
     }
 
+    /**
+     * Registers the "PDFViewUUpdate" event
+     * 
+     * <p>
+     * Calling this method twice will override the previous event callback
+     * </p>
+     * 
+     * @param updatePDFViewCallbacks
+     *            the method to be called when the "PDFViewUUpdate" event is
+     *            triggered
+     */
     public void registerPDFViewUpdateEvent(Consumer<List<BufferedImage>> updatePDFViewCallbacks) {
         this.updatePDFViewCallbacks = updatePDFViewCallbacks;
     }
 
+    /**
+     * Registers the "StatisticViewUpdate" event
+     * 
+     * <p>
+     * Calling this method twice will override the previous event callback
+     * </p>
+     * 
+     * @param updateStatisticViewCallbacks
+     *            the method to be called when the "StatisticViewUpdate" event
+     *            is triggered
+     */
     public void registerStatisticViewUpdateEvent(Consumer<List<BufferedImage>> updateStatisticViewCallbacks) {
         this.updateStatisticViewCallbacks = updateStatisticViewCallbacks;
     }
 
+    /**
+     * Triggers the "PDFViewUUpdate" event
+     * 
+     * @param pdfImages
+     *            the pdf images that should be displayed in the userinterface
+     */
     public void triggerPDFViewUpdateEvent(List<BufferedImage> pdfImages) {
         updatePDFViewCallbacks.accept(pdfImages);
     }
 
+    /**
+     * Triggers the "StatisticViewUpdate" event
+     * 
+     * @param statisticImages
+     *            the statistic images that should be displayed in the
+     *            userinterface
+     */
     public void triggerStatisticViewUpdateEvent(List<BufferedImage> statisticImages) {
         updateStatisticViewCallbacks.accept(statisticImages);
     }
 
+    /**
+     * This method returns a list of the UINames of all textanalyzeralgorithms
+     * that have been registered to the controller
+     * 
+     * @return UINames of all textanalyzeralgorithms
+     */
     public List<String> getTextanalyzerUINames() {
         return new ArrayList<String>(this.allTextanalyzerAlgorithms.keySet());
     }
@@ -80,12 +143,21 @@ public class MainController {
             if (this.pdfDoc != null) {
                 this.pdfDoc.close();
             }
-            return PDDocument.load(new File(path));
+
         } catch (IOException e) {
             // TODO: add proper error propagation and feedback to user
+            // We may need to add an addition event for this
+            LOGGER.log(Level.WARNING, "PDF document could not be closed", e);
+            return null;
+        }
+        try {
+            return PDDocument.load(new File(path));
+        } catch (IOException e) {
+            // TODO: error propagation
             LOGGER.log(Level.WARNING, "PDF document could not be loaded", e);
             return null;
         }
+
     }
 
     private List<BufferedImage> renderPDFImages() {
@@ -110,16 +182,12 @@ public class MainController {
             List<TextanalyzerAlgorithm> algorithms) {
         return algorithms.stream().reduce(new ArrayList<Function<PDDocument, List<Finding>>>(),
                 (runMethodes, algorithm) -> {
-                    runMethodes.add(getRunMethodFromAlgorithm(algorithm));
+                    runMethodes.add(algorithm::run);
                     return runMethodes;
                 }, (runMethodes, missingRunMethodes) -> {
                     runMethodes.addAll(missingRunMethodes);
                     return runMethodes;
                 });
-    }
-
-    private Function<PDDocument, List<Finding>> getRunMethodFromAlgorithm(TextanalyzerAlgorithm algorithm) {
-        return algorithm::run;
     }
 
     private void initTextanalyzerAlgorithms() {
