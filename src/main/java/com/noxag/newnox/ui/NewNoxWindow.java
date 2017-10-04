@@ -33,12 +33,12 @@ public class NewNoxWindow extends JFrame {
     }
 
     public void registerOpenPDFEvent(Consumer<String> openPDFCallback) {
-        // ToDo: add event to confifPanel.openPDFButton and call
+        // ToDo: add action event to confifPanel.openPDFButton and call
         // openPDFCallback.accept(path);
     };
 
     public void registerAnalyzeEvent(Consumer<List<String>> analyzePDFCallback) {
-        // ToDo: add event to confifPanel.analyzeButton and call
+        // ToDo: add action event to confifPanel.analyzeButton and call
         // analyzePDFCallback.accept(algorithmList);
     }
 
@@ -47,11 +47,13 @@ public class NewNoxWindow extends JFrame {
     }
 
     public void updatePDFView(List<BufferedImage> pdfImages) {
-
+        // TODO: reset the pdfView with the new Images and call an update for
+        // pdfView
     }
 
     public void updateStatisticView(List<BufferedImage> chartImages) {
-
+        // TODO: reset the statisticView with the new Images and call an update
+        // for statisticView
     }
 
     private void initializeWindowAppearance() {
@@ -119,7 +121,6 @@ public class NewNoxWindow extends JFrame {
 
     private void initializeWindowBehaviour() {
         // set default close operation
-        // add window listener --> on close
     }
 
 }

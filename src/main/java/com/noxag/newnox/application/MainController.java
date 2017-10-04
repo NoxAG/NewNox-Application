@@ -140,9 +140,7 @@ public class MainController {
 
     private PDDocument readPDFFromFile(String path) {
         try {
-            if (this.pdfDoc != null) {
-                this.pdfDoc.close();
-            }
+            closePDF();
 
         } catch (IOException e) {
             // TODO: add proper error propagation and feedback to user
@@ -156,6 +154,13 @@ public class MainController {
             // TODO: error propagation
             LOGGER.log(Level.WARNING, "PDF document could not be loaded", e);
             return null;
+        }
+
+    }
+
+    private void closePDF() throws IOException {
+        if (this.pdfDoc != null) {
+            this.pdfDoc.close();
         }
 
     }
@@ -193,6 +198,11 @@ public class MainController {
     private void initTextanalyzerAlgorithms() {
         allTextanalyzerAlgorithms = new HashMap<>();
         allTextanalyzerAlgorithms.put(BadWordingAnalyzer.getUIName(), new BadWordingAnalyzer());
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        closePDF();
     }
 
 }
