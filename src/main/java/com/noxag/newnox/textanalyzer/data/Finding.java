@@ -1,5 +1,11 @@
 package com.noxag.newnox.textanalyzer.data;
 
+/**
+ * This class represents the result of a analysis
+ * 
+ * @author Tobias.Schmidt@de.ibm.com
+ *
+ */
 public class Finding {
 
     private String comment;
