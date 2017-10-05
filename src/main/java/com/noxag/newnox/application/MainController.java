@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -63,7 +64,8 @@ public class MainController {
      *            the textanalyzer algorithms to be run referenced by name
      */
     public void analyzePDFDocument(List<String> textAnalyzerUINames) {
-        Textanalyzer textanalyzer = new Textanalyzer(getTextanalyzerAlgorithmFromName(textAnalyzerUINames));
+        Textanalyzer textanalyzer = new Textanalyzer(
+                getRunMethodesFromAlgorithms(getTextanalyzerAlgorithmFromName(textAnalyzerUINames)));
         List<Finding> findings = textanalyzer.analyze(this.pdfDoc);
 
         List<StatisticFinding> statisticFindings = getFindingsOfSubInstances(findings, StatisticFinding.class);
@@ -179,6 +181,18 @@ public class MainController {
             algorithm1.addAll(algorithm2);
             return algorithm1;
         });
+    }
+
+    private List<Function<PDDocument, List<Finding>>> getRunMethodesFromAlgorithms(
+            List<TextanalyzerAlgorithm> algorithms) {
+        return algorithms.stream().reduce(new ArrayList<Function<PDDocument, List<Finding>>>(),
+                (runMethodes, algorithm) -> {
+                    runMethodes.add(algorithm::run);
+                    return runMethodes;
+                }, (runMethodes, missingRunMethodes) -> {
+                    runMethodes.addAll(missingRunMethodes);
+                    return runMethodes;
+                });
     }
 
     private void initTextanalyzerAlgorithms() {
