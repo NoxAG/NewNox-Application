@@ -10,6 +10,15 @@ public class TextFinding extends Finding {
     private TextPositionSequence textPositionSequence;
     private TextFindingType type;
 
+    public TextFinding() {
+        super();
+    }
+
+    public TextFinding(TextPositionSequence textPositionSequence, TextFindingType type) {
+        this.textPositionSequence = textPositionSequence;
+        this.type = type;
+    }
+
     public enum TextFindingType {
         BAD_WORDING, SENTENCE_COMPLEXITY, WORD_FREQUENCE, PAGINATION, BIBLIOGRAPHY;
     }
