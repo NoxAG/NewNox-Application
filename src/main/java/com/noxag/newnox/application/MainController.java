@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -16,7 +15,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.Textanalyzer;
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
-import com.noxag.newnox.textanalyzer.algorithms.BadWordingAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.PoorWordingAnalyzer;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
@@ -64,21 +63,25 @@ public class MainController {
      *            the textanalyzer algorithms to be run referenced by name
      */
     public void analyzePDFDocument(List<String> textAnalyzerUINames) {
-        Textanalyzer textanalyzer = new Textanalyzer(
-                getRunMethodesFromAlgorithms(getTextanalyzerAlgorithmFromName(textAnalyzerUINames)));
+        Textanalyzer textanalyzer = new Textanalyzer(getTextanalyzerAlgorithmFromName(textAnalyzerUINames));
         List<Finding> findings = textanalyzer.analyze(this.pdfDoc);
 
         List<StatisticFinding> statisticFindings = getFindingsOfSubInstances(findings, StatisticFinding.class);
         List<TextFinding> textFindings = getFindingsOfSubInstances(findings, TextFinding.class);
 
-        PDFHighlighter.highlight(this.pdfDoc, textFindings);
+        try {
+            PDFHighlighter.highlight(this.pdfDoc, textFindings);
+        } catch (IOException e) {
+            // TODO: error propagation
+            LOGGER.log(Level.WARNING, "PDF Text could not be highlighted", e);
+        }
 
         triggerPDFViewUpdateEvent(renderPDFImages());
         triggerStatisticViewUpdateEvent(ChartGenerator.generateChartImages(statisticFindings));
     }
 
     /**
-     * Registers the "PDFViewUUpdate" event
+     * Registers the "PDFViewUpdate" event
      * 
      * <p>
      * Calling this method twice will override the previous event callback
@@ -183,21 +186,9 @@ public class MainController {
         });
     }
 
-    private List<Function<PDDocument, List<Finding>>> getRunMethodesFromAlgorithms(
-            List<TextanalyzerAlgorithm> algorithms) {
-        return algorithms.stream().reduce(new ArrayList<Function<PDDocument, List<Finding>>>(),
-                (runMethodes, algorithm) -> {
-                    runMethodes.add(algorithm::run);
-                    return runMethodes;
-                }, (runMethodes, missingRunMethodes) -> {
-                    runMethodes.addAll(missingRunMethodes);
-                    return runMethodes;
-                });
-    }
-
     private void initTextanalyzerAlgorithms() {
         allTextanalyzerAlgorithms = new HashMap<>();
-        allTextanalyzerAlgorithms.put(BadWordingAnalyzer.getUIName(), new BadWordingAnalyzer());
+        allTextanalyzerAlgorithms.put(PoorWordingAnalyzer.getUIName(), new PoorWordingAnalyzer());
     }
 
     @Override

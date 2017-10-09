@@ -15,8 +15,10 @@ import com.noxag.newnox.textanalyzer.data.TextPositionSequence;
 
 public class PDFHighlighter {
 
-    public static void highlight(PDDocument pdfDoc, List<TextFinding> textFindings) {
-
+    public static void highlight(PDDocument pdfDoc, List<TextFinding> textFindings) throws IOException {
+        for (TextFinding finding : textFindings) {
+            addTextMarkupAnnotation(pdfDoc, finding.getTextPositionSequence());
+        }
     }
 
     /**
@@ -27,16 +29,23 @@ public class PDFHighlighter {
      * @throws IOException
      * 
      */
-    private static void addTextMarkupAnnotation(PDDocument doc, TextPositionSequence annotationPosition)
+    public static void addTextMarkupAnnotation(PDDocument doc, TextPositionSequence annotationPosition)
             throws IOException {
-        List<PDAnnotation> pageAnnotations = doc.getPage(annotationPosition.getPageNum() - 1).getAnnotations();
-        pageAnnotations.add(generateTextMarkupAnnotation(annotationPosition));
+        addTextMarkupAnnotation(doc, annotationPosition, new PDColor(new float[] { 1, 1, 0 }, PDDeviceRGB.INSTANCE),
+                PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
     }
 
-    private static PDAnnotation generateTextMarkupAnnotation(TextPositionSequence annotationPosition) {
-        PDAnnotationTextMarkup txtMark = new PDAnnotationTextMarkup(PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
-        txtMark.setColor(new PDColor(new float[] { 1, 1, 0 }, PDDeviceRGB.INSTANCE));
-        txtMark.setConstantOpacity((float) 0.5);
+    public static void addTextMarkupAnnotation(PDDocument doc, TextPositionSequence annotationPosition, PDColor color,
+            String subType) throws IOException {
+        doc.getPage(annotationPosition.getPageNum() - 1).getAnnotations()
+                .add(generateTextMarkupAnnotation(annotationPosition, color, subType));
+    }
+
+    private static PDAnnotation generateTextMarkupAnnotation(TextPositionSequence annotationPosition, PDColor color,
+            String subType) {
+        PDAnnotationTextMarkup txtMark = new PDAnnotationTextMarkup(subType);
+        txtMark.setColor(color);
+        txtMark.setConstantOpacity(1f);
         txtMark.setRectangle(new PDRectangle(annotationPosition.getX(), annotationPosition.getY(),
                 annotationPosition.getWidth(), annotationPosition.getHeight()));
         return txtMark;

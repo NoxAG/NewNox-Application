@@ -46,9 +46,9 @@ public class NewNoxWindow extends JFrame {
         this.configPanel.setTextanalyzerAlgorithms(textanayzerUINames);
     }
 
-    public void updatePDFView(List<BufferedImage> pdfImages) {
-        // TODO: reset the pdfView with the new Images and call an update for
-        // pdfView
+    public void updatePDFPanel(List<BufferedImage> pdfImages) {
+        // TODO: reset the PDFPanel with the new Images and call an update for
+        // PDFPanel
     }
 
     public void updateStatisticView(List<BufferedImage> chartImages) {
