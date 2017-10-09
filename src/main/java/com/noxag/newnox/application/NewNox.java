@@ -13,5 +13,6 @@ public class NewNox {
         mainWindow.setTextanalyzerAlgorithms(mainController.getTextanalyzerUINames());
         mainWindow.setBounds(600, 150, 800, 600);
         mainWindow.setVisible(true);
+        mainWindow.setAlwaysOnTop(true);
     }
 }
