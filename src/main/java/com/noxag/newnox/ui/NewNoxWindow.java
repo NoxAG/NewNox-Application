@@ -1,126 +1,125 @@
 package com.noxag.newnox.ui;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.function.Consumer;
+import java.io.Serializable;
 
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
-import com.noxag.newnox.ui.configurationmodule.ConfigurationPanel;
-import com.noxag.newnox.ui.pdfmodule.PDFPanel;
-import com.noxag.newnox.ui.statisticmodule.StatisticPanel;
-
-public class NewNoxWindow extends JFrame {
-
+public class NewNoxWindow extends Application implements Serializable {
     private static final long serialVersionUID = 668695870448644732L;
 
-    private ConfigurationPanel configPanel;
-    private PDFPanel pdfPanel;
-    private StatisticPanel statisticPanel;
+    @Override
+    public void start(Stage s) throws Exception {
+        // TODO Auto-generated method stub
+        SplitPane parent = new SplitPane();
+        VBox left = new VBox();
+        left.setSpacing(10);
 
-    private JPanel leftSidePanel;
+        BorderPane configPane = addConfigPane();
+        configPane.prefHeightProperty().bind(left.heightProperty().multiply(0.3));
+        configPane.setBorder(new Border(
+                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 
-    public NewNoxWindow() {
-        initializeWindowAppearance();
-        initializeWindowComponents();
-        initializeWindowBehaviour();
+        VBox statisticPane = addStatisticPane();
+        statisticPane.prefHeightProperty().bind(left.heightProperty().multiply(0.7).add(-20));
+        statisticPane.setBorder(new Border(
+                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+
+        VBox PDFPane = addPDFPane();
+
+        left.getChildren().addAll(configPane, statisticPane);
+        parent.getItems().addAll(left, PDFPane);
+
+        Scene scene = new Scene(parent);
+        s.setWidth(800);
+        s.setHeight(600);
+        s.setScene(scene);
+        s.setTitle("NewNoxAG - PA-Analyzer");
+
+        s.show();
     }
 
-    public void registerOpenPDFEvent(Consumer<String> openPDFCallback) {
-        // ToDo: add action event to confifPanel.openPDFButton and call
-        // openPDFCallback.accept(path);
-    };
-
-    public void registerAnalyzeEvent(Consumer<List<String>> analyzePDFCallback) {
-        // ToDo: add action event to confifPanel.analyzeButton and call
-        // analyzePDFCallback.accept(algorithmList);
+    private VBox addPDFPane() {
+        VBox PDFPane = new VBox();
+        PDFPane.getChildren().add(new Label("PDF"));
+        return PDFPane;
     }
 
-    public void setTextanalyzerAlgorithms(List<String> textanayzerUINames) {
-        this.configPanel.setTextanalyzerAlgorithms(textanayzerUINames);
+    private VBox addStatisticPane() {
+        VBox statisticPane = new VBox();
+        statisticPane.getChildren().add(new Label("Statistiken"));
+        return statisticPane;
     }
 
-    public void updatePDFPanel(List<BufferedImage> pdfImages) {
-        // TODO: reset the PDFPanel with the new Images and call an update for
-        // PDFPanel
+    private BorderPane addConfigPane() {
+        BorderPane configPane = new BorderPane();
+
+        TabPane tabbar = addTabPaneToConfigPane();
+        configPane.setCenter(tabbar);
+
+        Button run = new Button("Run");
+        run.prefWidthProperty().bind(configPane.widthProperty().multiply(0.3));
+        run.prefHeightProperty().bind(configPane.heightProperty().multiply(1.0));
+        configPane.setRight(run);
+
+        return configPane;
     }
 
-    public void updateStatisticView(List<BufferedImage> chartImages) {
-        // TODO: reset the statisticView with the new Images and call an update
-        // for statisticView
+    private TabPane addTabPaneToConfigPane() {
+        TabPane tabbar = new TabPane();
+        Tab textTab = new Tab();
+        textTab.setText("Textanalysen");
+        Tab statTab = new Tab();
+        statTab.setText("Statistikanalysen");
+
+        VBox textAlgPane = createTextAlgPane();
+        textTab.setContent(textAlgPane);
+        VBox statAlgPane = createStatAlgPane();
+        statTab.setContent(statAlgPane);
+
+        tabbar.getTabs().add(textTab);
+        tabbar.getTabs().add(statTab);
+
+        tabbar.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+
+        return tabbar;
     }
 
-    private void initializeWindowAppearance() {
-        // set minimal window size
-        // set preferred window size
-        // set window title
-        // set window icon
-        // force window ratio ?
-        // set window background ?
-        // set layout manager
-        // set visible
+    private VBox createTextAlgPane() {
+        VBox textAlgPane = new VBox();
+        textAlgPane.getChildren().add(new Label("Textalgorithmen"));
+        return textAlgPane;
     }
 
-    private void initializeWindowComponents() {
-        this.setLayout(new GridLayout(1, 2));
-
-        instanziateComponentes();
-        initalizeLeftSidePanel();
-
-        addComponentColors();
-        addComponentBorders();
-
-        this.add(leftSidePanel);
-        this.add(pdfPanel);
-
+    private VBox createStatAlgPane() {
+        VBox textStatPane = new VBox();
+        textStatPane.getChildren().add(new Label("Statistikalgorithmen"));
+        return textStatPane;
     }
 
-    private void instanziateComponentes() {
-        configPanel = new ConfigurationPanel();
-        pdfPanel = new PDFPanel();
-        statisticPanel = new StatisticPanel();
-        leftSidePanel = new JPanel();
-    }
-
-    private void initalizeLeftSidePanel() {
-        leftSidePanel.setLayout(new GridBagLayout());
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1;
-        constraints.weighty = 0.33;
-        constraints.fill = GridBagConstraints.BOTH;
-        leftSidePanel.add(configPanel, constraints);
-
-        constraints.gridy = 1;
-        constraints.weighty = 0.67;
-        leftSidePanel.add(statisticPanel, constraints);
-    }
-
-    private void addComponentColors() {
-        pdfPanel.setBackground(Color.LIGHT_GRAY);
-        leftSidePanel.setBackground(Color.DARK_GRAY);
-        configPanel.setBackground(Color.ORANGE);
-        statisticPanel.setBackground(Color.YELLOW);
-    }
-
-    private void addComponentBorders() {
-        pdfPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        leftSidePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        configPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        statisticPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-    }
-
-    private void initializeWindowBehaviour() {
-        // set default close operation
-    }
-
+    /*
+     * 
+     * 
+     * private ConfigurationPanel configPanel; private PDFPanel pdfPanel;
+     * private StatisticPanel statisticPanel;
+     * 
+     * public void start(Stage s) throws Exception { VBox parent = new VBox();
+     * Label test = new Label("TEST"); parent.getChildren().add(test); Scene
+     * scene = new Scene(parent); s.setScene(scene); s.show(); }
+     */
 }
