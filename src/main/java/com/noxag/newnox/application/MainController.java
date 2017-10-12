@@ -21,7 +21,6 @@ import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textlogic.ChartGenerator;
 import com.noxag.newnox.textlogic.PDFHighlighter;
-import com.noxag.newnox.ui.pdfmodule.PDFPageDrawer;
 
 /**
  * This class handles inputs of the userinterface via an event listener
@@ -169,7 +168,7 @@ public class MainController {
     }
 
     private List<BufferedImage> renderPDFImages() {
-        return PDFPageDrawer.getAllPagesFromPDFAsImage(this.pdfDoc);
+        return null;
     }
 
     private <S extends Finding> List<S> getFindingsOfSubInstances(List<Finding> findings, Class<S> childClass) {
