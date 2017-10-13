@@ -5,6 +5,8 @@ import com.noxag.newnox.ui.pdfmodule.PDFPane;
 import com.noxag.newnox.ui.statisticmodule.StatisticPane;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
@@ -15,16 +17,15 @@ public class NewNoxWindow extends Application {
     private ConfigurationPane configPane;
     private PDFPane pdfPane;
     private VBox left;
-    SplitPane main;
-    Scene scene;
+    private SplitPane main;
+    private static Scene scene;
 
     @Override
     public void start(Stage stage) throws Exception {
         main = new SplitPane();
-
+        initStage(stage);
         initLeftSide();
         initRightSide();
-        initStage(stage);
 
         main.getItems().addAll(left, pdfPane);
         stage.show();
@@ -36,6 +37,12 @@ public class NewNoxWindow extends Application {
         stage.setHeight(600);
         stage.setScene(scene);
         stage.setTitle("NewNoxAG - PA-Analyzer");
+        scene.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth,
+                    Number newSceneWidth) {
+            }
+        });
     }
 
     private void initRightSide() {
@@ -54,8 +61,12 @@ public class NewNoxWindow extends Application {
 
         statisticPane = new StatisticPane();
         statisticPane.prefHeightProperty().bind(left.heightProperty().multiply(0.7).add(-20));
+        statisticPane.prefWidthProperty().bind(left.widthProperty().multiply(0.9));
 
         left.getChildren().addAll(configPane, statisticPane);
     }
 
+    public static Scene getScene() {
+        return scene;
+    }
 }
