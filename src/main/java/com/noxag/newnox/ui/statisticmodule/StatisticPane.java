@@ -1,6 +1,7 @@
 package com.noxag.newnox.ui.statisticmodule;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javafx.scene.Node;
@@ -21,10 +22,10 @@ public class StatisticPane extends BorderPane {
     private Button incrementButton, decrementButton;
     private Pagination pager;
 
-    private ArrayList<BarChart> charts;
+    private List<BarChart> charts;
     private int chartsPerPageCounter = 1;
 
-    public StatisticPane(ArrayList<BarChart> barChart) {
+    public StatisticPane(List<BarChart> barChart) {
         charts = barChart;
 
         initIncrButton();
@@ -41,7 +42,7 @@ public class StatisticPane extends BorderPane {
         this(createCharts(15));
     }
 
-    public void setCharts(ArrayList<BarChart> charts) {
+    public void setCharts(List<BarChart> charts) {
         this.charts = charts;
     }
 
@@ -126,8 +127,8 @@ public class StatisticPane extends BorderPane {
     }
 
     // Following section is only for testing purposes
-    private static ArrayList<BarChart> createCharts(int num) {
-        ArrayList<BarChart> sampleChart = new ArrayList<BarChart>();
+    private static List<BarChart> createCharts(int num) {
+        List<BarChart> sampleChart = new ArrayList<BarChart>();
         for (int i = 0; i < num; i++) {
             sampleChart.add(createSampleChart(i));
         }
