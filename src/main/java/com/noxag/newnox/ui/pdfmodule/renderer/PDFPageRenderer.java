@@ -1,70 +1,58 @@
 package com.noxag.newnox.ui.pdfmodule.renderer;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 public class PDFPageRenderer {
     private final static int SCALING_FACTOR = 2;
 
-    public static List<Image> getTextHighlightingOverlay(PDDocument doc) throws IOException {
-        return PDFPageRenderer.getTextHighlightingOverlay(doc, 0, doc.getNumberOfPages() - 1);
+    public static List<Image> getTextHighlightingOverlayFromDocument(PDDocument doc) {
+        return PDFPageRenderer.getTextHighlightingOverlayForPages(doc, 0, doc.getNumberOfPages() - 1);
     }
 
-    public static List<Image> getTextHighlightingOverlay(PDDocument doc, int pageIndex, int pageIndexOffset)
-            throws IOException {
+    public static List<Image> getTextHighlightingOverlayForPages(PDDocument doc, int pageIndex, int pageIndexOffset) {
         List<Image> overlayImages = new ArrayList<>();
         for (int i = pageIndex; i <= (pageIndex + pageIndexOffset); i++) {
-            overlayImages.add(PDFPageRenderer.getTextHighlightingOverlay(doc, i));
+            overlayImages.add(PDFPageRenderer.getTextHighlightingOverlayForPage(doc, i));
         }
         return overlayImages;
     }
 
-    public static Image getTextHighlightingOverlay(PDDocument doc, int pageIndex) throws IOException {
-        return new TextHighlightingRenderer(doc).renderImage(pageIndex, SCALING_FACTOR);
+    public static Image getTextHighlightingOverlayForPage(PDDocument doc, int pageIndex) {
+        TextMarkupRenderer renderer = new TextMarkupRenderer(doc);
+        try {
+            return renderer.renderImage(pageIndex, SCALING_FACTOR);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public static List<Image> getPDFTextOverlay(PDDocument doc) throws IOException {
-        return getPDFTextOverlay(doc, 0, doc.getNumberOfPages() - 1);
+    public static Image getPageFromPDFAsImage(PDDocument doc, int pageIndex) {
+        PDFRenderer renderer = new PDFRenderer(doc);
+        try {
+            return renderer.renderImage(pageIndex, SCALING_FACTOR, ImageType.ARGB);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public static List<Image> getPDFTextOverlay(PDDocument doc, int pageIndex, int pageIndexOffset) throws IOException {
+    public static List<Image> getPagesFromPDFAsImage(PDDocument doc, int pageIndex, int pageIndexOffset) {
         List<Image> pdfPages = new ArrayList<>();
         for (int i = pageIndex; i <= (pageIndex + pageIndexOffset); i++) {
-            pdfPages.add(PDFPageRenderer.getPDFTextOverlay(doc, i));
+            pdfPages.add(PDFPageRenderer.getPageFromPDFAsImage(doc, i));
         }
         return pdfPages;
     }
 
-    public static Image getPDFTextOverlay(PDDocument doc, int pageIndex) throws IOException {
-        return new PDFRenderer(doc).renderImage(pageIndex, SCALING_FACTOR, ImageType.ARGB);
-    }
-
-    public static Image getBackgroundImage(PDDocument doc) {
-        PDPage page = doc.getPage(0);
-        PDRectangle cropbBox = page.getCropBox();
-        int widthPx = Math.round(cropbBox.getWidth() * SCALING_FACTOR);
-        int heightPx = Math.round(cropbBox.getHeight() * SCALING_FACTOR);
-
-        return createBackgroundImage(widthPx, heightPx);
-    }
-
-    private static Image createBackgroundImage(int width, int height) {
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = image.createGraphics();
-        g.setBackground(Color.WHITE);
-        g.clearRect(0, 0, image.getWidth(), image.getHeight());
-        g.dispose();
-        return image;
+    public static List<Image> getAllPagesFromPDFAsImage(PDDocument doc) {
+        return getPagesFromPDFAsImage(doc, 0, doc.getNumberOfPages() - 1);
     }
 }
