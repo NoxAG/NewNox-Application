@@ -1,5 +1,6 @@
 package com.noxag.newnox.ui.statisticmodule;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import javafx.scene.Node;
@@ -14,15 +15,17 @@ import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 
 public class StatisticPane extends BorderPane {
-    Button incrementButton, decrementButton;
-    Pagination pager;
+    private static final int MAX_CHARTS = 4;
+    private static final int MIN_CHARTS = 1;
 
-    private BarChart[] chartArray;
+    private Button incrementButton, decrementButton;
+    private Pagination pager;
 
-    int counter = 1;
+    private ArrayList<BarChart> charts;
+    private int chartsPerPageCounter = 1;
 
-    public StatisticPane(BarChart[] barChart) {
-        chartArray = barChart;
+    public StatisticPane(ArrayList<BarChart> barChart) {
+        charts = barChart;
 
         initIncrButton();
         initDecrButton();
@@ -38,10 +41,14 @@ public class StatisticPane extends BorderPane {
         this(createCharts(15));
     }
 
+    public void setCharts(ArrayList<BarChart> charts) {
+        this.charts = charts;
+    }
+
     private void initIncrButton() {
         incrementButton = new Button("+");
         incrementButton.setOnAction((event) -> {
-            counter *= 2;
+            chartsPerPageCounter *= 2;
             reloadPage();
         });
     }
@@ -49,26 +56,26 @@ public class StatisticPane extends BorderPane {
     private void initDecrButton() {
         decrementButton = new Button("-");
         decrementButton.setOnAction((event) -> {
-            counter /= 2;
+            chartsPerPageCounter /= 2;
             reloadPage();
         });
     }
 
     // check if Increment Button should be activated
-    public void checkIncrButton() {
-        if (counter >= 3) {
-            incrementButton.setDisable(true);
-        } else {
+    private void checkIncrButton() {
+        if (chartsPerPageCounter < MAX_CHARTS) {
             incrementButton.setDisable(false);
+        } else {
+            incrementButton.setDisable(true);
         }
     }
 
     // check if Decrement Button should be activated
-    public void checkDecrButton() {
-        if (counter <= 1) {
-            decrementButton.setDisable(true);
-        } else {
+    private void checkDecrButton() {
+        if (chartsPerPageCounter > MIN_CHARTS) {
             decrementButton.setDisable(false);
+        } else {
+            decrementButton.setDisable(true);
         }
     }
 
@@ -99,8 +106,8 @@ public class StatisticPane extends BorderPane {
 
     // Calculate pages to be shown
     private void setPager() {
-        if (chartArray != null) {
-            pager.setPageCount((int) Math.ceil((float) chartArray.length / (float) counter));
+        if (charts != null) {
+            pager.setPageCount((int) Math.ceil((float) charts.size() / (float) chartsPerPageCounter));
         } else {
             pager.setPageCount(1);
         }
@@ -109,22 +116,25 @@ public class StatisticPane extends BorderPane {
     // Adding charts to given page
     private void buildCharts(GridPane page, int index) {
         page.getChildren().clear();
-        for (int i = 0; i < counter; i++) {
-            if (i + index * counter < chartArray.length)
-                page.add(chartArray[i + index * counter], (int) Math.ceil((i + 1) / 2.0), 2 - ((i + 1) % 2));
+        for (int i = 0; i < chartsPerPageCounter; i++) {
+            if (i + index * chartsPerPageCounter < charts.size()) {
+                int column = (int) Math.ceil((i + 1) / 2.0);
+                int row = 2 - ((i + 1) % 2);
+                page.add(charts.get(i + index * chartsPerPageCounter), column, row);
+            }
         }
     }
 
     // Following section is only for testing purposes
-    public static BarChart[] createCharts(int num) {
-        BarChart[] sampleChart = new BarChart[num];
+    private static ArrayList<BarChart> createCharts(int num) {
+        ArrayList<BarChart> sampleChart = new ArrayList<BarChart>();
         for (int i = 0; i < num; i++) {
-            sampleChart[i] = createSampleChart(i);
+            sampleChart.add(createSampleChart(i));
         }
         return sampleChart;
     }
 
-    public static BarChart createSampleChart(int index) {
+    private static BarChart createSampleChart(int index) {
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         BarChart bc = new BarChart<String, Number>(xAxis, yAxis);
@@ -157,7 +167,7 @@ public class StatisticPane extends BorderPane {
         return bc;
     }
 
-    public static double generateRndDouble() {
+    private static double generateRndDouble() {
         Random r = new Random();
         return 1 + 1000 * r.nextDouble();
     }
