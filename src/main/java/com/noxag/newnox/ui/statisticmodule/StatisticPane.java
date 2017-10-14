@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -11,22 +16,38 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 
 public class StatisticPane extends BorderPane {
     private static final int MAX_CHARTS = 4;
     private static final int MIN_CHARTS = 1;
+    private static final int COMMENTS_PER_PAGE = 10;
 
     private Button incrementButton, decrementButton;
     private Pagination pager;
 
     private List<BarChart> charts;
+    private List<CommentaryFinding> commentFindings;
     private int chartsPerPageCounter = 1;
 
+    // Only for testing purpose
+    public StatisticPane() {
+        this(createCharts(15), createComments(15));
+    }
+
     public StatisticPane(List<BarChart> barChart) {
+        this(barChart, null);
+    }
+
+    public StatisticPane(List<BarChart> barChart, List<CommentaryFinding> commentaryFindings) {
         charts = barChart;
+        commentFindings = commentaryFindings;
 
         initIncrButton();
         initDecrButton();
@@ -35,11 +56,6 @@ public class StatisticPane extends BorderPane {
         this.setLeft(decrementButton);
         this.setRight(incrementButton);
         this.setCenter(pager);
-    }
-
-    // Only for testing purpose
-    public StatisticPane() {
-        this(createCharts(15));
     }
 
     public void setCharts(List<BarChart> charts) {
@@ -71,7 +87,6 @@ public class StatisticPane extends BorderPane {
         }
     }
 
-    // check if Decrement Button should be activated
     private void checkDecrButton() {
         if (chartsPerPageCounter > MIN_CHARTS) {
             decrementButton.setDisable(false);
@@ -91,9 +106,17 @@ public class StatisticPane extends BorderPane {
     private void apendPagesToPager() {
         pager.setPageFactory(new Callback<Integer, Node>() {
             public Node call(Integer pageIndex) {
-                GridPane page = new GridPane();
-                buildCharts(page, pageIndex);
-                return page;
+                if ((int) Math.ceil((float) charts.size() / (float) chartsPerPageCounter) > pageIndex) {
+                    GridPane page = new GridPane();
+                    page.setAlignment(Pos.CENTER);
+                    buildCharts(page, pageIndex);
+                    return page;
+                } else {
+                    StackPane page = new StackPane();
+                    page.setAlignment(Pos.CENTER);
+                    buildComments(page, pageIndex);
+                    return page;
+                }
             }
         });
     }
@@ -108,7 +131,9 @@ public class StatisticPane extends BorderPane {
     // Calculate pages to be shown
     private void setPager() {
         if (charts != null) {
-            pager.setPageCount((int) Math.ceil((float) charts.size() / (float) chartsPerPageCounter));
+            int numOfChartPages = (int) Math.ceil(charts.size() / (float) chartsPerPageCounter);
+            int numOfCommentPages = (int) Math.ceil((commentFindings.size() / (float) COMMENTS_PER_PAGE));
+            pager.setPageCount(numOfChartPages + numOfCommentPages);
         } else {
             pager.setPageCount(1);
         }
@@ -124,6 +149,53 @@ public class StatisticPane extends BorderPane {
                 page.add(charts.get(i + index * chartsPerPageCounter), column, row);
             }
         }
+    }
+
+    public void buildComments(StackPane page, int index) {
+        page.getChildren().clear();
+
+        TableView<CommentaryFinding> commentTableView = new TableView<>();
+        commentTableView.setEditable(false);
+        commentTableView.prefWidthProperty().bind(this.widthProperty().multiply(0.8));
+        commentTableView.prefHeightProperty().bind(this.heightProperty().multiply(0.9));
+        commentTableView.maxWidthProperty().bind(this.widthProperty().multiply(0.8));
+        commentTableView.maxHeightProperty().bind(this.heightProperty().multiply(0.9));
+
+        List<CommentaryFinding> comments = new ArrayList<CommentaryFinding>();
+
+        for (int i = 0; i < COMMENTS_PER_PAGE; i++) {
+            int lastPageOfCharts = (int) Math.ceil((float) charts.size() / (float) chartsPerPageCounter);
+            int commentFindingsIndex = i + (index - lastPageOfCharts) * COMMENTS_PER_PAGE;
+
+            if (commentFindingsIndex >= commentFindings.size()) {
+                break;
+            }
+
+            comments.add(commentFindings.get(commentFindingsIndex));
+        }
+
+        ObservableList<CommentaryFinding> data = FXCollections.observableArrayList(comments);
+        commentTableView.setItems(data);
+
+        TableColumn<CommentaryFinding, Integer> numOfPageColumn = new TableColumn<>("Seite");
+        numOfPageColumn.setCellValueFactory(new PropertyValueFactory<CommentaryFinding, Integer>("page"));
+        numOfPageColumn.prefWidthProperty().bind(commentTableView.widthProperty().multiply(0.1));
+
+        TableColumn<CommentaryFinding, Integer> lineColumn = new TableColumn<>("Zeile");
+        lineColumn.setCellValueFactory(new PropertyValueFactory<CommentaryFinding, Integer>("line"));
+        lineColumn.prefWidthProperty().bind(commentTableView.widthProperty().multiply(0.1));
+
+        TableColumn<CommentaryFinding, String> typeColumn = new TableColumn<>("Typ");
+        typeColumn.setCellValueFactory(new PropertyValueFactory<CommentaryFinding, String>("type"));
+        typeColumn.prefWidthProperty().bind(commentTableView.widthProperty().multiply(0.2));
+
+        TableColumn<CommentaryFinding, String> commentColumn = new TableColumn<>("Kommentar");
+        commentColumn.setCellValueFactory(new PropertyValueFactory<CommentaryFinding, String>("comment"));
+        commentColumn.prefWidthProperty().bind(commentTableView.widthProperty().multiply(0.6));
+
+        commentTableView.getColumns().addAll(numOfPageColumn, lineColumn, typeColumn, commentColumn);
+
+        page.getChildren().add(commentTableView);
     }
 
     // Following section is only for testing purposes
@@ -171,5 +243,13 @@ public class StatisticPane extends BorderPane {
     private static double generateRndDouble() {
         Random r = new Random();
         return 1 + 1000 * r.nextDouble();
+    }
+
+    private static List<CommentaryFinding> createComments(int num) {
+        List<CommentaryFinding> comments = new ArrayList<>();
+        for (int i = 0; i < num; i++) {
+            comments.add(new CommentaryFinding("BLABLBALBASPODJPAOIAS\nDOI", "Typ " + i, i, i * 10));
+        }
+        return comments;
     }
 }

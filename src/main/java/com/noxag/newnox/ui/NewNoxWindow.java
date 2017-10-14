@@ -63,6 +63,7 @@ public class NewNoxWindow extends Application {
 
         statisticPane = new StatisticPane();
         statisticPane.prefHeightProperty().bind(left.heightProperty().multiply(0.7).add(-20));
+        statisticPane.maxHeightProperty().bind(left.heightProperty().multiply(0.7).add(-20));
         statisticPane.prefWidthProperty().bind(left.widthProperty().multiply(0.9));
 
         left.getChildren().addAll(configPane, statisticPane);
