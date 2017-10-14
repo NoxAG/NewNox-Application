@@ -35,6 +35,8 @@ public class NewNoxWindow extends Application {
         scene = new Scene(main);
         stage.setWidth(800);
         stage.setHeight(600);
+        stage.setMinWidth(800);
+        stage.setMinHeight(600);
         stage.setScene(scene);
         stage.setTitle("NewNoxAG - PA-Analyzer");
         scene.widthProperty().addListener(new ChangeListener<Number>() {

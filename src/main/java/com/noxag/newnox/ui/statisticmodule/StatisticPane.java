@@ -2,79 +2,61 @@ package com.noxag.newnox.ui.statisticmodule;
 
 import java.util.Random;
 
-import com.noxag.newnox.ui.NewNoxWindow;
-
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.Pagination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 
-public class StatisticPane extends VBox {
-    private GridPane chartPane;
-    private BorderPane pagerPane;
-    int column = 1, row = 1, maxrow = 1, maxcolumn = 1;
-    int counter = 1, size = 1;
+public class StatisticPane extends BorderPane {
     Button incrementButton, decrementButton;
+    Pagination pager;
 
-    public StatisticPane() {
-        chartPane = new GridPane();
-        initPagerPane();
+    private BarChart[] chartArray;
 
-        // Only for Testing
-        buildCharts();
+    int counter = 1;
 
-        this.getChildren().addAll(chartPane, pagerPane);
-    }
-
-    // initialize PagerPane with Buttons and Pager
-    private void initPagerPane() {
-        pagerPane = new BorderPane();
+    public StatisticPane(BarChart[] barChart) {
+        chartArray = barChart;
 
         initIncrButton();
         initDecrButton();
-        pagerPane.setLeft(decrementButton);
-        pagerPane.setRight(incrementButton);
-        // TODO: Draw Pager
-        pagerPane.setCenter(new Label("Pager"));
+        initPager();
+
+        this.setLeft(decrementButton);
+        this.setRight(incrementButton);
+        this.setCenter(pager);
     }
 
-    // initialize Decrement Button
-    private void initDecrButton() {
-        decrementButton = new Button("-");
-        decrementButton.setOnAction((event) -> {
-            counter--;
-            buildCharts();
-            checkDecrButton();
-            checkIncrButton();
-        });
-        addListenerForSizeChanging(NewNoxWindow.getScene().widthProperty());
-        addListenerForSizeChanging(NewNoxWindow.getScene().heightProperty());
+    // Only for testing purpose
+    public StatisticPane() {
+        this(createCharts(15));
     }
 
-    // initialize Increment Button
     private void initIncrButton() {
         incrementButton = new Button("+");
         incrementButton.setOnAction((event) -> {
-            counter++;
-            buildCharts();
-            checkIncrButton();
+            counter *= 2;
+            reloadPage();
+        });
+    }
+
+    private void initDecrButton() {
+        decrementButton = new Button("-");
+        decrementButton.setOnAction((event) -> {
+            counter /= 2;
+            reloadPage();
         });
     }
 
     // check if Increment Button should be activated
     public void checkIncrButton() {
-        // Only for testing
-        System.out.println((size + 1) * 150 + ">=?" + this.getWidth());
-        // TODO: Fixen
-        if ((150 * (size + 1)) >= this.getWidth() || (50 * (size + 1)) >= this.getHeight()) {
+        if (counter >= 3) {
             incrementButton.setDisable(true);
         } else {
             incrementButton.setDisable(false);
@@ -90,40 +72,67 @@ public class StatisticPane extends VBox {
         }
     }
 
-    // add sizechanging-Listeners for checking Increment Button activation state
+    private void initPager() {
+        pager = new Pagination();
+        apendPagesToPager();
+        reloadPage();
+    }
 
-    private void addListenerForSizeChanging(ReadOnlyDoubleProperty property) {
-        property.addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                checkIncrButton();
+    // Sets a callback Function for appending a page to every 'tab' of the pager
+    // --> callback is called always if number of pages has been changed
+    private void apendPagesToPager() {
+        pager.setPageFactory(new Callback<Integer, Node>() {
+            public Node call(Integer pageIndex) {
+                GridPane page = new GridPane();
+                buildCharts(page, pageIndex);
+                return page;
             }
         });
     }
 
-    // ONLY-FOR-TESTING-SECTION (build random Charts)
+    // Page reload actions
+    private void reloadPage() {
+        setPager();
+        checkIncrButton();
+        checkDecrButton();
+    }
 
-    private void buildCharts() {
-        size = counter;
-        row = column = 1;
-        chartPane.getChildren().clear();
-        while (column <= size) {
-            chartPane.add(createSampleChart(), row, column);
-            row++;
-            if (row > size) {
-                row = 1;
-                column++;
-            }
+    // Calculate pages to be shown
+    private void setPager() {
+        if (chartArray != null) {
+            pager.setPageCount((int) Math.ceil((float) chartArray.length / (float) counter));
+        } else {
+            pager.setPageCount(1);
         }
     }
 
-    public static BarChart createSampleChart() {
+    // Adding charts to given page
+    private void buildCharts(GridPane page, int index) {
+        page.getChildren().clear();
+        for (int i = 0; i < counter; i++) {
+            if (i + index * counter < chartArray.length)
+                page.add(chartArray[i + index * counter], (int) Math.ceil((i + 1) / 2.0), 2 - ((i + 1) % 2));
+        }
+    }
+
+    // Following section is only for testing purposes
+    public static BarChart[] createCharts(int num) {
+        BarChart[] sampleChart = new BarChart[num];
+        for (int i = 0; i < num; i++) {
+            sampleChart[i] = createSampleChart(i);
+        }
+        return sampleChart;
+    }
+
+    public static BarChart createSampleChart(int index) {
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         BarChart bc = new BarChart<String, Number>(xAxis, yAxis);
-        bc.setTitle("Chart");
+        bc.setTitle("Chart " + (index + 1));
         bc.setMinWidth(150);
         bc.setMinHeight(50);
+        bc.setPrefWidth(800);
+        bc.setPrefHeight(600);
         xAxis.setLabel("Name");
         yAxis.setLabel("Value");
 
