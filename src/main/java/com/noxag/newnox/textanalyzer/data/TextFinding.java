@@ -14,6 +14,10 @@ public class TextFinding extends Finding {
         super();
     }
 
+    public TextFinding(TextPositionSequence textPositionSequence) {
+        this(textPositionSequence, null);
+    }
+
     public TextFinding(TextPositionSequence textPositionSequence, TextFindingType type) {
         this.textPositionSequence = textPositionSequence;
         this.type = type;

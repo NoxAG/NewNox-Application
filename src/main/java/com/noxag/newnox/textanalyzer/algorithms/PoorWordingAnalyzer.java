@@ -18,7 +18,7 @@ import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
 import com.noxag.newnox.textanalyzer.data.TextPositionSequence;
-import com.noxag.newnox.textanalyzer.util.TextanalyzerUtil;
+import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 
 /**
  * This class can be used to find all words that shouldn't be used in an
@@ -43,7 +43,7 @@ public class PoorWordingAnalyzer implements TextanalyzerAlgorithm {
     }
 
     public PoorWordingAnalyzer(String wordingBlacklistPath) {
-        this.wordingBlacklist = readBadWordingBlackListFile(wordingBlacklistPath);
+        this.wordingBlacklist = readWordingBlackListFile(wordingBlacklistPath);
     }
 
     @Override
@@ -60,9 +60,8 @@ public class PoorWordingAnalyzer implements TextanalyzerAlgorithm {
     private List<TextFinding> findWordInDocument(PDDocument doc, String searchTerm) {
         List<TextPositionSequence> textPositions = new ArrayList<>();
         try {
-            textPositions = TextanalyzerUtil.findInDocument(doc, searchTerm,
-                    TextanalyzerUtil::findWordOnPageIgnoreCase);
-
+            textPositions = PDFTextExtractionUtil.findInDocument(doc, searchTerm,
+                    PDFTextExtractionUtil::findWordIgnoreCase);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not search through document", e);
         }
@@ -76,7 +75,7 @@ public class PoorWordingAnalyzer implements TextanalyzerAlgorithm {
         return textFindings;
     }
 
-    private List<String> readBadWordingBlackListFile(String wordingBlacklistPath) {
+    private List<String> readWordingBlackListFile(String wordingBlacklistPath) {
         List<String> wordingBlacklist = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(BLACKLIST_PATH));) {
             String line = "";

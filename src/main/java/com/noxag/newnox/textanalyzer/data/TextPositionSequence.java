@@ -5,11 +5,10 @@ import java.util.List;
 import org.apache.pdfbox.text.TextPosition;
 
 public class TextPositionSequence implements CharSequence {
-
     final List<TextPosition> textPositions;
     final int start;
     final int end;
-    final int pageNum;
+    final int pageIndex;
 
     public TextPositionSequence(List<TextPosition> textPositions, int pageNum) {
         this(textPositions, 0, textPositions.size() - 1, pageNum);
@@ -19,7 +18,7 @@ public class TextPositionSequence implements CharSequence {
         this.textPositions = textPositions;
         this.start = start;
         this.end = end;
-        this.pageNum = pageNum;
+        this.pageIndex = pageNum;
     }
 
     @Override
@@ -37,13 +36,13 @@ public class TextPositionSequence implements CharSequence {
 
     @Override
     public TextPositionSequence subSequence(int start, int end) {
-        return new TextPositionSequence(textPositions, this.start + start, this.start + end, this.pageNum);
+        return new TextPositionSequence(textPositions, this.start + start, this.start + end, this.pageIndex);
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder(length());
-        for (int i = 0; i < length(); i++) {
+        for (int i = 0; i <= length(); i++) {
             builder.append(charAt(i));
         }
         return builder.toString();
@@ -69,11 +68,23 @@ public class TextPositionSequence implements CharSequence {
 
     public float getHeight() {
         TextPosition first = textPositions.get(start);
-        return first.getHeightDir();
+        return first.getHeightDir() * 1.1f;
     }
 
-    public int getPageNum() {
-        return pageNum;
+    public int getPageIndex() {
+        return pageIndex;
+    }
+
+    public List<TextPosition> getTextPositions() {
+        return textPositions;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public int getEnd() {
+        return end;
     }
 
 }

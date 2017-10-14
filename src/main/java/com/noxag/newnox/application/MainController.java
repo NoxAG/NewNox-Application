@@ -20,8 +20,7 @@ import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textlogic.ChartGenerator;
-import com.noxag.newnox.textlogic.PDFHighlighter;
-import com.noxag.newnox.ui.pdfmodule.PDFPageDrawer;
+import com.noxag.newnox.textlogic.PDFTextMarker;
 
 /**
  * This class handles inputs of the userinterface via an event listener
@@ -70,10 +69,10 @@ public class MainController {
         List<TextFinding> textFindings = getFindingsOfSubInstances(findings, TextFinding.class);
 
         try {
-            PDFHighlighter.highlight(this.pdfDoc, textFindings);
+            PDFTextMarker.addTextMarkups(this.pdfDoc, textFindings);
         } catch (IOException e) {
             // TODO: error propagation
-            LOGGER.log(Level.WARNING, "PDF Text could not be highlighted", e);
+            LOGGER.log(Level.WARNING, "PDF Text could not be markered", e);
         }
 
         triggerPDFViewUpdateEvent(renderPDFImages());
@@ -169,7 +168,7 @@ public class MainController {
     }
 
     private List<BufferedImage> renderPDFImages() {
-        return PDFPageDrawer.getAllPagesFromPDFAsImage(this.pdfDoc);
+        return null;
     }
 
     private <S extends Finding> List<S> getFindingsOfSubInstances(List<Finding> findings, Class<S> childClass) {
