@@ -12,6 +12,12 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 
+/**
+ * This class generates a chart by given StatisticFindings
+ * 
+ * @author Pascal.Schroeder@de.ibm.com
+ *
+ */
 public class ChartGenerator {
     public static final int MIN_WIDTH = 150;
     public static final int PREF_WIDTH = 800;

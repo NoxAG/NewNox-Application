@@ -1,5 +1,11 @@
 package com.noxag.newnox.textanalyzer.data;
 
+/**
+ * This class represents the result of a statistical analysis
+ * 
+ * @author Pascal.Schroeder@de.ibm.com
+ *
+ */
 public class CommentaryFinding extends Finding {
     private int page;
     private int line;

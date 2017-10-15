@@ -3,7 +3,6 @@ package com.noxag.newnox.ui.statisticmodule;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 
@@ -13,9 +12,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableColumn;
@@ -25,6 +21,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
+
+/**
+ * This class represents the StatisticPane for the User Interface
+ * 
+ * @author Pascal.Schroeder@de.ibm.com
+ *
+ */
 
 public class StatisticPane extends BorderPane {
     private static final int MAX_CHARTS = 4;
@@ -40,14 +43,12 @@ public class StatisticPane extends BorderPane {
     private List<CommentaryFinding> commentFindings;
     private int chartsPerPageCounter = 1;
 
-    // Only for testing purpose
     public StatisticPane() {
-        this(createCharts(15), createComments(15));
+        this(new ArrayList<BarChart>());
     }
 
-    // Constructors
     public StatisticPane(List<BarChart> barChart) {
-        this(barChart, createComments(15));
+        this(barChart, new ArrayList<CommentaryFinding>());
     }
 
     public StatisticPane(List<BarChart> barChart, List<CommentaryFinding> commentaryFindings) {
@@ -86,7 +87,7 @@ public class StatisticPane extends BorderPane {
     }
 
     private void checkIncrButton() {
-        if (chartsPerPageCounter < MAX_CHARTS) {
+        if (chartsPerPageCounter < MAX_CHARTS && chartsPerPageCounter < (charts.size())) {
             incrementButton.setDisable(false);
         } else {
             incrementButton.setDisable(true);
@@ -134,8 +135,11 @@ public class StatisticPane extends BorderPane {
     private void calculatePager() {
         if (charts != null) {
             int numOfChartPages = (int) Math.ceil(charts.size() / (float) chartsPerPageCounter);
-            int numOfCommentPages = (int) Math.ceil((commentFindings.size() / (float) COMMENTS_PER_PAGE));
-            pager.setPageCount(numOfChartPages + numOfCommentPages);
+            if (numOfChartPages != 0) {
+                pager.setPageCount(numOfChartPages + 1);
+            } else {
+                pager.setPageCount(1);
+            }
         } else {
             pager.setPageCount(1);
         }
@@ -178,17 +182,8 @@ public class StatisticPane extends BorderPane {
     private ObservableList<CommentaryFinding> createDataForTable(int index) {
         List<CommentaryFinding> comments = new ArrayList<CommentaryFinding>();
 
-        for (int i = 0; i < COMMENTS_PER_PAGE; i++) {
-            int lastPageOfCharts = (int) Math.ceil((float) charts.size() / (float) chartsPerPageCounter);
-            int commentFindingsIndex = i + (index - lastPageOfCharts) * COMMENTS_PER_PAGE;
-
-            // if current index of commentFindings to be shown in Table View
-            // is higher than size of commentFindings-List, abort
-            if (commentFindingsIndex >= commentFindings.size()) {
-                break;
-            }
-
-            comments.add(commentFindings.get(commentFindingsIndex));
+        for (int i = 0; i < commentFindings.size(); i++) {
+            comments.add(commentFindings.get(i));
         }
 
         ObservableList<CommentaryFinding> data = FXCollections.observableArrayList(comments);
@@ -218,58 +213,14 @@ public class StatisticPane extends BorderPane {
         return Column;
     }
 
-    // Following section is only for testing purposes
-    private static List<BarChart> createCharts(int num) {
-        List<BarChart> sampleChart = new ArrayList<BarChart>();
-        for (int i = 0; i < num; i++) {
-            sampleChart.add(createSampleChart(i));
-        }
-        return sampleChart;
+    public void setCharts(List<BarChart> charts) {
+        this.charts = charts;
+        reloadPage();
     }
 
-    private static BarChart createSampleChart(int index) {
-        final CategoryAxis xAxis = new CategoryAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        BarChart bc = new BarChart<String, Number>(xAxis, yAxis);
-        bc.setTitle("Chart " + (index + 1));
-        bc.setMinWidth(150);
-        bc.setMinHeight(50);
-        bc.setPrefWidth(800);
-        bc.setPrefHeight(600);
-        xAxis.setLabel("Name");
-        yAxis.setLabel("Value");
-
-        XYChart.Series series1 = new XYChart.Series();
-        series1.setName("Dataline I");
-        series1.getData().add(new XYChart.Data("Eins", generateRndDouble()));
-        series1.getData().add(new XYChart.Data("Zwei", generateRndDouble()));
-        series1.getData().add(new XYChart.Data("Drei", generateRndDouble()));
-        series1.getData().add(new XYChart.Data("Vier", generateRndDouble()));
-        series1.getData().add(new XYChart.Data("Fünf", generateRndDouble()));
-
-        XYChart.Series series2 = new XYChart.Series();
-        series2.setName("Dataline II");
-        series2.getData().add(new XYChart.Data("Eins", generateRndDouble()));
-        series2.getData().add(new XYChart.Data("Zwei", generateRndDouble()));
-        series2.getData().add(new XYChart.Data("Drei", generateRndDouble()));
-        series2.getData().add(new XYChart.Data("Vier", generateRndDouble()));
-        series2.getData().add(new XYChart.Data("Fünf", generateRndDouble()));
-
-        bc.getData().addAll(series1, series2);
-
-        return bc;
+    public void setCommentFindings(List<CommentaryFinding> commentFindings) {
+        this.commentFindings = commentFindings;
+        reloadPage();
     }
 
-    private static double generateRndDouble() {
-        Random r = new Random();
-        return 1 + 1000 * r.nextDouble();
-    }
-
-    private static List<CommentaryFinding> createComments(int num) {
-        List<CommentaryFinding> comments = new ArrayList<>();
-        for (int i = 0; i < num; i++) {
-            comments.add(new CommentaryFinding("BLABLBALBASPODJPAOIAS\nDOI", "Typ " + i, i, i * 10));
-        }
-        return comments;
-    }
 }

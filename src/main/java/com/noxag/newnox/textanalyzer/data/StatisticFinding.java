@@ -6,15 +6,10 @@ import java.util.List;
 /**
  * This class represents the result of a statistical analysis
  * 
- * @author Tobias.Schmidt@de.ibm.com
+ * @author Pascal.Schroeder@de.ibm.com
  *
  */
 public class StatisticFinding extends Finding {
-    private static final int MIN_WIDTH = 150;
-    private static final int MIN_HEIGHT = 50;
-    private static final int PREF_WIDTH = 800;
-    private static final int ÜREF_HEIGHT = 600;
-
     private static final String VOCABULARY_TITLE = "Vokabular";
     private static final String PUNCTUATION_TITLE = "Satzzeichen";
     private static final String ABBREVIATION_TITLE = "Abkürzungen";

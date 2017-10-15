@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,11 +17,12 @@ import com.noxag.newnox.textanalyzer.Textanalyzer;
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.algorithms.VocabularyDistributionAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.WordingAnalyzer;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
-import com.noxag.newnox.textlogic.PDFHighlighter;
 import com.noxag.newnox.textlogic.PDFTextMarker;
+
 import javafx.scene.chart.BarChart;
 
 /**
@@ -38,7 +40,7 @@ public class MainController {
     private List<TextanalyzerAlgorithm> textanalyzerAlgorithms;
     private List<TextanalyzerAlgorithm> statisticanalyzerAlgorithms;
     private Consumer<List<BufferedImage>> updatePDFImagesCallback;
-    private Consumer<List<BarChart>> updateStatisticViewCallback;
+    private BiConsumer<List<BarChart>, List<CommentaryFinding>> updateStatisticViewCallback;
     private Consumer<List<BufferedImage>> updateTextMarkupImagesCallback;
     private Consumer<String> alertPopupCallback;
 
@@ -79,8 +81,8 @@ public class MainController {
             // TODO: error propagation
             LOGGER.log(Level.WARNING, "PDF Text could not be markered", e);
         }
-      
-        triggerPDFViewUpdateEvent(renderPDFImages());
+
+        // triggerPDFViewUpdateEvent(renderPDFImages());
         triggerPDFImagesUpdateEvent(renderPDFImages());
         // triggerStatisticViewUpdateEvent(ChartGenerator.generateChartImages(statisticFindings));
     }
@@ -115,7 +117,8 @@ public class MainController {
      *            the method to be called when the "StatisticViewUpdate" event
      *            is triggered
      */
-    public void registerStatisticViewUpdateEvent(Consumer<List<BarChart>> updateStatisticViewCallback) {
+    public void registerStatisticViewUpdateEvent(
+            BiConsumer<List<BarChart>, List<CommentaryFinding>> updateStatisticViewCallback) {
         this.updateStatisticViewCallback = updateStatisticViewCallback;
     }
 
@@ -144,8 +147,8 @@ public class MainController {
      *            the statistic images that should be displayed in the
      *            userinterface
      */
-    public void triggerStatisticViewUpdateEvent(List<BarChart> charts) {
-        updateStatisticViewCallback.accept(charts);
+    public void triggerStatisticViewUpdateEvent(List<BarChart> charts, List<CommentaryFinding> comment) {
+        updateStatisticViewCallback.accept(charts, comment);
     }
 
     public void triggerAlertPopupEvent(String alertMessage) {

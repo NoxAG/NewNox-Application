@@ -1,16 +1,15 @@
 package com.noxag.newnox.ui;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
 import com.noxag.newnox.textanalyzer.data.StatisticFindingData;
 import com.noxag.newnox.textlogic.ChartGenerator;
-
-import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.function.Consumer;
 import com.noxag.newnox.ui.configurationmodule.ConfigurationPane;
 import com.noxag.newnox.ui.pdfmodule.PDFPane;
 import com.noxag.newnox.ui.statisticmodule.StatisticPane;
@@ -23,6 +22,13 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+/**
+ * This class builds the User Interface
+ * 
+ * @author Pascal.Schroeder@de.ibm.com
+ *
+ */
 
 public class NewNoxWindow extends Application {
     private static final double PDFPANE_WIDTH_FACTOR = 0.4;
@@ -47,6 +53,9 @@ public class NewNoxWindow extends Application {
         initStage(stage);
         initLeftSide();
         initRightSide();
+
+        // Only for testing purpose
+        updateStatisticView();
 
         main.getItems().addAll(left, pdfPane);
         stage.show();
@@ -79,10 +88,7 @@ public class NewNoxWindow extends Application {
         left.minWidthProperty().bind(main.widthProperty().multiply(LEFT_WIDTH_FACTOR));
 
         configPane = createConfigPane();
-
-        List<BarChart> testCharts = ChartGenerator.generateBarCharts(createTestFindings());
-
-        statisticPane = createStatisticPane(testCharts);
+        statisticPane = createStatisticPane();
 
         left.getChildren().addAll(configPane, statisticPane);
     }
@@ -94,8 +100,8 @@ public class NewNoxWindow extends Application {
         return configPane;
     }
 
-    private StatisticPane createStatisticPane(List<BarChart> barChartList) {
-        StatisticPane statisticPane = new StatisticPane(barChartList);
+    private StatisticPane createStatisticPane() {
+        StatisticPane statisticPane = new StatisticPane();
         statisticPane.prefHeightProperty()
                 .bind(left.heightProperty().multiply(STATISTICPANE_HEIGHT_FACTOR).add(STATISTICPANE_HEIGHT_INCREASE));
         statisticPane.maxHeightProperty()
@@ -106,23 +112,6 @@ public class NewNoxWindow extends Application {
 
     public static Scene getScene() {
         return scene;
-    }
-
-    // Only for testing purpose
-    private List<StatisticFinding> createTestFindings() {
-        List<StatisticFinding> findingList = new ArrayList<StatisticFinding>();
-        for (int i = 0; i < 10; i++) {
-            StatisticFinding finding = new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION);
-            for (int k = 0; k < 10; k++) {
-                StatisticFindingData data = new StatisticFindingData("Test" + k, k);
-                finding.addStatisticData(data);
-            }
-            finding.setChartName("Test");
-
-            findingList.add(finding);
-        }
-
-        return findingList;
     }
 
     public void registerAnalyzeEvent(Consumer<List<String>> analyzeCallBack) {
@@ -145,7 +134,6 @@ public class NewNoxWindow extends Application {
 
     public void setTextanalyzerAlgorithms(List<String> textanalyzerUINames) {
         // TODO configPane.setTextanalyzerAlgorithms(textanalyzerUINames);
-
     }
 
     public void setStatisticanalyzerAlgorithms(List<String> statisticanalyzerUINames) {
@@ -161,11 +149,41 @@ public class NewNoxWindow extends Application {
         // TODO: pdfPane.setTextMarkupImages(textMarkupImages)
     }
 
-    public void updateStatisticView(List<BarChart> charts) {
-        // TODO: statisticPane.setCharts(charts)
+    public void updateStatisticView(List<BarChart> charts, List<CommentaryFinding> comments) {
+        statisticPane.setCharts(charts);
+        statisticPane.setCommentFindings(comments);
     }
 
     public void popupAlert(String alertmessage) {
         // TODO: create alert window with alertmessage
+    }
+
+    // Following section is only for testing purposes
+    public void updateStatisticView() {
+        statisticPane.setCharts(ChartGenerator.generateBarCharts(createTestFindings(15)));
+        statisticPane.setCommentFindings(createSampleComments(15));
+    }
+
+    private static List<CommentaryFinding> createSampleComments(int num) {
+        List<CommentaryFinding> comments = new ArrayList<>();
+        for (int i = 0; i < num; i++) {
+            comments.add(new CommentaryFinding("BLABLBALBASPODJPAOIAS\nDOI", "Typ " + i, i, i * 10));
+        }
+        return comments;
+    }
+
+    private List<StatisticFinding> createTestFindings(int num) {
+        List<StatisticFinding> findingList = new ArrayList<StatisticFinding>();
+        for (int i = 0; i < num; i++) {
+            StatisticFinding finding = new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION);
+            for (int k = 0; k < 10; k++) {
+                StatisticFindingData data = new StatisticFindingData("Test" + k, k);
+                finding.addStatisticData(data);
+            }
+            finding.setChartName("Test");
+
+            findingList.add(finding);
+        }
+        return findingList;
     }
 }

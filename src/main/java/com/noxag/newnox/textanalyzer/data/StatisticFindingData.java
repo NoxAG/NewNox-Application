@@ -1,5 +1,11 @@
 package com.noxag.newnox.textanalyzer.data;
 
+/**
+ * This class represents the resulting data of a statistical analysis
+ * 
+ * @author Pascal.Schroeder@de.ibm.com
+ *
+ */
 public class StatisticFindingData {
     private String designation;
     private double value;
