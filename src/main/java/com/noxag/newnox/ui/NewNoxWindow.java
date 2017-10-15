@@ -94,15 +94,18 @@ public class NewNoxWindow extends Application {
 
     // Only for testing purpose
     private List<StatisticFinding> createTestFindings() {
-        StatisticFinding finding = new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION);
-        for (int k = 0; k < 10; k++) {
-            StatisticFindingData data = new StatisticFindingData("Test" + k, k);
-            finding.addStatisticData(data);
-        }
-        finding.setChartName("Test");
-
         List<StatisticFinding> findingList = new ArrayList<StatisticFinding>();
-        findingList.add(finding);
+        for (int i = 0; i < 10; i++) {
+            StatisticFinding finding = new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION);
+            for (int k = 0; k < 10; k++) {
+                StatisticFindingData data = new StatisticFindingData("Test" + k, k);
+                finding.addStatisticData(data);
+            }
+            finding.setChartName("Test");
+
+            findingList.add(finding);
+        }
+
         return findingList;
     }
 }
