@@ -15,4 +15,9 @@ public class PaginationAnalyzer implements TextanalyzerAlgorithm {
         return null;
     }
 
+    @Override
+    public String getUIName() {
+        return PaginationAnalyzer.class.getSimpleName();
+    }
+
 }

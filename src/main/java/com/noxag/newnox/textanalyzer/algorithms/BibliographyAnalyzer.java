@@ -15,4 +15,9 @@ public class BibliographyAnalyzer implements TextanalyzerAlgorithm {
         return null;
     }
 
+    @Override
+    public String getUIName() {
+        return BibliographyAnalyzer.class.getSimpleName();
+    }
+
 }

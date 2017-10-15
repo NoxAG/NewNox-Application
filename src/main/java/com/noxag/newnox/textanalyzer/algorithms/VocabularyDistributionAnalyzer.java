@@ -24,4 +24,9 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
         return null;
     }
 
+    @Override
+    public String getUIName() {
+        return VocabularyDistributionAnalyzer.class.getSimpleName();
+    }
+
 }

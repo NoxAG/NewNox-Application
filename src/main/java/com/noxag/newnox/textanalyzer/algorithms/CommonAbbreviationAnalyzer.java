@@ -22,4 +22,9 @@ public class CommonAbbreviationAnalyzer implements TextanalyzerAlgorithm {
         return null;
     }
 
+    @Override
+    public String getUIName() {
+        return CommonAbbreviationAnalyzer.class.getSimpleName();
+    }
+
 }

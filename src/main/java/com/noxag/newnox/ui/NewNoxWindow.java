@@ -1,5 +1,9 @@
 package com.noxag.newnox.ui;
 
+import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.function.Consumer;
+
 import com.noxag.newnox.ui.configurationmodule.ConfigurationPane;
 import com.noxag.newnox.ui.pdfmodule.PDFPane;
 import com.noxag.newnox.ui.statisticmodule.StatisticPane;
@@ -8,6 +12,7 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -25,6 +30,8 @@ public class NewNoxWindow extends Application {
     private PDFPane pdfPane;
     private VBox left;
     private SplitPane main;
+    private Consumer<String> openPDFBtnCallBack;
+    private Consumer<List<String>> analyzeBtnCallBack;
     private static Scene scene;
 
     @Override
@@ -81,4 +88,49 @@ public class NewNoxWindow extends Application {
     public static Scene getScene() {
         return scene;
     }
+
+    public void registerAnalyzeEvent(Consumer<List<String>> analyzeCallBack) {
+        this.analyzeBtnCallBack = analyzeCallBack;
+    }
+
+    public void registerOpenPDFEvent(Consumer<String> openPDFCallBack) {
+        this.openPDFBtnCallBack = openPDFCallBack;
+    }
+
+    // TODO call this method when analyzer button has been pressed
+    public void triggerAnalyzeEvent(List<String> algorithms) {
+        this.analyzeBtnCallBack.accept(algorithms);
+    }
+
+    // TODO call this method when open button has been pressed
+    public void triggerOpenPDFEvent(String path) {
+        this.openPDFBtnCallBack.accept(path);
+    }
+
+    public void setTextanalyzerAlgorithms(List<String> textanalyzerUINames) {
+        // TODO configPane.setTextanalyzerAlgorithms(textanalyzerUINames);
+
+    }
+
+    public void setStatisticanalyzerAlgorithms(List<String> statisticanalyzerUINames) {
+        // TODO
+        // configPane.setStatisticanalyzerAlgorithms(statisticanalyzerUINames);
+    }
+
+    public void updatePDFImages(List<BufferedImage> pdfImages) {
+        // TODO: pdfPane.setPDFImages(pdfImages)
+    }
+
+    public void updateTextMarkupImages(List<BufferedImage> textMarkupImages) {
+        // TODO: pdfPane.setTextMarkupImages(textMarkupImages)
+    }
+
+    public void updateStatisticView(List<BarChart> charts) {
+        // TODO: statisticPane.setCharts(charts)
+    }
+
+    public void popupAlert(String alertmessage) {
+        // TODO: create alert window with alertmessage
+    }
+
 }

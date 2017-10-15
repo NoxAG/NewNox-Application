@@ -53,7 +53,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
         return findings;
     }
 
-    public static String getUIName() {
+    public String getUIName() {
         return WordingAnalyzer.class.getSimpleName();
     }
 

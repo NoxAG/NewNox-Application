@@ -15,4 +15,9 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
         return null;
     }
 
+    @Override
+    public String getUIName() {
+        return RepetitivWordingAnalyzer.class.getSimpleName();
+    }
+
 }
