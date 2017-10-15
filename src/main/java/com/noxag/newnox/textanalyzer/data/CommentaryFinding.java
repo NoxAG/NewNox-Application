@@ -9,12 +9,12 @@ public class CommentaryFinding extends Finding {
         super();
     }
 
-    public CommentaryFinding(String c, String t, int p, int l) {
+    public CommentaryFinding(String comment, String type, int page, int line) {
         this();
-        setComment(c);
-        setType(t);
-        setPage(p);
-        setLine(l);
+        setComment(comment);
+        setType(type);
+        setPage(page);
+        setLine(line);
     }
 
     public int getPage() {
