@@ -18,47 +18,51 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 public class ConfigurationPane extends BorderPane {
 
-    public Button btnrun, btnopen;
-    public FileChooser fileChooser;
+    private Button btnrun, btnopen;
+    private FileChooser fileChooser;
+    private ConfigurationTabPane configTabPane;
+    private HBox btnbox;
 
     public ConfigurationPane() {
 
-        ConfigurationTabPane configTabPane = new ConfigurationTabPane();
+        configTabPane = new ConfigurationTabPane();
         this.setCenter(configTabPane);
 
         this.setBorder(new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 
-        // Add "run" button
+        createButtons();
+        createFileChooser();
+
+    }
+
+    private void createButtons() {
         btnrun = new Button("Run");
         btnopen = new Button("Open File ...");
-        HBox btnbox = new HBox();
+        btnbox = new HBox();
         this.setBottom(btnbox);
         btnbox.getChildren().addAll(btnopen, btnrun);
         btnbox.setAlignment(Pos.BOTTOM_RIGHT);
         HBox.setMargin(btnrun, new Insets(4.0, 4.0, 4.0, 4.0));
         HBox.setMargin(btnopen, new Insets(4.0, 0.0, 4.0, 4.0));
-        // btnrun.minWidthProperty().bind(open.widthProperty());
+    }
 
+    private void createFileChooser() {
         fileChooser = new FileChooser();
         fileChooser.setTitle("Open File...");
         fileChooser.getExtensionFilters().addAll(new ExtensionFilter("PDF Files", "*.pdf"),
                 new ExtensionFilter("All Files", "*.*"));
-
     }
 
     public Button getRunButton() {
-        // Gibt Run Button zurück
         return btnrun;
     }
 
     public Button getOpenButton() {
-        // Gibt Open Button zurück
         return btnopen;
     }
 
     public FileChooser getFileChooser() {
-        // Übergibt fileChooser
         return fileChooser;
     }
 
