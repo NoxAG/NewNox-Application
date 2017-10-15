@@ -1,9 +1,16 @@
 package com.noxag.newnox.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.noxag.newnox.textanalyzer.data.StatisticFinding;
+import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
+import com.noxag.newnox.textanalyzer.data.StatisticFindingData;
+import com.noxag.newnox.textlogic.ChartGenerator;
+
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.Consumer;
-
 import com.noxag.newnox.ui.configurationmodule.ConfigurationPane;
 import com.noxag.newnox.ui.pdfmodule.PDFPane;
 import com.noxag.newnox.ui.statisticmodule.StatisticPane;
@@ -71,22 +78,51 @@ public class NewNoxWindow extends Application {
         left.setSpacing(10);
         left.minWidthProperty().bind(main.widthProperty().multiply(LEFT_WIDTH_FACTOR));
 
-        configPane = new ConfigurationPane();
+        configPane = createConfigPane();
+
+        List<BarChart> testCharts = ChartGenerator.generateBarCharts(createTestFindings());
+
+        statisticPane = createStatisticPane(testCharts);
+
+        left.getChildren().addAll(configPane, statisticPane);
+    }
+
+    private ConfigurationPane createConfigPane() {
+        ConfigurationPane configPane = new ConfigurationPane();
         configPane.prefHeightProperty().bind(left.heightProperty().multiply(CONFIGPANE_HEIGHT_FACTOR));
         configPane.prefWidthProperty().bind(left.widthProperty().multiply(CONFIGPANE_WIDTH_FACTOR));
+        return configPane;
+    }
 
-        statisticPane = new StatisticPane();
+    private StatisticPane createStatisticPane(List<BarChart> barChartList) {
+        StatisticPane statisticPane = new StatisticPane(barChartList);
         statisticPane.prefHeightProperty()
                 .bind(left.heightProperty().multiply(STATISTICPANE_HEIGHT_FACTOR).add(STATISTICPANE_HEIGHT_INCREASE));
         statisticPane.maxHeightProperty()
                 .bind(left.heightProperty().multiply(STATISTICPANE_HEIGHT_FACTOR).add(STATISTICPANE_HEIGHT_INCREASE));
         statisticPane.prefWidthProperty().bind(left.widthProperty().multiply(STATISTICPANE_WIDTH_FACTOR));
-
-        left.getChildren().addAll(configPane, statisticPane);
+        return statisticPane;
     }
 
     public static Scene getScene() {
         return scene;
+    }
+
+    // Only for testing purpose
+    private List<StatisticFinding> createTestFindings() {
+        List<StatisticFinding> findingList = new ArrayList<StatisticFinding>();
+        for (int i = 0; i < 10; i++) {
+            StatisticFinding finding = new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION);
+            for (int k = 0; k < 10; k++) {
+                StatisticFindingData data = new StatisticFindingData("Test" + k, k);
+                finding.addStatisticData(data);
+            }
+            finding.setChartName("Test");
+
+            findingList.add(finding);
+        }
+
+        return findingList;
     }
 
     public void registerAnalyzeEvent(Consumer<List<String>> analyzeCallBack) {
@@ -132,5 +168,4 @@ public class NewNoxWindow extends Application {
     public void popupAlert(String alertmessage) {
         // TODO: create alert window with alertmessage
     }
-
 }

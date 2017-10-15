@@ -19,8 +19,8 @@ import com.noxag.newnox.textanalyzer.algorithms.WordingAnalyzer;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
+import com.noxag.newnox.textlogic.PDFHighlighter;
 import com.noxag.newnox.textlogic.PDFTextMarker;
-
 import javafx.scene.chart.BarChart;
 
 /**
@@ -79,7 +79,8 @@ public class MainController {
             // TODO: error propagation
             LOGGER.log(Level.WARNING, "PDF Text could not be markered", e);
         }
-
+      
+        triggerPDFViewUpdateEvent(renderPDFImages());
         triggerPDFImagesUpdateEvent(renderPDFImages());
         // triggerStatisticViewUpdateEvent(ChartGenerator.generateChartImages(statisticFindings));
     }
