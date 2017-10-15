@@ -13,6 +13,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class NewNoxWindow extends Application {
+    private static final double PDFPANE_WIDTH_FACTOR = 0.4;
+    private static final double LEFT_WIDTH_FACTOR = 0.3;
+    private static final double CONFIGPANE_WIDTH_FACTOR = 0.9;
+    private static final double CONFIGPANE_HEIGHT_FACTOR = 0.3;
+    private static final double STATISTICPANE_WIDTH_FACTOR = 0.9;
+    private static final double STATISTICPANE_HEIGHT_FACTOR = 0.7;
+    private static final int STATISTICPANE_HEIGHT_INCREASE = -20;
     private StatisticPane statisticPane;
     private ConfigurationPane configPane;
     private PDFPane pdfPane;
@@ -49,21 +56,24 @@ public class NewNoxWindow extends Application {
 
     private void initRightSide() {
         pdfPane = new PDFPane();
-        pdfPane.minWidthProperty().bind(main.widthProperty().multiply(0.4));
+        pdfPane.minWidthProperty().bind(main.widthProperty().multiply(PDFPANE_WIDTH_FACTOR));
     }
 
     private void initLeftSide() {
         left = new VBox();
         left.setSpacing(10);
-        left.minWidthProperty().bind(main.widthProperty().multiply(0.3));
+        left.minWidthProperty().bind(main.widthProperty().multiply(LEFT_WIDTH_FACTOR));
 
         configPane = new ConfigurationPane();
-        configPane.prefHeightProperty().bind(left.heightProperty().multiply(0.3));
-        configPane.prefWidthProperty().bind(left.widthProperty().multiply(0.9));
+        configPane.prefHeightProperty().bind(left.heightProperty().multiply(CONFIGPANE_HEIGHT_FACTOR));
+        configPane.prefWidthProperty().bind(left.widthProperty().multiply(CONFIGPANE_WIDTH_FACTOR));
 
         statisticPane = new StatisticPane();
-        statisticPane.prefHeightProperty().bind(left.heightProperty().multiply(0.7).add(-20));
-        statisticPane.prefWidthProperty().bind(left.widthProperty().multiply(0.9));
+        statisticPane.prefHeightProperty()
+                .bind(left.heightProperty().multiply(STATISTICPANE_HEIGHT_FACTOR).add(STATISTICPANE_HEIGHT_INCREASE));
+        statisticPane.maxHeightProperty()
+                .bind(left.heightProperty().multiply(STATISTICPANE_HEIGHT_FACTOR).add(STATISTICPANE_HEIGHT_INCREASE));
+        statisticPane.prefWidthProperty().bind(left.widthProperty().multiply(STATISTICPANE_WIDTH_FACTOR));
 
         left.getChildren().addAll(configPane, statisticPane);
     }
