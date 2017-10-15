@@ -6,6 +6,8 @@ public class ConfigurationTabPane extends TabPane {
 
     private ConfigurationTab textAlgorithmsTab;
     private ConfigurationTab statisticAlgorithmsTab;
+    // TODO: 2 Testlisten anlegen (textanalysen & statistikanalysen) und
+    // entsprechend bei "new ConfigurationTab("...") als Parameter übergeben
 
     public ConfigurationTabPane() {
         textAlgorithmsTab = new ConfigurationTab("Textanalysen");

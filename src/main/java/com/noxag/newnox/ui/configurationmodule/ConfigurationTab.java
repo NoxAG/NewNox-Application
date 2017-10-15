@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.scene.control.Tab;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 
 public class ConfigurationTab extends Tab {
@@ -13,8 +14,10 @@ public class ConfigurationTab extends Tab {
 
     public ConfigurationTab(String name, List<String> AlgorithmUINames) {
         this.setText(name);
-        // TODO:add checkboxes for algorithms
-
+        FlowPane checkboxPane = new FlowPane();
+        // TODO: Für jeden String aus AlogrithmUINames Liste eine Chechkbox
+        // hinzufügen
+        this.setContent(checkboxPane);
     }
 
     public void addAlgorithms(List<String> AlgorithmUINames) {
