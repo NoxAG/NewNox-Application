@@ -32,17 +32,17 @@ import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
  * @author Tobias.Schmidt@de.ibm.com
  *
  */
-public class PoorWordingAnalyzer implements TextanalyzerAlgorithm {
+public class WordingAnalyzer implements TextanalyzerAlgorithm {
 
-    private static final Logger LOGGER = Logger.getLogger(PoorWordingAnalyzer.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(WordingAnalyzer.class.getName());
     private static final String BLACKLIST_PATH = "src/main/resources/analyzer-conf/wording-blacklist.csv";
     private List<String> wordingBlacklist;
 
-    public PoorWordingAnalyzer() {
+    public WordingAnalyzer() {
         this(BLACKLIST_PATH);
     }
 
-    public PoorWordingAnalyzer(String wordingBlacklistPath) {
+    public WordingAnalyzer(String wordingBlacklistPath) {
         this.wordingBlacklist = readWordingBlackListFile(wordingBlacklistPath);
     }
 
@@ -54,7 +54,7 @@ public class PoorWordingAnalyzer implements TextanalyzerAlgorithm {
     }
 
     public static String getUIName() {
-        return PoorWordingAnalyzer.class.getSimpleName();
+        return WordingAnalyzer.class.getSimpleName();
     }
 
     private List<TextFinding> findWordInDocument(PDDocument doc, String searchTerm) {

@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 
@@ -21,6 +20,9 @@ public class PDFTextMarker {
 
     private static final Logger LOGGER = Logger.getLogger(PDFTextMarker.class.getName());
 
+    private static final PDColor DEFAULT_COLOR = PDFColors.YELLOW;
+    private static final String DEFAULT_SUB_TYPE = PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
+
     public static void addTextMarkups(PDDocument pdfDoc, List<TextFinding> textFindings) throws IOException {
         for (TextFinding finding : textFindings) {
             addTextMarkup(pdfDoc, finding.getTextPositionSequence(), toColor(finding.getType()),
@@ -29,12 +31,12 @@ public class PDFTextMarker {
     }
 
     public static void addTextMarkup(PDDocument doc, TextPositionSequence annotationPosition) throws IOException {
-        addTextMarkup(doc, annotationPosition, new PDColor(new float[] { 1, 0, 0 }, PDDeviceRGB.INSTANCE));
+        addTextMarkup(doc, annotationPosition, DEFAULT_COLOR);
     }
 
     public static void addTextMarkup(PDDocument doc, TextPositionSequence annotationPosition, PDColor color)
             throws IOException {
-        addTextMarkup(doc, annotationPosition, color, PDAnnotationTextMarkup.SUB_TYPE_STRIKEOUT);
+        addTextMarkup(doc, annotationPosition, color, DEFAULT_SUB_TYPE);
     }
 
     public static void addTextMarkup(PDDocument doc, TextPositionSequence annotationPosition, PDColor color,
@@ -88,9 +90,8 @@ public class PDFTextMarker {
         case TABLE_OF_FIGURES:
             return PDFColors.DEEP_PINK;
         default:
-            return PDFColors.YELLOW;
+            return DEFAULT_COLOR;
         }
-
     }
 
     private static String toTextMarkupSubType(TextFindingType type) {
@@ -113,8 +114,7 @@ public class PDFTextMarker {
         case TABLE_OF_FIGURES:
             return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
         default:
-            return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
+            return DEFAULT_SUB_TYPE;
         }
-
     }
 }
