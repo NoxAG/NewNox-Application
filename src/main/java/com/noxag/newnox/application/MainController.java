@@ -15,12 +15,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.Textanalyzer;
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
-import com.noxag.newnox.textanalyzer.algorithms.PoorWordingAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.WordingAnalyzer;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textlogic.ChartGenerator;
-import com.noxag.newnox.textlogic.PDFHighlighter;
+import com.noxag.newnox.textlogic.PDFTextMarker;
 
 /**
  * This class handles inputs of the userinterface via an event listener
@@ -69,10 +69,10 @@ public class MainController {
         List<TextFinding> textFindings = getFindingsOfSubInstances(findings, TextFinding.class);
 
         try {
-            PDFHighlighter.highlight(this.pdfDoc, textFindings);
+            PDFTextMarker.addTextMarkups(this.pdfDoc, textFindings);
         } catch (IOException e) {
             // TODO: error propagation
-            LOGGER.log(Level.WARNING, "PDF Text could not be highlighted", e);
+            LOGGER.log(Level.WARNING, "PDF Text could not be markered", e);
         }
 
         triggerPDFViewUpdateEvent(renderPDFImages());
@@ -187,7 +187,7 @@ public class MainController {
 
     private void initTextanalyzerAlgorithms() {
         allTextanalyzerAlgorithms = new HashMap<>();
-        allTextanalyzerAlgorithms.put(PoorWordingAnalyzer.getUIName(), new PoorWordingAnalyzer());
+        allTextanalyzerAlgorithms.put(WordingAnalyzer.getUIName(), new WordingAnalyzer());
     }
 
     @Override
