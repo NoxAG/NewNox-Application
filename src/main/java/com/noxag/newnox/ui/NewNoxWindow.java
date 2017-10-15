@@ -1,5 +1,12 @@
 package com.noxag.newnox.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.noxag.newnox.textanalyzer.data.StatisticFinding;
+import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
+import com.noxag.newnox.textanalyzer.data.StatisticFindingData;
+import com.noxag.newnox.textlogic.ChartGenerator;
 import com.noxag.newnox.ui.configurationmodule.ConfigurationPane;
 import com.noxag.newnox.ui.pdfmodule.PDFPane;
 import com.noxag.newnox.ui.statisticmodule.StatisticPane;
@@ -8,6 +15,7 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -68,7 +76,9 @@ public class NewNoxWindow extends Application {
         configPane.prefHeightProperty().bind(left.heightProperty().multiply(CONFIGPANE_HEIGHT_FACTOR));
         configPane.prefWidthProperty().bind(left.widthProperty().multiply(CONFIGPANE_WIDTH_FACTOR));
 
-        statisticPane = new StatisticPane();
+        List<BarChart> testCharts = ChartGenerator.generateBarCharts(createTestFindings());
+
+        statisticPane = new StatisticPane(testCharts);
         statisticPane.prefHeightProperty()
                 .bind(left.heightProperty().multiply(STATISTICPANE_HEIGHT_FACTOR).add(STATISTICPANE_HEIGHT_INCREASE));
         statisticPane.maxHeightProperty()
@@ -80,5 +90,19 @@ public class NewNoxWindow extends Application {
 
     public static Scene getScene() {
         return scene;
+    }
+
+    // Only for testing purpose
+    private List<StatisticFinding> createTestFindings() {
+        StatisticFinding finding = new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION);
+        for (int k = 0; k < 10; k++) {
+            StatisticFindingData data = new StatisticFindingData("Test" + k, k);
+            finding.addStatisticData(data);
+        }
+        finding.setChartName("Test");
+
+        List<StatisticFinding> findingList = new ArrayList<StatisticFinding>();
+        findingList.add(finding);
+        return findingList;
     }
 }
