@@ -11,33 +11,34 @@ import org.apache.pdfbox.text.PDFTextStripper;
 
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFObject;
+import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 
 public class PDFTextExtractionUtil {
 
-    public static List<TextPositionSequence> extractText(PDDocument document) throws IOException {
+    public static List<PDFPage> extractText(PDDocument document) throws IOException {
         return extractText(document, 1, document.getNumberOfPages());
     }
 
-    public static List<TextPositionSequence> extractText(PDDocument document, int pageIndex) throws IOException {
-        return extractText(document, pageIndex, pageIndex);
+    public static PDFPage extractText(PDDocument document, int pageIndex) throws IOException {
+        return extractText(document, pageIndex, pageIndex).get(0);
     }
 
-    public static List<TextPositionSequence> extractText(PDDocument document, int pageStartIndex, int pageEndIndex)
+    public static List<PDFPage> extractText(PDDocument document, int pageStartIndex, int pageEndIndex)
             throws IOException {
-        final List<TextPositionSequence> words = new ArrayList<>();
+        final List<PDFPage> pages = new ArrayList<>();
 
         PDFTextPositionSequenceStripper stripper = new PDFTextPositionSequenceStripper() {
             @Override
             public String getText(PDDocument doc) throws IOException {
                 String result = super.getText(document);
-                words.addAll(PDFObject.getWords(this.getPDFPages()));
+                pages.addAll(this.getPDFPages());
                 return result;
             }
         };
 
         runTextStripper(stripper, document, pageStartIndex, pageEndIndex);
-        return words;
+        return pages;
     }
 
     /**
@@ -61,8 +62,7 @@ public class PDFTextExtractionUtil {
      */
     public static List<TextPositionSequence> findCharSequence(List<TextPositionSequence> words, String searchTerm)
             throws IOException {
-
-        return null;
+        return words.stream().filter(word -> word.contains(searchTerm)).collect(Collectors.toList());
     }
 
     /**
@@ -79,11 +79,11 @@ public class PDFTextExtractionUtil {
      */
     public static List<TextPositionSequence> findWord(PDDocument document, int pageIndex, String searchTerm)
             throws IOException {
-        return findWord(extractText(document, pageIndex), searchTerm);
+        return findWord(extractText(document, pageIndex).getWords(), searchTerm);
     }
 
     public static List<TextPositionSequence> findWord(PDDocument document, String searchTerm) throws IOException {
-        return findWord(extractText(document), searchTerm);
+        return findWord(getWordsFromList(extractText(document)), searchTerm);
     }
 
     public static List<TextPositionSequence> findWord(List<TextPositionSequence> words, String searchTerm)
@@ -106,12 +106,12 @@ public class PDFTextExtractionUtil {
      */
     public static List<TextPositionSequence> findWordIgnoreCase(PDDocument document, int pageIndex, String searchTerm)
             throws IOException {
-        return findWord(extractText(document, pageIndex), searchTerm);
+        return findWordIgnoreCase(extractText(document, pageIndex).getWords(), searchTerm);
     }
 
     public static List<TextPositionSequence> findWordIgnoreCase(PDDocument document, String searchTerm)
             throws IOException {
-        return findWord(extractText(document), searchTerm);
+        return findWordIgnoreCase(getWordsFromList(extractText(document)), searchTerm);
     }
 
     public static List<TextPositionSequence> findWordIgnoreCase(List<TextPositionSequence> words, String searchTerm)
@@ -132,6 +132,12 @@ public class PDFTextExtractionUtil {
         stripper.setStartPage(pageStartIndex);
         stripper.setEndPage(pageEndIndex);
         stripper.getText(document);
+    }
+
+    public static <T extends PDFObject> List<TextPositionSequence> getWordsFromList(List<T> pdfObjects) {
+        List<TextPositionSequence> words = new ArrayList<>();
+        pdfObjects.stream().forEach(pdfObject -> words.addAll(pdfObject.getWords()));
+        return words;
     }
 
     // Test function
