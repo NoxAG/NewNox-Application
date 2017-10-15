@@ -9,7 +9,5 @@ import com.noxag.newnox.textanalyzer.data.Finding;
 public interface TextanalyzerAlgorithm {
     public List<Finding> run(PDDocument doc);
 
-    public static String getUIName() {
-        return TextanalyzerAlgorithm.class.getSimpleName();
-    }
+    public String getUIName();
 }

@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -15,11 +14,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.Textanalyzer;
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
-import com.noxag.newnox.textanalyzer.algorithms.PoorWordingAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.VocabularyDistributionAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.WordingAnalyzer;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textlogic.PDFHighlighter;
+import com.noxag.newnox.textlogic.PDFTextMarker;
+import javafx.scene.chart.BarChart;
 
 /**
  * This class handles inputs of the userinterface via an event listener
@@ -33,12 +35,16 @@ public class MainController {
     private static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
 
     private PDDocument pdfDoc;
-    private HashMap<String, TextanalyzerAlgorithm> allTextanalyzerAlgorithms;
-    private Consumer<List<BufferedImage>> updatePDFViewCallbacks;
-    private Consumer<List<BufferedImage>> updateStatisticViewCallbacks;
+    private List<TextanalyzerAlgorithm> textanalyzerAlgorithms;
+    private List<TextanalyzerAlgorithm> statisticanalyzerAlgorithms;
+    private Consumer<List<BufferedImage>> updatePDFImagesCallback;
+    private Consumer<List<BarChart>> updateStatisticViewCallback;
+    private Consumer<List<BufferedImage>> updateTextMarkupImagesCallback;
+    private Consumer<String> alertPopupCallback;
 
     public MainController() {
         initTextanalyzerAlgorithms();
+        initStatisticanalyzerAlgorithms();
     }
 
     /**
@@ -50,7 +56,7 @@ public class MainController {
      */
     public void openPDFDocument(String path) {
         this.pdfDoc = readPDFFromFile(path);
-        triggerPDFViewUpdateEvent(renderPDFImages());
+        triggerPDFImagesUpdateEvent(renderPDFImages());
     }
 
     /**
@@ -68,13 +74,14 @@ public class MainController {
         List<TextFinding> textFindings = getFindingsOfSubInstances(findings, TextFinding.class);
 
         try {
-            PDFHighlighter.highlight(this.pdfDoc, textFindings);
+            PDFTextMarker.addTextMarkups(this.pdfDoc, textFindings);
         } catch (IOException e) {
             // TODO: error propagation
-            LOGGER.log(Level.WARNING, "PDF Text could not be highlighted", e);
+            LOGGER.log(Level.WARNING, "PDF Text could not be markered", e);
         }
-
+      
         triggerPDFViewUpdateEvent(renderPDFImages());
+        triggerPDFImagesUpdateEvent(renderPDFImages());
         // triggerStatisticViewUpdateEvent(ChartGenerator.generateChartImages(statisticFindings));
     }
 
@@ -89,8 +96,12 @@ public class MainController {
      *            the method to be called when the "PDFViewUUpdate" event is
      *            triggered
      */
-    public void registerPDFViewUpdateEvent(Consumer<List<BufferedImage>> updatePDFViewCallbacks) {
-        this.updatePDFViewCallbacks = updatePDFViewCallbacks;
+    public void registerPDFImagesUpdateEvent(Consumer<List<BufferedImage>> updatePDFImagesCallback) {
+        this.updatePDFImagesCallback = updatePDFImagesCallback;
+    }
+
+    public void registerTextMarkupImagesUpdateEvent(Consumer<List<BufferedImage>> updateTextMarkupImagesCallback) {
+        this.updateTextMarkupImagesCallback = updateTextMarkupImagesCallback;
     }
 
     /**
@@ -104,8 +115,12 @@ public class MainController {
      *            the method to be called when the "StatisticViewUpdate" event
      *            is triggered
      */
-    public void registerStatisticViewUpdateEvent(Consumer<List<BufferedImage>> updateStatisticViewCallbacks) {
-        this.updateStatisticViewCallbacks = updateStatisticViewCallbacks;
+    public void registerStatisticViewUpdateEvent(Consumer<List<BarChart>> updateStatisticViewCallback) {
+        this.updateStatisticViewCallback = updateStatisticViewCallback;
+    }
+
+    public void registerAlertPopupEvent(Consumer<String> alertPopupCallback) {
+        this.alertPopupCallback = alertPopupCallback;
     }
 
     /**
@@ -114,8 +129,12 @@ public class MainController {
      * @param pdfImages
      *            the pdf images that should be displayed in the userinterface
      */
-    public void triggerPDFViewUpdateEvent(List<BufferedImage> pdfImages) {
-        updatePDFViewCallbacks.accept(pdfImages);
+    public void triggerPDFImagesUpdateEvent(List<BufferedImage> pdfImages) {
+        updatePDFImagesCallback.accept(pdfImages);
+    }
+
+    public void triggerTextMarkupImagesUpdateEvent(List<BufferedImage> textMarkupImages) {
+        updateTextMarkupImagesCallback.accept(textMarkupImages);
     }
 
     /**
@@ -125,8 +144,12 @@ public class MainController {
      *            the statistic images that should be displayed in the
      *            userinterface
      */
-    public void triggerStatisticViewUpdateEvent(List<BufferedImage> statisticImages) {
-        updateStatisticViewCallbacks.accept(statisticImages);
+    public void triggerStatisticViewUpdateEvent(List<BarChart> charts) {
+        updateStatisticViewCallback.accept(charts);
+    }
+
+    public void triggerAlertPopupEvent(String alertMessage) {
+        alertPopupCallback.accept(alertMessage);
     }
 
     /**
@@ -136,7 +159,17 @@ public class MainController {
      * @return UINames of all textanalyzeralgorithms
      */
     public List<String> getTextanalyzerUINames() {
-        return new ArrayList<String>(this.allTextanalyzerAlgorithms.keySet());
+        return getAnalyzerUINames(this.textanalyzerAlgorithms);
+    }
+
+    public List<String> getStatisticanalyzerUINames() {
+        return getAnalyzerUINames(this.statisticanalyzerAlgorithms);
+    }
+
+    private List<String> getAnalyzerUINames(List<TextanalyzerAlgorithm> algorithms) {
+        List<String> uiNames = new ArrayList<>();
+        algorithms.stream().forEach(analyzer -> uiNames.add(analyzer.getUIName()));
+        return uiNames;
     }
 
     private PDDocument readPDFFromFile(String path) {
@@ -175,18 +208,28 @@ public class MainController {
     }
 
     private List<TextanalyzerAlgorithm> getTextanalyzerAlgorithmFromName(List<String> uiNames) {
-        return uiNames.stream().reduce(new ArrayList<TextanalyzerAlgorithm>(), (algorithms, uiName) -> {
-            algorithms.add(this.allTextanalyzerAlgorithms.get(uiName));
-            return algorithms;
-        }, (algorithm1, algorithm2) -> {
-            algorithm1.addAll(algorithm2);
-            return algorithm1;
-        });
+        List<TextanalyzerAlgorithm> matchingTextanalyzer = getAlgorithmWithMatchingNames(this.textanalyzerAlgorithms,
+                uiNames);
+        List<TextanalyzerAlgorithm> matchingStatisticanalyzer = getAlgorithmWithMatchingNames(
+                this.statisticanalyzerAlgorithms, uiNames);
+        matchingTextanalyzer.addAll(matchingStatisticanalyzer);
+        return matchingTextanalyzer;
+    }
+
+    private List<TextanalyzerAlgorithm> getAlgorithmWithMatchingNames(List<TextanalyzerAlgorithm> algorithms,
+            List<String> uiNames) {
+        return algorithms.stream().filter(analyzer -> uiNames.contains(analyzer.getUIName()))
+                .collect(Collectors.toList());
     }
 
     private void initTextanalyzerAlgorithms() {
-        allTextanalyzerAlgorithms = new HashMap<>();
-        allTextanalyzerAlgorithms.put(PoorWordingAnalyzer.getUIName(), new PoorWordingAnalyzer());
+        this.textanalyzerAlgorithms = new ArrayList<>();
+        this.textanalyzerAlgorithms.add(new WordingAnalyzer());
+    }
+
+    private void initStatisticanalyzerAlgorithms() {
+        this.statisticanalyzerAlgorithms = new ArrayList<>();
+        this.statisticanalyzerAlgorithms.add(new VocabularyDistributionAnalyzer());
     }
 
     @Override

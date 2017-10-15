@@ -7,6 +7,10 @@ import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
 import com.noxag.newnox.textanalyzer.data.StatisticFindingData;
 import com.noxag.newnox.textlogic.ChartGenerator;
+
+import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.function.Consumer;
 import com.noxag.newnox.ui.configurationmodule.ConfigurationPane;
 import com.noxag.newnox.ui.pdfmodule.PDFPane;
 import com.noxag.newnox.ui.statisticmodule.StatisticPane;
@@ -33,6 +37,8 @@ public class NewNoxWindow extends Application {
     private PDFPane pdfPane;
     private VBox left;
     private SplitPane main;
+    private Consumer<String> openPDFBtnCallBack;
+    private Consumer<List<String>> analyzeBtnCallBack;
     private static Scene scene;
 
     @Override
@@ -117,5 +123,49 @@ public class NewNoxWindow extends Application {
         }
 
         return findingList;
+    }
+
+    public void registerAnalyzeEvent(Consumer<List<String>> analyzeCallBack) {
+        this.analyzeBtnCallBack = analyzeCallBack;
+    }
+
+    public void registerOpenPDFEvent(Consumer<String> openPDFCallBack) {
+        this.openPDFBtnCallBack = openPDFCallBack;
+    }
+
+    // TODO call this method when analyzer button has been pressed
+    public void triggerAnalyzeEvent(List<String> algorithms) {
+        this.analyzeBtnCallBack.accept(algorithms);
+    }
+
+    // TODO call this method when open button has been pressed
+    public void triggerOpenPDFEvent(String path) {
+        this.openPDFBtnCallBack.accept(path);
+    }
+
+    public void setTextanalyzerAlgorithms(List<String> textanalyzerUINames) {
+        // TODO configPane.setTextanalyzerAlgorithms(textanalyzerUINames);
+
+    }
+
+    public void setStatisticanalyzerAlgorithms(List<String> statisticanalyzerUINames) {
+        // TODO
+        // configPane.setStatisticanalyzerAlgorithms(statisticanalyzerUINames);
+    }
+
+    public void updatePDFImages(List<BufferedImage> pdfImages) {
+        // TODO: pdfPane.setPDFImages(pdfImages)
+    }
+
+    public void updateTextMarkupImages(List<BufferedImage> textMarkupImages) {
+        // TODO: pdfPane.setTextMarkupImages(textMarkupImages)
+    }
+
+    public void updateStatisticView(List<BarChart> charts) {
+        // TODO: statisticPane.setCharts(charts)
+    }
+
+    public void popupAlert(String alertmessage) {
+        // TODO: create alert window with alertmessage
     }
 }

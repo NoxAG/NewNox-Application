@@ -18,6 +18,6 @@ import java.io.IOException;
  *            the result type of the function
  */
 @FunctionalInterface
-public interface Function<A, B, C, D> {
+public interface TriFunction<A, B, C, D> {
     public D apply(A one, B two, C three) throws IOException;
 }
