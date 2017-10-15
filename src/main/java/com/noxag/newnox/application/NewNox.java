@@ -1,12 +1,21 @@
 package com.noxag.newnox.application;
 
-import javafx.application.Application;
+import com.noxag.newnox.ui.NewNoxWindow;
 
-public class NewNox {
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+public class NewNox extends Application {
+    private Stage primaryStage;
+    private NewNoxWindow mainWindow;
+
+    public NewNox() {
+        mainWindow = new NewNoxWindow();
+    }
+
     public static void main(String[] args) {
         MainController mainController = new MainController();
-
-        Application.launch(com.noxag.newnox.ui.NewNoxWindow.class);
+        launch(args);
         /*
          * mainWindow.registerOpenPDFEvent(mainController::openPDFDocument);
          * mainWindow.registerAnalyzeEvent(mainController::analyzePDFDocument);
@@ -15,4 +24,11 @@ public class NewNox {
          * mainWindow.setVisible(true); mainWindow.setAlwaysOnTop(true);
          */
     }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        primaryStage = stage;
+        mainWindow.start(primaryStage);
+    }
+
 }
