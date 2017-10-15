@@ -17,7 +17,7 @@ import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
-import com.noxag.newnox.textanalyzer.data.TextPositionSequence;
+import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 
 /**
@@ -60,8 +60,7 @@ public class PoorWordingAnalyzer implements TextanalyzerAlgorithm {
     private List<TextFinding> findWordInDocument(PDDocument doc, String searchTerm) {
         List<TextPositionSequence> textPositions = new ArrayList<>();
         try {
-            textPositions = PDFTextExtractionUtil.findInDocument(doc, searchTerm,
-                    PDFTextExtractionUtil::findWordIgnoreCase);
+            textPositions = PDFTextExtractionUtil.findWord(doc, searchTerm);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not search through document", e);
         }

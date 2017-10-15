@@ -1,5 +1,7 @@
 package com.noxag.newnox.textanalyzer.data;
 
+import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
+
 /**
  * This class represents the result of a text analysis
  * 

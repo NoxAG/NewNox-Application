@@ -1,24 +1,40 @@
-package com.noxag.newnox.textanalyzer.data;
+package com.noxag.newnox.textanalyzer.data.pdf;
 
 import java.util.List;
 
 import org.apache.pdfbox.text.TextPosition;
 
+/**
+ * 
+ * @author Tobias.Schmidt@de.ibm.com
+ *
+ */
 public class TextPositionSequence implements CharSequence {
     final List<TextPosition> textPositions;
     final int start;
     final int end;
     final int pageIndex;
+    final boolean hasWordSeperator;
 
-    public TextPositionSequence(List<TextPosition> textPositions, int pageNum) {
-        this(textPositions, 0, textPositions.size() - 1, pageNum);
+    public TextPositionSequence(List<TextPosition> textPositions, int pageIndex) {
+        this(textPositions, 0, textPositions.size() - 1, pageIndex);
     }
 
-    public TextPositionSequence(List<TextPosition> textPositions, int start, int end, int pageNum) {
+    public TextPositionSequence(List<TextPosition> textPositions, int start, int end, int pageIndex) {
+        this(textPositions, start, end, pageIndex, false);
+    }
+
+    public TextPositionSequence(TextPositionSequence copyMe, boolean hasWordSeperator) {
+        this(copyMe.getTextPositions(), copyMe.getStart(), copyMe.getEnd(), copyMe.getPageIndex(), hasWordSeperator);
+    }
+
+    public TextPositionSequence(List<TextPosition> textPositions, int start, int end, int pageIndex,
+            boolean hasWordSeperator) {
         this.textPositions = textPositions;
         this.start = start;
         this.end = end;
-        this.pageIndex = pageNum;
+        this.pageIndex = pageIndex;
+        this.hasWordSeperator = hasWordSeperator;
     }
 
     @Override
@@ -85,6 +101,15 @@ public class TextPositionSequence implements CharSequence {
 
     public int getEnd() {
         return end;
+    }
+
+    public TextPosition getFirstTextPosition() {
+        return this.getTextPositions().get(0);
+    }
+
+    public TextPosition getLastTextPosition() {
+        List<TextPosition> positions = this.getTextPositions();
+        return positions.get(positions.size() - 1);
     }
 
 }

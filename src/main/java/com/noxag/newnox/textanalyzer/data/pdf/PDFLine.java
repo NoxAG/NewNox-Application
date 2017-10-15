@@ -1,11 +1,16 @@
-package com.noxag.newnox.textanalyzer.data;
+package com.noxag.newnox.textanalyzer.data.pdf;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.text.TextPosition;
 
-public class PDFLine {
+/**
+ * 
+ * @author Tobias.Schmidt@de.ibm.com
+ *
+ */
+public class PDFLine implements PDFObject {
     List<TextPositionSequence> words;
 
     public PDFLine() {
@@ -16,6 +21,7 @@ public class PDFLine {
         this.setWords(words);
     }
 
+    @Override
     public List<TextPositionSequence> getWords() {
         return words;
     }
@@ -24,20 +30,23 @@ public class PDFLine {
         this.words = words;
     }
 
+    public TextPositionSequence getFirstWord() {
+        return words.get(0);
+    }
+
+    public TextPositionSequence getLastWord() {
+        return words.get(words.size() - 1);
+    }
+
+    @Override
     public TextPositionSequence getTextPositionSequence() {
         if (words.isEmpty()) {
             return null;
         }
         List<TextPosition> charPositions = new ArrayList<>();
-        charPositions.add(words.get(0).getTextPositions().get(0));
-
-        List<TextPosition> charPos = words.get(words.size() - 1).getTextPositions();
-        charPositions.add(charPos.get(charPos.size() - 1));
-        return new TextPositionSequence(charPositions, words.get(0).getPageIndex());
+        charPositions.add(this.getFirstWord().getFirstTextPosition());
+        charPositions.add(this.getLastWord().getLastTextPosition());
+        return new TextPositionSequence(charPositions, this.getFirstWord().getPageIndex());
     }
 
-    public static TextPositionSequence getSentenceTextPositionSequence(List<PDFLine> lines) {
-
-        return null;
-    }
 }
