@@ -34,6 +34,7 @@ public class StatisticPane extends BorderPane {
 
     private List<BarChart> charts;
     private List<CommentaryFinding> commentFindings;
+    private TableView<CommentaryFinding> commentTableView;
     private int chartsPerPageCounter = 1;
 
     // Only for testing purpose
@@ -41,6 +42,7 @@ public class StatisticPane extends BorderPane {
         this(createCharts(15), createComments(15));
     }
 
+    // Constructors
     public StatisticPane(List<BarChart> barChart) {
         this(barChart, null);
     }
@@ -56,10 +58,6 @@ public class StatisticPane extends BorderPane {
         this.setLeft(decrementButton);
         this.setRight(incrementButton);
         this.setCenter(pager);
-    }
-
-    public void setCharts(List<BarChart> charts) {
-        this.charts = charts;
     }
 
     private void initIncrButton() {
@@ -78,7 +76,12 @@ public class StatisticPane extends BorderPane {
         });
     }
 
-    // check if Increment Button should be activated
+    private void initPager() {
+        pager = new Pagination();
+        apendPagesToPager();
+        reloadPage();
+    }
+
     private void checkIncrButton() {
         if (chartsPerPageCounter < MAX_CHARTS) {
             incrementButton.setDisable(false);
@@ -95,17 +98,13 @@ public class StatisticPane extends BorderPane {
         }
     }
 
-    private void initPager() {
-        pager = new Pagination();
-        apendPagesToPager();
-        reloadPage();
-    }
-
     // Sets a callback Function for appending a page to every 'tab' of the pager
-    // --> callback is called always if number of pages has been changed
+    // --> callback is called always when a page has been clicked
     private void apendPagesToPager() {
         pager.setPageFactory(new Callback<Integer, Node>() {
             public Node call(Integer pageIndex) {
+                // As long as we have unadded charts left, they will be added.
+                // If all charts are already added, commentPages will be added.
                 if ((int) Math.ceil((float) charts.size() / (float) chartsPerPageCounter) > pageIndex) {
                     GridPane page = new GridPane();
                     page.setAlignment(Pos.CENTER);
@@ -128,7 +127,7 @@ public class StatisticPane extends BorderPane {
         checkDecrButton();
     }
 
-    // Calculate pages to be shown
+    // Calculate number of pages to be shown
     private void setPager() {
         if (charts != null) {
             int numOfChartPages = (int) Math.ceil(charts.size() / (float) chartsPerPageCounter);
@@ -151,22 +150,37 @@ public class StatisticPane extends BorderPane {
         }
     }
 
+    // Adding comments to given page
     public void buildComments(StackPane page, int index) {
         page.getChildren().clear();
 
-        TableView<CommentaryFinding> commentTableView = new TableView<>();
+        createTableView();
+        createDataForTable(index);
+        createTableColumns();
+
+        page.getChildren().add(commentTableView);
+    }
+
+    private void createTableView() {
+        commentTableView = new TableView<>();
         commentTableView.setEditable(false);
         commentTableView.prefWidthProperty().bind(this.widthProperty().multiply(0.8));
         commentTableView.prefHeightProperty().bind(this.heightProperty().multiply(0.9));
         commentTableView.maxWidthProperty().bind(this.widthProperty().multiply(0.8));
         commentTableView.maxHeightProperty().bind(this.heightProperty().multiply(0.9));
+    }
 
+    // Collect all data, which has to be added to the TabbleView, in a List and
+    // sets this as Item of TableView
+    private void createDataForTable(int index) {
         List<CommentaryFinding> comments = new ArrayList<CommentaryFinding>();
 
         for (int i = 0; i < COMMENTS_PER_PAGE; i++) {
             int lastPageOfCharts = (int) Math.ceil((float) charts.size() / (float) chartsPerPageCounter);
             int commentFindingsIndex = i + (index - lastPageOfCharts) * COMMENTS_PER_PAGE;
 
+            // if current index of commentFindings to be shown in Table View
+            // is higher than size of commentFindings-List, abort
             if (commentFindingsIndex >= commentFindings.size()) {
                 break;
             }
@@ -176,26 +190,24 @@ public class StatisticPane extends BorderPane {
 
         ObservableList<CommentaryFinding> data = FXCollections.observableArrayList(comments);
         commentTableView.setItems(data);
+    }
 
-        TableColumn<CommentaryFinding, Integer> numOfPageColumn = new TableColumn<>("Seite");
-        numOfPageColumn.setCellValueFactory(new PropertyValueFactory<CommentaryFinding, Integer>("page"));
-        numOfPageColumn.prefWidthProperty().bind(commentTableView.widthProperty().multiply(0.1));
-
-        TableColumn<CommentaryFinding, Integer> lineColumn = new TableColumn<>("Zeile");
-        lineColumn.setCellValueFactory(new PropertyValueFactory<CommentaryFinding, Integer>("line"));
-        lineColumn.prefWidthProperty().bind(commentTableView.widthProperty().multiply(0.1));
-
-        TableColumn<CommentaryFinding, String> typeColumn = new TableColumn<>("Typ");
-        typeColumn.setCellValueFactory(new PropertyValueFactory<CommentaryFinding, String>("type"));
-        typeColumn.prefWidthProperty().bind(commentTableView.widthProperty().multiply(0.2));
-
-        TableColumn<CommentaryFinding, String> commentColumn = new TableColumn<>("Kommentar");
-        commentColumn.setCellValueFactory(new PropertyValueFactory<CommentaryFinding, String>("comment"));
-        commentColumn.prefWidthProperty().bind(commentTableView.widthProperty().multiply(0.6));
+    // create Head Columns for TableView
+    private void createTableColumns() {
+        TableColumn<CommentaryFinding, Integer> numOfPageColumn = createTableColumn("Seite", "page", 0.1);
+        TableColumn<CommentaryFinding, Integer> lineColumn = createTableColumn("Zeile", "line", 0.1);
+        TableColumn<CommentaryFinding, String> typeColumn = createTableColumn("Typ", "type", 0.2);
+        TableColumn<CommentaryFinding, String> commentColumn = createTableColumn("Kommentar", "comment", 0.6);
 
         commentTableView.getColumns().addAll(numOfPageColumn, lineColumn, typeColumn, commentColumn);
+    }
 
-        page.getChildren().add(commentTableView);
+    private <T> TableColumn<CommentaryFinding, T> createTableColumn(String textInField,
+            String varNameOfCommentaryFindingObject, double widthInPercent) {
+        TableColumn<CommentaryFinding, T> Column = new TableColumn<>(textInField);
+        Column.setCellValueFactory(new PropertyValueFactory<CommentaryFinding, T>(varNameOfCommentaryFindingObject));
+        Column.prefWidthProperty().bind(commentTableView.widthProperty().multiply(widthInPercent));
+        return Column;
     }
 
     // Following section is only for testing purposes
