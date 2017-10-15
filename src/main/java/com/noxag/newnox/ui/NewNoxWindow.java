@@ -72,20 +72,30 @@ public class NewNoxWindow extends Application {
         left.setSpacing(10);
         left.minWidthProperty().bind(main.widthProperty().multiply(LEFT_WIDTH_FACTOR));
 
-        configPane = new ConfigurationPane();
-        configPane.prefHeightProperty().bind(left.heightProperty().multiply(CONFIGPANE_HEIGHT_FACTOR));
-        configPane.prefWidthProperty().bind(left.widthProperty().multiply(CONFIGPANE_WIDTH_FACTOR));
+        configPane = createConfigPane();
 
         List<BarChart> testCharts = ChartGenerator.generateBarCharts(createTestFindings());
 
-        statisticPane = new StatisticPane(testCharts);
+        statisticPane = createStatisticPane(testCharts);
+
+        left.getChildren().addAll(configPane, statisticPane);
+    }
+
+    private ConfigurationPane createConfigPane() {
+        ConfigurationPane configPane = new ConfigurationPane();
+        configPane.prefHeightProperty().bind(left.heightProperty().multiply(CONFIGPANE_HEIGHT_FACTOR));
+        configPane.prefWidthProperty().bind(left.widthProperty().multiply(CONFIGPANE_WIDTH_FACTOR));
+        return configPane;
+    }
+
+    private StatisticPane createStatisticPane(List<BarChart> barChartList) {
+        StatisticPane statisticPane = new StatisticPane(barChartList);
         statisticPane.prefHeightProperty()
                 .bind(left.heightProperty().multiply(STATISTICPANE_HEIGHT_FACTOR).add(STATISTICPANE_HEIGHT_INCREASE));
         statisticPane.maxHeightProperty()
                 .bind(left.heightProperty().multiply(STATISTICPANE_HEIGHT_FACTOR).add(STATISTICPANE_HEIGHT_INCREASE));
         statisticPane.prefWidthProperty().bind(left.widthProperty().multiply(STATISTICPANE_WIDTH_FACTOR));
-
-        left.getChildren().addAll(configPane, statisticPane);
+        return statisticPane;
     }
 
     public static Scene getScene() {
