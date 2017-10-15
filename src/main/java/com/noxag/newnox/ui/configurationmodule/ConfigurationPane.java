@@ -1,7 +1,6 @@
 package com.noxag.newnox.ui.configurationmodule;
 
 import java.io.File;
-import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -94,12 +93,6 @@ public class ConfigurationPane extends BorderPane {
 
     public FileChooser getFileChooser() {
         return fileChooser;
-    }
-
-    public List<String> getTextanalyzer() {
-        // TODO: This method should return a list of strings containing every
-        // algorithm that has been "checked"
-        return null;
     }
 
 }

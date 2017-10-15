@@ -3,38 +3,50 @@ package com.noxag.newnox.ui.configurationmodule;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 public class ConfigurationTab extends Tab {
     public ConfigurationTab(String name) {
         this(name, new ArrayList<String>());
     }
 
+    private CheckBox cb;
+    private VBox checkboxPane;
+    private ScrollPane scrollPane;
+    public List<String> selectedAlgorithms;
+
     public ConfigurationTab(String name, List<String> AlgorithmUINames) {
         this.setText(name);
-        FlowPane checkboxPane = new FlowPane();
-        // TODO: Für jeden String aus AlogrithmUINames Liste eine Chechkbox
-        // hinzufügen
-        this.setContent(checkboxPane);
+        checkboxPane = new VBox();
+        setAlgorithms(AlgorithmUINames);
+        scrollPane = new ScrollPane(checkboxPane);
+        scrollPane.setFitToHeight(true);
+        this.setContent(scrollPane);
     }
 
-    public void addAlgorithms(List<String> AlgorithmUINames) {
-        HBox hbox = new HBox();
-        this.setContent(hbox);
+    public VBox setAlgorithms(List<String> AlgorithmUINames) {
 
-        /*
-         * CheckBox hb = new CheckBox(); hb.setText("First");
-         * hb.setSelected(false); hbox.getChildren().add(hb); //
-         * AlgorithmUINames.get(i)
-         */
+        for (String element : AlgorithmUINames) {
+            cb = new CheckBox(element);
+            checkboxPane.getChildren().add(cb);
+            VBox.setMargin(cb, new Insets(2.0, 2.0, 2.0, 2.0));
+            cb.setOnAction(e -> getTextanalyzer(e));
+        }
+        return checkboxPane;
 
-        // TODO: add checkboxes for algorithms
-        /*
-         * for (int i = 0; i < AlgorithmUINames.size(); i++) {
-         * hbox.getChildren().add(new CheckBox(AlgorithmUINames.get(i))); }
-         */
+    }
 
+    public List<String> getTextanalyzer(ActionEvent e) { // Falsch!!!
+        selectedAlgorithms = new ArrayList<String>();
+        if (cb.isSelected() == true) {
+            selectedAlgorithms.add(cb.getText());
+        }
+        System.out.println(selectedAlgorithms);
+        return selectedAlgorithms;
     }
 }

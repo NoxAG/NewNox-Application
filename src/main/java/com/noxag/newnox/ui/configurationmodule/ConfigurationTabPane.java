@@ -7,11 +7,18 @@ public class ConfigurationTabPane extends TabPane {
     private ConfigurationTab textAlgorithmsTab;
     private ConfigurationTab statisticAlgorithmsTab;
     // TODO: 2 Testlisten anlegen (textanalysen & statistikanalysen) und
-    // entsprechend bei "new ConfigurationTab("...") als Parameter übergeben
+    // entsprechend bei "new ConfigurationTab("...") als Parameter ï¿½bergeben
+    // private ArrayList<String> names = new ArrayList<String>();
 
     public ConfigurationTabPane() {
-        textAlgorithmsTab = new ConfigurationTab("Textanalysen");
-        statisticAlgorithmsTab = new ConfigurationTab("Statistikanalysen");
+        /*
+         * names.add("Akademische AufrichtigkeitserklÃ¤rung");
+         * names.add("Bibliography Analyzer");
+         * names.add("Coomon Abbreviation Analyzer");
+         * names.add("Font Analyzer"); names.add("Line Spacing Analyzer");
+         */
+        textAlgorithmsTab = new ConfigurationTab("Textanalysen"); // "Textanalysen"
+        statisticAlgorithmsTab = new ConfigurationTab("Statistikanalysen"); // "Statistikanalysen"
         this.getTabs().add(textAlgorithmsTab);
         this.getTabs().add(statisticAlgorithmsTab);
         this.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
