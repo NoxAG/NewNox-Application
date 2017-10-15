@@ -17,8 +17,8 @@ import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
-import com.noxag.newnox.textanalyzer.data.TextPositionSequence;
-import com.noxag.newnox.textanalyzer.util.TextanalyzerUtil;
+import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
+import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 
 /**
  * This class can be used to find all words that shouldn't be used in an
@@ -32,18 +32,18 @@ import com.noxag.newnox.textanalyzer.util.TextanalyzerUtil;
  * @author Tobias.Schmidt@de.ibm.com
  *
  */
-public class PoorWordingAnalyzer implements TextanalyzerAlgorithm {
+public class WordingAnalyzer implements TextanalyzerAlgorithm {
 
-    private static final Logger LOGGER = Logger.getLogger(PoorWordingAnalyzer.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(WordingAnalyzer.class.getName());
     private static final String BLACKLIST_PATH = "src/main/resources/analyzer-conf/wording-blacklist.csv";
     private List<String> wordingBlacklist;
 
-    public PoorWordingAnalyzer() {
+    public WordingAnalyzer() {
         this(BLACKLIST_PATH);
     }
 
-    public PoorWordingAnalyzer(String wordingBlacklistPath) {
-        this.wordingBlacklist = readBadWordingBlackListFile(wordingBlacklistPath);
+    public WordingAnalyzer(String wordingBlacklistPath) {
+        this.wordingBlacklist = readWordingBlackListFile(wordingBlacklistPath);
     }
 
     @Override
@@ -54,15 +54,13 @@ public class PoorWordingAnalyzer implements TextanalyzerAlgorithm {
     }
 
     public static String getUIName() {
-        return PoorWordingAnalyzer.class.getSimpleName();
+        return WordingAnalyzer.class.getSimpleName();
     }
 
     private List<TextFinding> findWordInDocument(PDDocument doc, String searchTerm) {
         List<TextPositionSequence> textPositions = new ArrayList<>();
         try {
-            textPositions = TextanalyzerUtil.findInDocument(doc, searchTerm,
-                    TextanalyzerUtil::findWordOnPageIgnoreCase);
-
+            textPositions = PDFTextExtractionUtil.findWord(doc, searchTerm);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not search through document", e);
         }
@@ -76,7 +74,7 @@ public class PoorWordingAnalyzer implements TextanalyzerAlgorithm {
         return textFindings;
     }
 
-    private List<String> readBadWordingBlackListFile(String wordingBlacklistPath) {
+    private List<String> readWordingBlackListFile(String wordingBlacklistPath) {
         List<String> wordingBlacklist = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(BLACKLIST_PATH));) {
             String line = "";

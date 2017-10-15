@@ -1,5 +1,7 @@
 package com.noxag.newnox.textanalyzer.data;
 
+import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
+
 /**
  * This class represents the result of a text analysis
  * 
@@ -12,6 +14,10 @@ public class TextFinding extends Finding {
 
     public TextFinding() {
         super();
+    }
+
+    public TextFinding(TextPositionSequence textPositionSequence) {
+        this(textPositionSequence, null);
     }
 
     public TextFinding(TextPositionSequence textPositionSequence, TextFindingType type) {
