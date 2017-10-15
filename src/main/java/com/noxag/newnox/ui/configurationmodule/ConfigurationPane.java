@@ -40,6 +40,8 @@ public class ConfigurationPane extends BorderPane {
         btnopen = createButtons("Open File...");
         btnbox = createButtonBox();
 
+        btnbox.getChildren().addAll(btnopen, btnrun);
+
         createActionEventForOpenFile();
 
         this.setBottom(btnbox);
@@ -55,7 +57,6 @@ public class ConfigurationPane extends BorderPane {
 
     private HBox createButtonBox() {
         HBox btnBox = new HBox();
-        btnBox.getChildren().addAll(btnopen, btnrun);
         btnBox.setAlignment(Pos.BOTTOM_RIGHT);
         return btnBox;
     }
