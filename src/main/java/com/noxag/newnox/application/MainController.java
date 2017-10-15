@@ -19,7 +19,6 @@ import com.noxag.newnox.textanalyzer.algorithms.PoorWordingAnalyzer;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
-import com.noxag.newnox.textlogic.ChartGenerator;
 import com.noxag.newnox.textlogic.PDFHighlighter;
 
 /**
@@ -76,7 +75,7 @@ public class MainController {
         }
 
         triggerPDFViewUpdateEvent(renderPDFImages());
-        triggerStatisticViewUpdateEvent(ChartGenerator.generateChartImages(statisticFindings));
+        // triggerStatisticViewUpdateEvent(ChartGenerator.generateChartImages(statisticFindings));
     }
 
     /**
