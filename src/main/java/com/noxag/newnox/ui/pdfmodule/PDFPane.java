@@ -18,20 +18,20 @@ import javafx.scene.layout.VBox;
 public class PDFPane extends VBox {
     private ScrollPane scrollPane;
     private BorderPane fileLocationPane;
-    private List<java.awt.Image> textHighlightingOverlay;
-    private List<java.awt.Image> pdfTextOverlay;
+    private List<BufferedImage> textMarkupOverlay;
+    private List<BufferedImage> pdfTextOverlay;
 
     public PDFPane() {
-        this(new ArrayList<java.awt.Image>());
+        this(new ArrayList<BufferedImage>());
     }
 
-    public PDFPane(List<java.awt.Image> pdfTextOverlay) {
-        this(pdfTextOverlay, new ArrayList<java.awt.Image>());
+    public PDFPane(List<BufferedImage> pdfTextOverlay) {
+        this(pdfTextOverlay, new ArrayList<BufferedImage>());
     }
 
-    public PDFPane(List<java.awt.Image> pdfTextOverlay, List<java.awt.Image> textHighlightingOverlay) {
+    public PDFPane(List<BufferedImage> pdfTextOverlay, List<BufferedImage> textHighlightingOverlay) {
         this.pdfTextOverlay = pdfTextOverlay;
-        this.textHighlightingOverlay = textHighlightingOverlay;
+        this.textMarkupOverlay = textHighlightingOverlay;
 
         scrollPane = createScrollPane();
         fileLocationPane = createFileLocationPane();
@@ -61,12 +61,12 @@ public class PDFPane extends VBox {
         List<StackPane> StackList = new ArrayList<StackPane>();
 
         for (int i = 0; i < pdfTextOverlay.size(); i++) {
-            StackList.add(createStackPane(textHighlightingOverlay.get(i), pdfTextOverlay.get(i)));
+            StackList.add(createStackPane(textMarkupOverlay.get(i), pdfTextOverlay.get(i)));
         }
         return StackList;
     }
 
-    private StackPane createStackPane(java.awt.Image textHighlightingOverlay, java.awt.Image pdfTextOverlay) {
+    private StackPane createStackPane(BufferedImage textHighlightingOverlay, BufferedImage pdfTextOverlay) {
         BufferedImage imageBackground = createBackgroundImage(pdfTextOverlay.getWidth(null),
                 pdfTextOverlay.getHeight(null));
 
@@ -89,7 +89,7 @@ public class PDFPane extends VBox {
         return image;
     }
 
-    private ImageView createImageView(java.awt.Image image) {
+    private ImageView createImageView(BufferedImage image) {
         Image img = SwingFXUtils.toFXImage((BufferedImage) image, null);
         return new ImageView(img);
     }
@@ -108,19 +108,19 @@ public class PDFPane extends VBox {
         return fileLocationPane;
     }
 
-    public List<java.awt.Image> getTextHighlightingOverlay() {
-        return textHighlightingOverlay;
+    public List<BufferedImage> getTextMarkupOverlay() {
+        return textMarkupOverlay;
     }
 
-    public void setTextHighlightingOverlay(List<java.awt.Image> textHighlightingOverlay) {
-        this.textHighlightingOverlay = textHighlightingOverlay;
+    public void setTextMarkupOverlay(List<BufferedImage> textMarkupOverlay) {
+        this.textMarkupOverlay = textMarkupOverlay;
     }
 
-    public List<java.awt.Image> getPdfTextOverlay() {
+    public List<BufferedImage> getPDFTextOverlay() {
         return pdfTextOverlay;
     }
 
-    public void setPdfTextOverlay(List<java.awt.Image> pdfTextOverlay) {
+    public void setPDFTextOverlay(List<BufferedImage> pdfTextOverlay) {
         this.pdfTextOverlay = pdfTextOverlay;
     }
 

@@ -1,5 +1,8 @@
 package com.noxag.newnox.application;
 
+import static com.noxag.newnox.ui.pdfmodule.renderer.PDFPageRenderer.renderPDFTextOverlay;
+import static com.noxag.newnox.ui.pdfmodule.renderer.PDFPageRenderer.renderTextMarkupOverlay;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +24,7 @@ import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
+import com.noxag.newnox.textlogic.ChartGenerator;
 import com.noxag.newnox.textlogic.PDFTextMarker;
 
 import javafx.scene.chart.BarChart;
@@ -40,9 +44,12 @@ public class MainController {
     private List<TextanalyzerAlgorithm> textanalyzerAlgorithms;
     private List<TextanalyzerAlgorithm> statisticanalyzerAlgorithms;
     private Consumer<List<BufferedImage>> updatePDFImagesCallback;
-    private BiConsumer<List<BarChart>, List<CommentaryFinding>> updateStatisticViewCallback;
+    private BiConsumer<List<BarChart<String, Number>>, List<CommentaryFinding>> updateStatisticViewCallback;
     private Consumer<List<BufferedImage>> updateTextMarkupImagesCallback;
     private Consumer<String> alertPopupCallback;
+
+    private static final String ERROR_MESSAGE_TEXT_COULD_NOT_BE_MARKED = "PDF Text could not be markered";
+    private static final String ERROR_MESSAGE_PDF_COULD_NOT_BE_CLOSED = "PDF document could not be closed";
 
     public MainController() {
         initTextanalyzerAlgorithms();
@@ -58,7 +65,7 @@ public class MainController {
      */
     public void openPDFDocument(String path) {
         this.pdfDoc = readPDFFromFile(path);
-        triggerPDFImagesUpdateEvent(renderPDFImages());
+        triggerPDFImagesUpdateEvent(renderPDFTextOverlay(pdfDoc));
     }
 
     /**
@@ -74,17 +81,18 @@ public class MainController {
 
         List<StatisticFinding> statisticFindings = getFindingsOfSubInstances(findings, StatisticFinding.class);
         List<TextFinding> textFindings = getFindingsOfSubInstances(findings, TextFinding.class);
+        List<CommentaryFinding> commentaryFinding = getFindingsOfSubInstances(findings, CommentaryFinding.class);
 
         try {
             PDFTextMarker.addTextMarkups(this.pdfDoc, textFindings);
         } catch (IOException e) {
-            // TODO: error propagation
-            LOGGER.log(Level.WARNING, "PDF Text could not be markered", e);
+            LOGGER.log(Level.WARNING, ERROR_MESSAGE_TEXT_COULD_NOT_BE_MARKED, e);
+            this.triggerAlertPopupEvent(ERROR_MESSAGE_TEXT_COULD_NOT_BE_MARKED);
         }
 
-        // triggerPDFViewUpdateEvent(renderPDFImages());
-        triggerPDFImagesUpdateEvent(renderPDFImages());
-        // triggerStatisticViewUpdateEvent(ChartGenerator.generateChartImages(statisticFindings));
+        this.triggerPDFImagesUpdateEvent(renderPDFTextOverlay(this.pdfDoc));
+        this.triggerTextMarkupImagesUpdateEvent(renderTextMarkupOverlay(this.pdfDoc));
+        this.triggerStatisticViewUpdateEvent(ChartGenerator.generateBarCharts(statisticFindings), commentaryFinding);
     }
 
     /**
@@ -118,7 +126,7 @@ public class MainController {
      *            is triggered
      */
     public void registerStatisticViewUpdateEvent(
-            BiConsumer<List<BarChart>, List<CommentaryFinding>> updateStatisticViewCallback) {
+            BiConsumer<List<BarChart<String, Number>>, List<CommentaryFinding>> updateStatisticViewCallback) {
         this.updateStatisticViewCallback = updateStatisticViewCallback;
     }
 
@@ -147,7 +155,8 @@ public class MainController {
      *            the statistic images that should be displayed in the
      *            userinterface
      */
-    public void triggerStatisticViewUpdateEvent(List<BarChart> charts, List<CommentaryFinding> comment) {
+    public void triggerStatisticViewUpdateEvent(List<BarChart<String, Number>> charts,
+            List<CommentaryFinding> comment) {
         updateStatisticViewCallback.accept(charts, comment);
     }
 
@@ -178,11 +187,9 @@ public class MainController {
     private PDDocument readPDFFromFile(String path) {
         try {
             closePDF();
-
         } catch (IOException e) {
-            // TODO: add proper error propagation and feedback to user
-            // We may need to add an addition event for this
-            LOGGER.log(Level.WARNING, "PDF document could not be closed", e);
+            LOGGER.log(Level.WARNING, ERROR_MESSAGE_PDF_COULD_NOT_BE_CLOSED, e);
+            this.triggerAlertPopupEvent(ERROR_MESSAGE_PDF_COULD_NOT_BE_CLOSED);
             return null;
         }
         try {
@@ -200,10 +207,6 @@ public class MainController {
             this.pdfDoc.close();
         }
 
-    }
-
-    private List<BufferedImage> renderPDFImages() {
-        return null;
     }
 
     private <S extends Finding> List<S> getFindingsOfSubInstances(List<Finding> findings, Class<S> childClass) {

@@ -137,16 +137,15 @@ public class NewNoxWindow extends Application {
     }
 
     public void setStatisticanalyzerAlgorithms(List<String> statisticanalyzerUINames) {
-        // TODO
         // configPane.setStatisticanalyzerAlgorithms(statisticanalyzerUINames);
     }
 
-    public void updatePDFImages(List<BufferedImage> pdfImages) {
-        // TODO: pdfPane.setPDFImages(pdfImages)
+    public void updatePDFImages(List<BufferedImage> pdfTextOverlay) {
+        pdfPane.setPDFTextOverlay(pdfTextOverlay);
     }
 
     public void updateTextMarkupImages(List<BufferedImage> textMarkupImages) {
-        // TODO: pdfPane.setTextMarkupImages(textMarkupImages)
+        pdfPane.setTextMarkupOverlay(textMarkupImages);
     }
 
     public void updateStatisticView(List<BarChart<String, Number>> charts, List<CommentaryFinding> comments) {
