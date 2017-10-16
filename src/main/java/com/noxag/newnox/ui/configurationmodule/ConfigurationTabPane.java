@@ -1,5 +1,7 @@
 package com.noxag.newnox.ui.configurationmodule;
 
+import java.util.ArrayList;
+
 import javafx.scene.control.TabPane;
 
 public class ConfigurationTabPane extends TabPane {
@@ -8,17 +10,28 @@ public class ConfigurationTabPane extends TabPane {
     private ConfigurationTab statisticAlgorithmsTab;
     // TODO: 2 Testlisten anlegen (textanalysen & statistikanalysen) und
     // entsprechend bei "new ConfigurationTab("...") als Parameter ï¿½bergeben
-    // private ArrayList<String> names = new ArrayList<String>();
 
     public ConfigurationTabPane() {
-        /*
-         * names.add("Akademische AufrichtigkeitserklÃ¤rung");
-         * names.add("Bibliography Analyzer");
-         * names.add("Coomon Abbreviation Analyzer");
-         * names.add("Font Analyzer"); names.add("Line Spacing Analyzer");
-         */
-        textAlgorithmsTab = new ConfigurationTab("Textanalysen"); // "Textanalysen"
-        statisticAlgorithmsTab = new ConfigurationTab("Statistikanalysen"); // "Statistikanalysen"
+        // Only for testing purposes
+        ArrayList<String> names = createTestArrayList();
+
+        textAlgorithmsTab = createAlgorithmTab("Textanalysen", names);
+        statisticAlgorithmsTab = createAlgorithmTab("Statistikanalysen");
+
+        addTabs();
+    }
+
+    private ConfigurationTab createAlgorithmTab(String text) {
+        return createAlgorithmTab(text, new ArrayList<String>());
+    }
+
+    private ConfigurationTab createAlgorithmTab(String text, ArrayList<String> algorithmList) {
+        ConfigurationTab newTab = new ConfigurationTab(text, algorithmList);
+        newTab.updateHeight(this.heightProperty());
+        return newTab;
+    }
+
+    private void addTabs() {
         this.getTabs().add(textAlgorithmsTab);
         this.getTabs().add(statisticAlgorithmsTab);
         this.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
@@ -40,4 +53,16 @@ public class ConfigurationTabPane extends TabPane {
         this.statisticAlgorithmsTab = statisticAlgorithmsTab;
     }
 
+    // Only for testing purposes
+    private ArrayList<String> createTestArrayList() {
+        ArrayList<String> names = new ArrayList<String>();
+
+        names.add("Akademische Aufrichtigkeitserklärung");
+        names.add("Bibliography Analyzer");
+        names.add("Coomon Abbreviation Analyzer");
+        names.add("Font Analyzer");
+        names.add("Line Spacing Analyzer");
+
+        return names;
+    }
 }
