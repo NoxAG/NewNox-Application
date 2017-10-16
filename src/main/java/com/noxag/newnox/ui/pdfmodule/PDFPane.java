@@ -32,23 +32,26 @@ public class PDFPane extends VBox {
     ScrollPane scrollPane;
     GridPane pdfPane;
     BorderPane fileLocationPane;
-    // pane to fileLocationPane
     VBox box;
     StackPane stacky = new StackPane();
     private PDDocument pdfDocument;
 
     public PDFPane() {
+        getListAndStartNextProcedure();
+
         scrollPane = new ScrollPane();
+        scrollPane.setContent(pdfPane);
+        scrollPane.setStyle("-fx-background: #ECDFE1;");
+        scrollPane.setContent(stacky);
+
         pdfPane = new GridPane();
+
         fileLocationPane = new BorderPane();
+        fileLocationPane.setCenter(new Label("Name of the imported file (getPath)"));
+
         box = new VBox();
 
-        scrollPane.setContent(pdfPane);
-        fileLocationPane.setCenter(new Label("Name of the imported file (getPath)"));
-        scrollPane.setStyle("-fx-background: #ECDFE1;");
-        getListAndStartNextProcedure();
         this.getChildren().addAll(fileLocationPane, scrollPane);
-        scrollPane.setContent(stacky);
     }
 
     /**
@@ -64,7 +67,7 @@ public class PDFPane extends VBox {
         List<java.awt.Image> pdfTextOverlay = PDFPageRenderer.getAllPagesFromPDFAsImage(this.pdfDocument);
 
         for (int i = 0; i < textHighlightingOverlay.size(); i++) {
-            putThreeImagesInOneStackPane(textHighlightingOverlay.get(i), pdfTextOverlay.get(i));
+            stackImages(textHighlightingOverlay.get(i), pdfTextOverlay.get(i));
             getChildren().addAll(fileLocationPane, scrollPane, stacky);
         }
     }
@@ -77,8 +80,7 @@ public class PDFPane extends VBox {
      * @return stacky the StackPane which includes one PDF-Side
      */
 
-    public StackPane putThreeImagesInOneStackPane(java.awt.Image textHighlightingOverlay,
-            java.awt.Image pdfTextOverlay) {
+    public StackPane stackImages(java.awt.Image textHighlightingOverlay, java.awt.Image pdfTextOverlay) {
 
         WritableImage imageBackgroundWritable = null;
 
