@@ -24,6 +24,8 @@ public class ConfigurationPane extends BorderPane {
     private HBox btnbox;
 
     public ConfigurationPane() {
+        this.setStyle("-fx-border-width: 0 0 2 0; " + "-fx-border-style: solid solid solid solid;");
+
         configTabPane = new ConfigurationTabPane();
         configTabPane.prefHeightProperty().bind(this.heightProperty().multiply(0.9));
 
