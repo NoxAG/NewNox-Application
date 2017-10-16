@@ -29,7 +29,7 @@ public class ConfigurationPane extends BorderPane {
 
         btnrun = createButtons("Run");
         btnopen = createButtons("Open File...");
-        createFileChooser();
+        fileChooser = createFileChooser();
 
         createActionEventForOpenFile();
         createActionEventForRunButton();
@@ -53,11 +53,12 @@ public class ConfigurationPane extends BorderPane {
         return btnBox;
     }
 
-    private void createFileChooser() {
-        fileChooser = new FileChooser();
+    private FileChooser createFileChooser() {
+        FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open File...");
         fileChooser.getExtensionFilters().addAll(new ExtensionFilter("PDF Files", "*.pdf"),
                 new ExtensionFilter("All Files", "*.*"));
+        return fileChooser;
     }
 
     private void createActionEventForOpenFile() {
