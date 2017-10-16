@@ -149,7 +149,7 @@ public class NewNoxWindow extends Application {
         // TODO: pdfPane.setTextMarkupImages(textMarkupImages)
     }
 
-    public void updateStatisticView(List<BarChart> charts, List<CommentaryFinding> comments) {
+    public void updateStatisticView(List<BarChart<String, Number>> charts, List<CommentaryFinding> comments) {
         statisticPane.setCharts(charts);
         statisticPane.setCommentFindings(comments);
     }

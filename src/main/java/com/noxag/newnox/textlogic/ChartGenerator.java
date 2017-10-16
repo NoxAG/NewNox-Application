@@ -24,24 +24,23 @@ public class ChartGenerator {
     public static final int MIN_HEIGHT = 100;
     public static final int PREF_HEIGHT = 600;
 
-    public static List<BarChart> generateBarCharts(List<StatisticFinding> statisticFindings) {
-        List<BarChart> barCharts = new ArrayList<BarChart>();
+    public static List<BarChart<String, Number>> generateBarCharts(List<StatisticFinding> statisticFindings) {
+        List<BarChart<String, Number>> barCharts = new ArrayList<BarChart<String, Number>>();
         for (StatisticFinding finding : statisticFindings) {
             final CategoryAxis xAxis = new CategoryAxis();
             final NumberAxis yAxis = new NumberAxis();
 
-            BarChart bc = generateBarChart(finding.getChartName(), xAxis, yAxis);
+            BarChart<String, Number> bc = generateBarChart(finding.getChartName(), xAxis, yAxis);
             setLabelsToAxis(xAxis, yAxis, finding);
-            XYChart.Series series = createSeriesForChart(finding);
-
+            XYChart.Series<String, Number> series = createSeriesForChart(finding);
             bc.getData().addAll(series);
             barCharts.add(bc);
         }
         return barCharts;
     }
 
-    private static BarChart generateBarChart(String chartName, CategoryAxis xAxis, NumberAxis yAxis) {
-        BarChart bc = new BarChart(xAxis, yAxis);
+    private static BarChart<String, Number> generateBarChart(String chartName, CategoryAxis xAxis, NumberAxis yAxis) {
+        BarChart<String, Number> bc = new BarChart<>(xAxis, yAxis);
         bc.setTitle(chartName);
         bc.setMinWidth(MIN_WIDTH);
         bc.setPrefWidth(PREF_WIDTH);
@@ -55,16 +54,17 @@ public class ChartGenerator {
         yAxis.setLabel(finding.getyAxisLabel());
     }
 
-    private static Series createSeriesForChart(StatisticFinding finding) {
-        XYChart.Series series = new XYChart.Series();
+    private static Series<String, Number> createSeriesForChart(StatisticFinding finding) {
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName(finding.getDataLineLabel());
         addDataToSeries(series, finding.getStatisticData());
         return series;
     }
 
-    private static void addDataToSeries(XYChart.Series series, List<StatisticFindingData> statisticData) {
+    private static void addDataToSeries(XYChart.Series<String, Number> series,
+            List<StatisticFindingData> statisticData) {
         for (StatisticFindingData data : statisticData) {
-            series.getData().add(new XYChart.Data(data.getDesignation(), data.getValue()));
+            series.getData().add(new XYChart.Data<String, Number>(data.getDesignation(), data.getValue()));
         }
     }
 

@@ -32,26 +32,25 @@ import javafx.util.Callback;
 public class StatisticPane extends BorderPane {
     private static final int MAX_CHARTS = 4;
     private static final int MIN_CHARTS = 1;
-    private static final int COMMENTS_PER_PAGE = 10;
     private static final double TABLE_VIEW_WIDTH_FACTOR = 0.8;
     private static final double TABLE_VIEW_HEIGHT_FACTOR = 0.9;
 
     private Button incrementButton, decrementButton;
     private Pagination pager;
 
-    private List<BarChart> charts;
+    private List<BarChart<String, Number>> charts;
     private List<CommentaryFinding> commentFindings;
     private int chartsPerPageCounter = 1;
 
     public StatisticPane() {
-        this(new ArrayList<BarChart>());
+        this(new ArrayList<BarChart<String, Number>>());
     }
 
-    public StatisticPane(List<BarChart> barChart) {
+    public StatisticPane(List<BarChart<String, Number>> barChart) {
         this(barChart, new ArrayList<CommentaryFinding>());
     }
 
-    public StatisticPane(List<BarChart> barChart, List<CommentaryFinding> commentaryFindings) {
+    public StatisticPane(List<BarChart<String, Number>> barChart, List<CommentaryFinding> commentaryFindings) {
         charts = barChart;
         commentFindings = commentaryFindings;
 
@@ -213,7 +212,7 @@ public class StatisticPane extends BorderPane {
         return Column;
     }
 
-    public void setCharts(List<BarChart> charts) {
+    public void setCharts(List<BarChart<String, Number>> charts) {
         this.charts = charts;
         reloadPage();
     }
