@@ -7,11 +7,8 @@
 package com.noxag.newnox.ui.pdfmodule;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-
-import com.noxag.newnox.ui.pdfmodule.renderer.PDFPageRenderer;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -23,85 +20,117 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class PDFPane extends VBox {
-    ScrollPane scrollPane;
-    GridPane pdfPane;
-    BorderPane fileLocationPane;
-    VBox box;
-    StackPane stacky = new StackPane();
-    private PDDocument pdfDocument;
+    private ScrollPane scrollPane;
+    private BorderPane fileLocationPane;
+    private List<java.awt.Image> textHighlightingOverlay;
+    private List<java.awt.Image> pdfTextOverlay;
 
     public PDFPane() {
-        getListAndStartNextProcedure();
+        this(new ArrayList<java.awt.Image>());
+    }
 
-        scrollPane = new ScrollPane();
-        scrollPane.setContent(pdfPane);
-        scrollPane.setStyle("-fx-background: #ECDFE1;");
-        scrollPane.setContent(stacky);
+    public PDFPane(List<java.awt.Image> pdfTextOverlay) {
+        this(pdfTextOverlay, new ArrayList<java.awt.Image>());
+    }
 
-        pdfPane = new GridPane();
+    public PDFPane(List<java.awt.Image> pdfTextOverlay, List<java.awt.Image> textHighlightingOverlay) {
+        this.pdfTextOverlay = pdfTextOverlay;
+        this.textHighlightingOverlay = textHighlightingOverlay;
 
-        fileLocationPane = new BorderPane();
-        fileLocationPane.setCenter(new Label("Name of the imported file (getPath)"));
-
-        box = new VBox();
+        scrollPane = createScrollPane();
+        fileLocationPane = createFileLocationPane();
 
         this.getChildren().addAll(fileLocationPane, scrollPane);
     }
 
-    /**
-     * This method gets two lists of all Images. (Every list has one image per
-     * side). Also this method calls the method "putThreeImagesInOneStackPane()"
-     * with two images. At the end, the method adds the images to the Pane.
-     * 
-     */
+    private ScrollPane createScrollPane() {
+        VBox pdfPane = createPDFPane();
 
-    public void getListAndStartNextProcedure() {
-        List<java.awt.Image> textHighlightingOverlay = PDFPageRenderer
-                .getTextHighlightingOverlayFromDocument(this.pdfDocument);
-        List<java.awt.Image> pdfTextOverlay = PDFPageRenderer.getAllPagesFromPDFAsImage(this.pdfDocument);
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setStyle("-fx-background: #ECDFE1;");
+        scrollPane.setContent(pdfPane);
 
-        for (int i = 0; i < textHighlightingOverlay.size(); i++) {
-            stackImages(textHighlightingOverlay.get(i), pdfTextOverlay.get(i));
-            getChildren().addAll(fileLocationPane, scrollPane, stacky);
-        }
+        return scrollPane;
     }
 
-    /**
-     * This method gets two images and create a new one whilst the first image
-     * lay above the second one. Also this method creates the background for an
-     * image.
-     * 
-     * @return stacky the StackPane which includes one PDF-Side
-     */
+    private VBox createPDFPane() {
+        VBox pdfPane = new VBox();
+        pdfPane.prefHeightProperty().bind(this.heightProperty().multiply(0.9));
+        List<StackPane> imageStackPanes = getListsAndCreateStacks();
+        pdfPane.getChildren().addAll(imageStackPanes);
+        return pdfPane;
+    }
 
-    public StackPane stackImages(java.awt.Image textHighlightingOverlay, java.awt.Image pdfTextOverlay) {
+    public List<StackPane> getListsAndCreateStacks() {
+        List<StackPane> StackList = new ArrayList<StackPane>();
 
+        for (int i = 0; i < pdfTextOverlay.size(); i++) {
+            StackList.add(createStackPane(textHighlightingOverlay.get(i), pdfTextOverlay.get(i)));
+        }
+        return StackList;
+    }
+
+    private StackPane createStackPane(java.awt.Image textHighlightingOverlay, java.awt.Image pdfTextOverlay) {
+        BufferedImage imageBackground = createBackgroundImage(pdfTextOverlay.getWidth(null),
+                pdfTextOverlay.getHeight(null));
+
+        ImageView backgroundImageView = createImageView(imageBackground);
+
+        ImageView textHighlightingImageView = textHighlightingOverlay == null ? new ImageView()
+                : createImageView(textHighlightingOverlay);
+
+        ImageView pdfTextImageView = createImageView(pdfTextOverlay);
+
+        return stackImageViews(backgroundImageView, textHighlightingImageView, pdfTextImageView);
+    }
+
+    private BufferedImage createBackgroundImage(int width, int height) {
         WritableImage imageBackgroundWritable = null;
-
-        // generates canvas with white background + cast canvas to JavaFxImage
         final Canvas canvas = new Canvas(250, 250);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.WHITE);
         canvas.snapshot(null, (WritableImage) imageBackgroundWritable);
         BufferedImage bImage = SwingFXUtils.fromFXImage(imageBackgroundWritable, null);
-        Image imageBackground = SwingFXUtils.toFXImage((BufferedImage) bImage, null);
+        return bImage;
+    }
 
-        // Cast BufferedImage to JavaFxImage
-        Image imageTextHighlighting = SwingFXUtils.toFXImage((BufferedImage) textHighlightingOverlay, null);
-        Image imageText = SwingFXUtils.toFXImage((BufferedImage) pdfTextOverlay, null);
+    private ImageView createImageView(java.awt.Image image) {
+        Image img = SwingFXUtils.toFXImage((BufferedImage) image, null);
+        return new ImageView(img);
+    }
 
-        ImageView imageViewText = new ImageView(imageText);
-        ImageView imageViewBackground = new ImageView(imageBackground);
-        ImageView imageViewTextHighlighting = new ImageView(imageTextHighlighting);
+    public StackPane stackImageViews(ImageView backgroundImageView, ImageView textHighlightingImageView,
+            ImageView pdfTextImageView) {
+        StackPane imageStackPane = new StackPane();
+        imageStackPane.getChildren().addAll(backgroundImageView, textHighlightingImageView, pdfTextImageView);
+        imageStackPane.setPadding(new Insets(10, 50, 10, 50));
+        return imageStackPane;
+    }
 
-        stacky.getChildren().addAll(imageViewBackground, imageViewTextHighlighting, imageViewText);
-        stacky.setPadding(new Insets(10, 50, 10, 50));
-        return stacky;
+    private BorderPane createFileLocationPane() {
+        BorderPane fileLocationPane = new BorderPane();
+        fileLocationPane.setCenter(new Label("Name of the imported file (getPath)"));
+        return fileLocationPane;
+    }
+
+    public List<java.awt.Image> getTextHighlightingOverlay() {
+        return textHighlightingOverlay;
+    }
+
+    public void setTextHighlightingOverlay(List<java.awt.Image> textHighlightingOverlay) {
+        this.textHighlightingOverlay = textHighlightingOverlay;
+    }
+
+    public List<java.awt.Image> getPdfTextOverlay() {
+        return pdfTextOverlay;
+    }
+
+    public void setPdfTextOverlay(List<java.awt.Image> pdfTextOverlay) {
+        this.pdfTextOverlay = pdfTextOverlay;
     }
 }
