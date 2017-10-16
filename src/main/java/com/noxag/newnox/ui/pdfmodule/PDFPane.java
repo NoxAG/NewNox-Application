@@ -1,28 +1,19 @@
-/*
- * scroll pane, imageviews aneinander (liste), 
- * mehrere views übereinander, unterste kopieren, 
- * scrollen, 3fkt. set background, set pdf images, set texthightlight  
- */
-
 package com.noxag.newnox.ui.pdfmodule;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 
 public class PDFPane extends VBox {
     private ScrollPane scrollPane;
@@ -90,13 +81,12 @@ public class PDFPane extends VBox {
     }
 
     private BufferedImage createBackgroundImage(int width, int height) {
-        WritableImage imageBackgroundWritable = null;
-        final Canvas canvas = new Canvas(250, 250);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setFill(Color.WHITE);
-        canvas.snapshot(null, (WritableImage) imageBackgroundWritable);
-        BufferedImage bImage = SwingFXUtils.fromFXImage(imageBackgroundWritable, null);
-        return bImage;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
+        Graphics g = image.getGraphics();
+        g.setColor(java.awt.Color.WHITE);
+        g.drawRect(0, 0, width, height);
+        g.dispose();
+        return image;
     }
 
     private ImageView createImageView(java.awt.Image image) {
@@ -114,7 +104,7 @@ public class PDFPane extends VBox {
 
     private BorderPane createFileLocationPane() {
         BorderPane fileLocationPane = new BorderPane();
-        fileLocationPane.setCenter(new Label("Name of the imported file (getPath)"));
+        fileLocationPane.setCenter(new Label("Path of the imported File: "));
         return fileLocationPane;
     }
 
@@ -132,5 +122,10 @@ public class PDFPane extends VBox {
 
     public void setPdfTextOverlay(List<java.awt.Image> pdfTextOverlay) {
         this.pdfTextOverlay = pdfTextOverlay;
+    }
+
+    public void setPath(String path) {
+        fileLocationPane.getChildren().clear();
+        fileLocationPane.setCenter(new Label("Path of the imported File: " + path));
     }
 }
