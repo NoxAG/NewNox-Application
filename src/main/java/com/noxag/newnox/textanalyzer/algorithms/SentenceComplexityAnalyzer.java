@@ -15,4 +15,9 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
         return null;
     }
 
+    @Override
+    public String getUIName() {
+        return SentenceComplexityAnalyzer.class.getSimpleName();
+    }
+
 }

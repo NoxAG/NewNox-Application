@@ -15,4 +15,9 @@ public class FontAnalyzer implements TextanalyzerAlgorithm {
         return null;
     }
 
+    @Override
+    public String getUIName() {
+        return FontAnalyzer.class.getSimpleName();
+    }
+
 }
