@@ -192,11 +192,10 @@ public class StatisticPane extends BorderPane {
     // create Head Columns for TableView
     private List<TableColumn<CommentaryFinding, ?>> createTableColumns(TableView<CommentaryFinding> tableView,
             ReadOnlyDoubleProperty widthProperty) {
-        TableColumn<CommentaryFinding, Integer> numOfPageColumn = createTableColumn(widthProperty, "Seite", "page",
-                0.1);
-        TableColumn<CommentaryFinding, Integer> lineColumn = createTableColumn(widthProperty, "Zeile", "line", 0.1);
-        TableColumn<CommentaryFinding, String> typeColumn = createTableColumn(widthProperty, "Typ", "type", 0.2);
-        TableColumn<CommentaryFinding, String> commentColumn = createTableColumn(widthProperty, "Kommentar", "comment",
+        TableColumn<CommentaryFinding, Integer> numOfPageColumn = createTableColumn(widthProperty, "Page", "page", 0.1);
+        TableColumn<CommentaryFinding, Integer> lineColumn = createTableColumn(widthProperty, "Line", "line", 0.1);
+        TableColumn<CommentaryFinding, String> typeColumn = createTableColumn(widthProperty, "Type", "type", 0.2);
+        TableColumn<CommentaryFinding, String> commentColumn = createTableColumn(widthProperty, "Comment", "comment",
                 0.6);
 
         List<TableColumn<CommentaryFinding, ?>> columnList = new ArrayList<TableColumn<CommentaryFinding, ?>>();

@@ -127,7 +127,7 @@ public class PDFPane extends VBox {
 
     private BorderPane createFileLocationPane() {
         BorderPane fileLocationPane = new BorderPane();
-        fileLocationPane.setCenter(new Label("Es wurde noch keine Datei geöffnet"));
+        fileLocationPane.setCenter(new Label("No document attached"));
         return fileLocationPane;
     }
 
