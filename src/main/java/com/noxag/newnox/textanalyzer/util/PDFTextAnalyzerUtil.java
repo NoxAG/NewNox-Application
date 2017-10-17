@@ -17,14 +17,30 @@ import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
  *
  */
 public class PDFTextAnalyzerUtil {
-
+    /**
+     * This method applies the finder function for every word contained in the
+     * pdfObjects.
+     * 
+     * <p>
+     * Example:<br>
+     * {@code 
+     *  List<PDFPage> pages = PDFTextExtractionUtil.extractText(doc);} <br>
+     * {@code hits = PDFTextAnalyzerUtil.find(pages, searchTerm, PDFTextAnalyzerUtil::findWordIgnoreCase);}
+     * 
+     * </p>
+     * 
+     * @param pdfObjects
+     * @param searchTerm
+     * @param finder
+     * @return
+     */
     public static <T extends PDFObject> List<TextPositionSequence> find(List<T> pdfObjects, String searchTerm,
             BiFunction<List<TextPositionSequence>, String, List<TextPositionSequence>> finder) {
         return finder.apply(extractWords(pdfObjects), searchTerm);
     }
 
     /**
-     * Finds the exact word in the document on the given page
+     * Finds every match of the searchTerm in a list of words
      * 
      * This finder is case sensitive.
      * 
@@ -39,7 +55,7 @@ public class PDFTextAnalyzerUtil {
     }
 
     /**
-     * Finds the exact word in the document on the given page
+     * Finds every match of the searchTerm in a list of words
      * 
      * This finder ignores case differences.
      * 
