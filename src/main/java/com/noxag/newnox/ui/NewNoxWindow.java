@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
-import com.noxag.newnox.textanalyzer.data.StatisticFinding;
-import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
-import com.noxag.newnox.textanalyzer.data.StatisticFindingData;
-import com.noxag.newnox.textlogic.ChartGenerator;
 import com.noxag.newnox.ui.configurationmodule.ConfigurationPane;
 import com.noxag.newnox.ui.pdfmodule.PDFPane;
 import com.noxag.newnox.ui.statisticmodule.StatisticPane;
@@ -65,9 +61,6 @@ public class NewNoxWindow extends Application {
         initStage(stage);
         initLeftSide();
         initRightSide();
-
-        // Only for testing purpose
-        updateStatisticView();
 
         main.getItems().addAll(left, pdfPane);
         stage.show();
@@ -179,7 +172,8 @@ public class NewNoxWindow extends Application {
     // TODO call this method when open button has been pressed
     public void triggerOpenPDFEvent(File file) {
         this.openPDFBtnCallBack.accept(file);
-        this.pdfPane.setPath(file.getAbsolutePath());
+        this.pdfPane.setFileDescription(file.getName());
+
     }
 
     public void setTextanalyzerAlgorithms(List<String> textanalyzerUINames) {
@@ -205,34 +199,5 @@ public class NewNoxWindow extends Application {
 
     public void popupAlert(String alertmessage) {
         // TODO: create alert window with alertmessage
-    }
-
-    // Following section is only for testing purposes
-    public void updateStatisticView() {
-        statisticPane.setCharts(ChartGenerator.generateBarCharts(createTestFindings(15)));
-        statisticPane.setCommentFindings(createSampleComments(15));
-    }
-
-    private static List<CommentaryFinding> createSampleComments(int num) {
-        List<CommentaryFinding> comments = new ArrayList<>();
-        for (int i = 0; i < num; i++) {
-            comments.add(new CommentaryFinding("BLABLBALBASPODJPAOIAS\nDOI", "Typ " + i, i, i * 10));
-        }
-        return comments;
-    }
-
-    private List<StatisticFinding> createTestFindings(int num) {
-        List<StatisticFinding> findingList = new ArrayList<StatisticFinding>();
-        for (int i = 0; i < num; i++) {
-            StatisticFinding finding = new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION);
-            for (int k = 0; k < 10; k++) {
-                StatisticFindingData data = new StatisticFindingData("Test" + k, k);
-                finding.addStatisticData(data);
-            }
-            finding.setChartName("Test");
-
-            findingList.add(finding);
-        }
-        return findingList;
     }
 }
