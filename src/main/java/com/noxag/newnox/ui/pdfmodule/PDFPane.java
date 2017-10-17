@@ -15,6 +15,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * This class represents the PDFPane for the User Interface
+ * 
+ * @author Lars.Dittert@de.ibm.com
+ *
+ */
+
 public class PDFPane extends VBox {
     private ScrollPane scrollPane;
     private BorderPane fileLocationPane;
@@ -47,9 +54,8 @@ public class PDFPane extends VBox {
 
     private ScrollPane createScrollPane() {
         VBox pdfPane = createPDFPane();
-
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setStyle("-fx-background: #ECDFE1;");
+        scrollPane.setStyle("-fx-background: #CCCCCC;");
         scrollPane.setContent(pdfPane);
 
         return scrollPane;
@@ -57,7 +63,8 @@ public class PDFPane extends VBox {
 
     private VBox createPDFPane() {
         VBox pdfPane = new VBox();
-        pdfPane.prefHeightProperty().bind(this.heightProperty().multiply(0.9));
+        pdfPane.prefHeightProperty().bind(this.heightProperty().multiply(0.95));
+
         List<StackPane> imageStackPanes = getListsAndCreateStacks();
         pdfPane.getChildren().addAll(imageStackPanes);
         return pdfPane;
@@ -114,20 +121,26 @@ public class PDFPane extends VBox {
 
     private ImageView createImageView(BufferedImage image) {
         Image img = SwingFXUtils.toFXImage((BufferedImage) image, null);
-        return new ImageView(img);
+        ImageView imgView = new ImageView(img);
+        imgView.fitWidthProperty().bind(this.widthProperty().multiply(0.95));
+        imgView.setPreserveRatio(true);
+        return imgView;
     }
 
     public StackPane stackImageViews(ImageView backgroundImageView, ImageView textHighlightingImageView,
             ImageView pdfTextImageView) {
         StackPane imageStackPane = new StackPane();
         imageStackPane.getChildren().addAll(backgroundImageView, textHighlightingImageView, pdfTextImageView);
-        imageStackPane.setPadding(new Insets(10, 50, 10, 50));
+        imageStackPane.setPadding(new Insets(10, 0, 10, 0));
+
         return imageStackPane;
     }
 
     private BorderPane createFileLocationPane() {
         BorderPane fileLocationPane = new BorderPane();
-        fileLocationPane.setCenter(new Label("Es wurde noch keine Datei geöffnet"));
+        fileLocationPane.setCenter(new Label("No document attached"));
+        fileLocationPane.minHeightProperty().bind(this.heightProperty().multiply(0.03));
+        fileLocationPane.maxHeightProperty().bind(this.heightProperty().multiply(0.03));
         return fileLocationPane;
     }
 

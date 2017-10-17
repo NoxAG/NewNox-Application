@@ -35,7 +35,8 @@ import javafx.stage.Window;
  */
 
 public class NewNoxWindow extends Application {
-    private static final double PDFPANE_WIDTH_FACTOR = 0.4;
+    private static final double PDFPANE_MINWIDTH_FACTOR = 0.4;
+    private static final double PDFPANE_MAXWIDTH_FACTOR = 0.7;
     private static final double LEFT_WIDTH_FACTOR = 0.3;
     private static final double CONFIGPANE_WIDTH_FACTOR = 0.9;
     private static final double CONFIGPANE_HEIGHT_FACTOR = 0.3;
@@ -81,7 +82,8 @@ public class NewNoxWindow extends Application {
 
     private void initRightSide() {
         pdfPane = new PDFPane();
-        pdfPane.minWidthProperty().bind(main.widthProperty().multiply(PDFPANE_WIDTH_FACTOR));
+        pdfPane.minWidthProperty().bind(main.widthProperty().multiply(PDFPANE_MINWIDTH_FACTOR));
+        pdfPane.maxWidthProperty().bind(main.widthProperty().multiply(PDFPANE_MAXWIDTH_FACTOR));
     }
 
     private void initLeftSide() {

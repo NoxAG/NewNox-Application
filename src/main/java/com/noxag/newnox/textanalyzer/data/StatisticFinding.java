@@ -10,33 +10,33 @@ import java.util.List;
  *
  */
 public class StatisticFinding extends Finding {
-    private static final String VOCABULARY_TITLE = "Vokabular";
-    private static final String PUNCTUATION_TITLE = "Satzzeichen";
-    private static final String ABBREVIATION_TITLE = "Abkürzungen";
-    private static final String FOREIGN_TITLE = "Fremdwörter";
+    private static final String VOCABULARY_TITLE = "Vocabulary";
+    private static final String PUNCTUATION_TITLE = "Punctuation Character";
+    private static final String ABBREVIATION_TITLE = "Abbreviations";
+    private static final String FOREIGN_TITLE = "Loanword";
     private static final String WORDING_TITLE = "Wording";
-    private static final String SENTENCE_COMPLEXITY_TITLE = "Satzkomplexität";
+    private static final String SENTENCE_COMPLEXITY_TITLE = "Sentence Length";
 
-    private static final String VOCABULARY_XLABEL = "Wort";
-    private static final String PUNCTUATION_XLABEL = "Zeichen";
-    private static final String ABBREVIATION_XLABEL = "Abkürzung";
-    private static final String FOREIGN_XLABEL = "Fremdwort";
-    private static final String WORDING_XLABEL = "Wort";
-    private static final String SENTENCE_COMPLEXITY_XLABEL = "Komplexität";
+    private static final String VOCABULARY_XLABEL = "Word";
+    private static final String PUNCTUATION_XLABEL = "Punctuation Mark";
+    private static final String ABBREVIATION_XLABEL = "Abbreviations";
+    private static final String FOREIGN_XLABEL = "Loanword";
+    private static final String WORDING_XLABEL = "Word";
+    private static final String SENTENCE_COMPLEXITY_XLABEL = "Complexity";
 
-    private static final String VOCABULARY_YLABEL = "Häufigkeit";
-    private static final String PUNCTUATION_YLABEL = "Häufigkeit";
-    private static final String ABBREVIATION_YLABEL = "Häufigkeit";
-    private static final String FOREIGN_YLABEL = "Häufigkeit";
-    private static final String WORDING_YLABEL = "Häufigkeit";
-    private static final String SENTENCE_COMPLEXITY_YLABEL = "Häufigkeit";
+    private static final String VOCABULARY_YLABEL = "Frequency";
+    private static final String PUNCTUATION_YLABEL = "Frequency";
+    private static final String ABBREVIATION_YLABEL = "Frequency";
+    private static final String FOREIGN_YLABEL = "Frequency";
+    private static final String WORDING_YLABEL = "Frequency";
+    private static final String SENTENCE_COMPLEXITY_YLABEL = "Frequency";
 
-    private static final String VOCABULARY_DATALINE = "Vokabular";
-    private static final String PUNCTUATION_DATALINE = "Satzzeichen";
-    private static final String ABBREVIATION_DATALINE = "Abkürzungen";
-    private static final String FOREIGN_DATALINE = "Fremdwörter";
+    private static final String VOCABULARY_DATALINE = "Vocabulary";
+    private static final String PUNCTUATION_DATALINE = "Punctuation Character";
+    private static final String ABBREVIATION_DATALINE = "Abbreviations";
+    private static final String FOREIGN_DATALINE = "Loandword";
     private static final String WORDING_DATALINE = "Wording";
-    private static final String SENTENCE_COMPLEXITY_DATALINE = "Satzkomplexität";
+    private static final String SENTENCE_COMPLEXITY_DATALINE = "Sentence Length";
 
     private StatisticFindingType type;
     private List<StatisticFindingData> statisticData;

@@ -12,8 +12,8 @@ public class ConfigurationTabPane extends TabPane {
 
     public ConfigurationTabPane() {
 
-        textAlgorithmsTab = createAlgorithmTab("Textanalysen");
-        statisticAlgorithmsTab = createAlgorithmTab("Statistikanalysen");
+        textAlgorithmsTab = createAlgorithmTab("Text Analyses");
+        statisticAlgorithmsTab = createAlgorithmTab("Statistic Analyses");
 
         addTabs();
     }
