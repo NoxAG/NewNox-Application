@@ -57,7 +57,9 @@ public class PDFPane extends VBox {
 
     private VBox createPDFPane() {
         VBox pdfPane = new VBox();
-        pdfPane.prefHeightProperty().bind(this.heightProperty().multiply(0.9));
+        pdfPane.prefHeightProperty().bind(this.heightProperty().multiply(0.95));
+        pdfPane.prefWidthProperty().bind(this.widthProperty().multiply(0.9));
+
         List<StackPane> imageStackPanes = getListsAndCreateStacks();
         pdfPane.getChildren().addAll(imageStackPanes);
         return pdfPane;
@@ -114,20 +116,27 @@ public class PDFPane extends VBox {
 
     private ImageView createImageView(BufferedImage image) {
         Image img = SwingFXUtils.toFXImage((BufferedImage) image, null);
-        return new ImageView(img);
+        ImageView imgView = new ImageView(img);
+        imgView.fitWidthProperty().bind(this.widthProperty().multiply(0.8));
+        imgView.setPreserveRatio(true);
+        return imgView;
     }
 
     public StackPane stackImageViews(ImageView backgroundImageView, ImageView textHighlightingImageView,
             ImageView pdfTextImageView) {
         StackPane imageStackPane = new StackPane();
         imageStackPane.getChildren().addAll(backgroundImageView, textHighlightingImageView, pdfTextImageView);
-        imageStackPane.setPadding(new Insets(10, 50, 10, 50));
+        imageStackPane.setPadding(new Insets(10, 0, 10, 0));
+        // imageStackPane.paddingProperty().
         return imageStackPane;
     }
 
     private BorderPane createFileLocationPane() {
         BorderPane fileLocationPane = new BorderPane();
         fileLocationPane.setCenter(new Label("Path of the imported File: "));
+        fileLocationPane.minHeightProperty().bind(this.heightProperty().multiply(0.03));
+        fileLocationPane.maxHeightProperty().bind(this.heightProperty().multiply(0.03));
+
         return fileLocationPane;
     }
 

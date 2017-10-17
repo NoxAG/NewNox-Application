@@ -64,8 +64,14 @@ public class MainController {
      *            the path to the file that is supposed to be opened
      */
     public void openPDFDocument(File file) {
-        this.pdfDoc = readPDFFromFile(file);
-        triggerPDFImagesUpdateEvent(renderPDFTextOverlay(pdfDoc));
+        if (file == null) {
+            this.triggerAlertPopupEvent(
+                    "PDF konnte nicht geladen werden. Möglicherweise ist es in einer anderen Anwendung geöffnet");
+        } else {
+            this.pdfDoc = readPDFFromFile(file);
+            triggerPDFImagesUpdateEvent(renderPDFTextOverlay(pdfDoc));
+        }
+
     }
 
     /**
