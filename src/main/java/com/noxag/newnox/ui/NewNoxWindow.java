@@ -2,7 +2,6 @@ package com.noxag.newnox.ui;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -19,6 +18,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
@@ -53,10 +54,6 @@ public class NewNoxWindow extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         main = new SplitPane();
-
-        // new???
-        registerOpenPDFEvent((x) -> System.out.println("Registered OpenPDFEvent"));
-        registerAnalyzeEvent((x) -> System.out.println("Registered AnalyzeEvent"));
 
         initStage(stage);
         initLeftSide();
@@ -109,14 +106,12 @@ public class NewNoxWindow extends Application {
     }
 
     private void createActionEventForRunButton(ConfigurationPane configPane, Button btnRun) {
-        final List<String> selectedAnalyzer = new ArrayList<>();
         btnRun.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent e) {
-                selectedAnalyzer.addAll(configPane.getSelectedAnalyzers());
+                triggerAnalyzeEvent(configPane.getSelectedAnalyzers());
             }
         });
-        this.triggerAnalyzeEvent(selectedAnalyzer);
     }
 
     private void createActionEventForOpenButton(Button btnOpen, Button btnRun, FileChooser fileChooser) {
@@ -198,6 +193,11 @@ public class NewNoxWindow extends Application {
     }
 
     public void popupAlert(String alertmessage) {
-        // TODO: create alert window with alertmessage
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Alert");
+        alert.setHeaderText(null);
+        alert.setContentText(alertmessage);
+
+        alert.showAndWait();
     }
 }
