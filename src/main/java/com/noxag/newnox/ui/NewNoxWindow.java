@@ -1,6 +1,7 @@
 package com.noxag.newnox.ui;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -17,11 +18,17 @@ import com.noxag.newnox.ui.statisticmodule.StatisticPane;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  * This class builds the User Interface
@@ -43,13 +50,18 @@ public class NewNoxWindow extends Application {
     private PDFPane pdfPane;
     private VBox left;
     private SplitPane main;
-    private Consumer<String> openPDFBtnCallBack;
+    private Consumer<File> openPDFBtnCallBack;
     private Consumer<List<String>> analyzeBtnCallBack;
     private static Scene scene;
 
     @Override
     public void start(Stage stage) throws Exception {
         main = new SplitPane();
+
+        // new???
+        registerOpenPDFEvent((x) -> System.out.println("Registered OpenPDFEvent"));
+        registerAnalyzeEvent((x) -> System.out.println("Registered AnalyzeEvent"));
+
         initStage(stage);
         initLeftSide();
         initRightSide();
@@ -88,9 +100,46 @@ public class NewNoxWindow extends Application {
         left.minWidthProperty().bind(main.widthProperty().multiply(LEFT_WIDTH_FACTOR));
 
         configPane = createConfigPane();
+        // new
+        createActionEventsForConfigPane(configPane);
         statisticPane = createStatisticPane();
 
         left.getChildren().addAll(configPane, statisticPane);
+    }
+
+    private void createActionEventsForConfigPane(ConfigurationPane configPane) {
+        Button btnOpen = configPane.getOpenButton();
+        Button btnRun = configPane.getRunButton();
+        FileChooser fileChooser = configPane.getFileChooser();
+        createActionEventForRunButton(configPane, btnRun);
+        createActionEventForOpenButton(btnOpen, btnRun, fileChooser);
+    }
+
+    private void createActionEventForRunButton(ConfigurationPane configPane, Button btnRun) {
+        final List<String> selectedAnalyzer = new ArrayList<>();
+        btnRun.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent e) {
+                selectedAnalyzer.addAll(configPane.getSelectedAnalyzers());
+            }
+        });
+        this.triggerAnalyzeEvent(selectedAnalyzer);
+    }
+
+    private void createActionEventForOpenButton(Button btnOpen, Button btnRun, FileChooser fileChooser) {
+        btnOpen.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent e) {
+                Node source = (Node) e.getSource();
+                Window stage = source.getScene().getWindow();
+                File file = fileChooser.showOpenDialog(stage);
+                if (file != null) {
+                    btnRun.setDisable(false);
+                }
+                // new
+                triggerOpenPDFEvent(file);
+            }
+        });
     }
 
     private ConfigurationPane createConfigPane() {
@@ -118,7 +167,7 @@ public class NewNoxWindow extends Application {
         this.analyzeBtnCallBack = analyzeCallBack;
     }
 
-    public void registerOpenPDFEvent(Consumer<String> openPDFCallBack) {
+    public void registerOpenPDFEvent(Consumer<File> openPDFCallBack) {
         this.openPDFBtnCallBack = openPDFCallBack;
     }
 
@@ -128,16 +177,16 @@ public class NewNoxWindow extends Application {
     }
 
     // TODO call this method when open button has been pressed
-    public void triggerOpenPDFEvent(String path) {
-        this.openPDFBtnCallBack.accept(path);
+    public void triggerOpenPDFEvent(File file) {
+        this.openPDFBtnCallBack.accept(file);
     }
 
     public void setTextanalyzerAlgorithms(List<String> textanalyzerUINames) {
-        // TODO configPane.setTextanalyzerAlgorithms(textanalyzerUINames);
+        configPane.setTextanalyzerUInames(textanalyzerUINames);
     }
 
     public void setStatisticanalyzerAlgorithms(List<String> statisticanalyzerUINames) {
-        // configPane.setStatisticanalyzerAlgorithms(statisticanalyzerUINames);
+        configPane.setStatisticanalyzerUInames(statisticanalyzerUINames);
     }
 
     public void updatePDFImages(List<BufferedImage> pdfTextOverlay) {

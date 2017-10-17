@@ -16,8 +16,7 @@ public class PDFPageRenderer {
         return PDFPageRenderer.renderTextMarkupOverlay(doc, 0, doc.getNumberOfPages() - 1);
     }
 
-    public static List<BufferedImage> renderTextMarkupOverlay(PDDocument doc, int pageIndex,
-            int pageIndexOffset) {
+    public static List<BufferedImage> renderTextMarkupOverlay(PDDocument doc, int pageIndex, int pageIndexOffset) {
         List<BufferedImage> overlayImages = new ArrayList<>();
         for (int i = pageIndex; i <= (pageIndex + pageIndexOffset); i++) {
             overlayImages.add(PDFPageRenderer.renderTextMarkupOverlay(doc, i));

@@ -1,20 +1,14 @@
 package com.noxag.newnox.ui.configurationmodule;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Window;
 
 public class ConfigurationPane extends BorderPane {
 
@@ -31,16 +25,19 @@ public class ConfigurationPane extends BorderPane {
 
         btnrun = createButtons("Run");
         btnopen = createButtons("Open File...");
-        fileChooser = createFileChooser();
+        btnrun.setDisable(true);
 
-        createActionEventForOpenFile();
-        createActionEventForRunButton();
+        fileChooser = createFileChooser();
 
         btnbox = createButtonBox();
         btnbox.getChildren().addAll(btnopen, btnrun);
 
         this.setCenter(configTabPane);
         this.setBottom(btnbox);
+    }
+
+    public List<String> getSelectedAnalyzers() {
+        return this.configTabPane.getSelectedAnalyzers();
     }
 
     private Button createButtons(String text) {
@@ -63,34 +60,6 @@ public class ConfigurationPane extends BorderPane {
         return fileChooser;
     }
 
-    private void createActionEventForOpenFile() {
-        btnrun.setDisable(true);
-
-        btnopen.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(final ActionEvent e) {
-                Node source = (Node) e.getSource();
-                Window stage = source.getScene().getWindow();
-                File file = fileChooser.showOpenDialog(stage);
-                if (file != null) {
-                    btnrun.setDisable(false);
-                }
-            }
-        });
-    }
-
-    private void createActionEventForRunButton() {
-        btnrun.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(final ActionEvent e) {
-                List<String> selectedAlgorithms = new ArrayList<String>();
-                configTabPane.getTabs().stream().forEach(tab -> {
-                    selectedAlgorithms.addAll(((ConfigurationTab) tab).getSelectedAnalyzers());
-                });
-            }
-        });
-    }
-
     public Button getRunButton() {
         return btnrun;
     }
@@ -105,6 +74,14 @@ public class ConfigurationPane extends BorderPane {
 
     public ConfigurationPane getPane() {
         return this;
+    }
+
+    public void setTextanalyzerUInames(List<String> AlgorithmUINames) {
+        this.configTabPane.setTextanalyzerUInames(AlgorithmUINames);
+    }
+
+    public void setStatisticanalyzerUInames(List<String> AlgorithmUINames) {
+        this.configTabPane.setStatisticanalyzerUInames(AlgorithmUINames);
     }
 
 }

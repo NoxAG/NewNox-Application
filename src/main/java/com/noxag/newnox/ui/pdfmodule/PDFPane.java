@@ -33,9 +33,15 @@ public class PDFPane extends VBox {
         this.pdfTextOverlay = pdfTextOverlay;
         this.textMarkupOverlay = textHighlightingOverlay;
 
+        reloadPage();
+    }
+
+    // new
+    public void reloadPage() {
         scrollPane = createScrollPane();
         fileLocationPane = createFileLocationPane();
 
+        this.getChildren().clear();
         this.getChildren().addAll(fileLocationPane, scrollPane);
     }
 
@@ -61,9 +67,26 @@ public class PDFPane extends VBox {
         List<StackPane> StackList = new ArrayList<StackPane>();
 
         for (int i = 0; i < pdfTextOverlay.size(); i++) {
-            StackList.add(createStackPane(textMarkupOverlay.get(i), pdfTextOverlay.get(i)));
+            // new
+            if (textMarkupOverlay.size() <= i) {
+                StackList.add(createStackPane(pdfTextOverlay.get(i)));
+            } else {
+                StackList.add(createStackPane(textMarkupOverlay.get(i), pdfTextOverlay.get(i)));
+            }
         }
         return StackList;
+    }
+
+    // new(to refactor)
+    private StackPane createStackPane(BufferedImage pdfTextOverlay) {
+        BufferedImage imageBackground = createBackgroundImage(pdfTextOverlay.getWidth(null),
+                pdfTextOverlay.getHeight(null));
+
+        ImageView backgroundImageView = createImageView(imageBackground);
+
+        ImageView pdfTextImageView = createImageView(pdfTextOverlay);
+
+        return stackImageViews(backgroundImageView, new ImageView(), pdfTextImageView);
     }
 
     private StackPane createStackPane(BufferedImage textHighlightingOverlay, BufferedImage pdfTextOverlay) {
@@ -114,6 +137,7 @@ public class PDFPane extends VBox {
 
     public void setTextMarkupOverlay(List<BufferedImage> textMarkupOverlay) {
         this.textMarkupOverlay = textMarkupOverlay;
+        reloadPage();
     }
 
     public List<BufferedImage> getPDFTextOverlay() {
@@ -122,6 +146,7 @@ public class PDFPane extends VBox {
 
     public void setPDFTextOverlay(List<BufferedImage> pdfTextOverlay) {
         this.pdfTextOverlay = pdfTextOverlay;
+        reloadPage();
     }
 
     public void setPath(String path) {

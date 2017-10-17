@@ -23,13 +23,13 @@ public class ConfigurationTab extends Tab {
     public ConfigurationTab(String name, List<String> AlgorithmUINames) {
         this.setText(name);
 
-        createCheckboxAndSetAlgorithms(AlgorithmUINames);
         createScrollPane();
+        setAlgorithms(AlgorithmUINames);
 
         this.setContent(scrollPane);
     }
 
-    public void createCheckboxAndSetAlgorithms(List<String> AlgorithmUINames) {
+    public void setAlgorithms(List<String> AlgorithmUINames) {
         checkboxPane = new VBox();
 
         AlgorithmUINames.stream().forEach(element -> {
@@ -39,10 +39,11 @@ public class ConfigurationTab extends Tab {
             VBox.setMargin(checkbox, new Insets(2.0, 2.0, 2.0, 2.0));
             checkboxPane.getChildren().add(checkbox);
         });
+        scrollPane.setContent(checkboxPane);
     }
 
     private void createScrollPane() {
-        scrollPane = new ScrollPane(checkboxPane);
+        scrollPane = new ScrollPane();
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToHeight(true);
     }

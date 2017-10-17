@@ -63,8 +63,8 @@ public class MainController {
      * @param path
      *            the path to the file that is supposed to be opened
      */
-    public void openPDFDocument(String path) {
-        this.pdfDoc = readPDFFromFile(path);
+    public void openPDFDocument(File file) {
+        this.pdfDoc = readPDFFromFile(file);
         triggerPDFImagesUpdateEvent(renderPDFTextOverlay(pdfDoc));
     }
 
@@ -184,7 +184,7 @@ public class MainController {
         return uiNames;
     }
 
-    private PDDocument readPDFFromFile(String path) {
+    private PDDocument readPDFFromFile(File file) {
         try {
             closePDF();
         } catch (IOException e) {
@@ -193,7 +193,7 @@ public class MainController {
             return null;
         }
         try {
-            return PDDocument.load(new File(path));
+            return PDDocument.load(file);
         } catch (IOException e) {
             // TODO: error propagation
             LOGGER.log(Level.WARNING, "PDF document could not be loaded", e);
