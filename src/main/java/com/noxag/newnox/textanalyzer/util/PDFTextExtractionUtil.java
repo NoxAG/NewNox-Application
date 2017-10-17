@@ -3,27 +3,63 @@ package com.noxag.newnox.textanalyzer.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFObject;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 
+/**
+ * This utils class contains methods to extract text from {@link PDDocument}s
+ * 
+ * @author Tobias.Schmidt@de.ibm.com
+ *
+ */
 public class PDFTextExtractionUtil {
-
+    /**
+     * Extracts the text of a {@link PDDocument}
+     * 
+     * @param document
+     *            the document to extract the text from
+     * @returns a representation of the documents' text
+     * @throws IOException
+     *             if PDDcument can not be read
+     */
     public static List<PDFPage> extractText(PDDocument document) throws IOException {
         return extractText(document, 1, document.getNumberOfPages());
     }
 
+    /**
+     * Extracts the text of a single page of a {@link PDDocument}
+     * 
+     * @param document
+     *            the document to extract the text from
+     * @param pageIndex
+     *            the '1' bases pageIndex that specifies the page to extract the
+     *            text from
+     * @returns a representation of the documents' text
+     * @throws IOException
+     *             if PDDcument can not be read
+     */
     public static PDFPage extractText(PDDocument document, int pageIndex) throws IOException {
         return extractText(document, pageIndex, pageIndex).get(0);
     }
 
+    /**
+     * Extracts the text of a {@link PDDocument} from one page to another
+     * 
+     * @param document
+     *            the document to extract the text from
+     * @param pageStartIndex
+     *            the '1' bases pageIndex to start extracting from
+     * @param pageEndIndex
+     *            the '1' bases pageIndex to end extracting from
+     * @returns a representation of the documents' text
+     * @throws IOException
+     *             if PDDcument can not be read
+     */
     public static List<PDFPage> extractText(PDDocument document, int pageStartIndex, int pageEndIndex)
             throws IOException {
         final List<PDFPage> pages = new ArrayList<>();
@@ -41,91 +77,6 @@ public class PDFTextExtractionUtil {
         return pages;
     }
 
-    /**
-     * Finds every occurrence of the given char sequence, even if the sequence
-     * is only one part of a word in the document
-     * 
-     * <p>
-     * This method won't find a multiple of words! Every time there is a
-     * whitespace in the given searchTerm this method will return an empty list
-     * </p>
-     * 
-     * 
-     * @param document
-     *            the document that is searched through
-     * @param page
-     *            the page number of the document that is searched through
-     * @param searchTerm
-     *            the char sequence that is searched for
-     * @return a list with all occurrences of the given searchTerm
-     * @throws IOException
-     */
-    public static List<TextPositionSequence> findCharSequence(List<TextPositionSequence> words, String searchTerm)
-            throws IOException {
-        return words.stream().filter(word -> word.contains(searchTerm)).collect(Collectors.toList());
-    }
-
-    /**
-     * Finds the exact word in the document on the given page
-     * 
-     * @param document
-     *            the document that is searched through
-     * @param pageIndex
-     *            the page number of the document that is searched through
-     * @param searchTerm
-     *            the word that is searched for
-     * @return a list with all occurrences of the given word
-     * @throws IOException
-     */
-    public static List<TextPositionSequence> findWord(PDDocument document, int pageIndex, String searchTerm)
-            throws IOException {
-        return findWord(extractText(document, pageIndex).getWords(), searchTerm);
-    }
-
-    public static List<TextPositionSequence> findWord(PDDocument document, String searchTerm) throws IOException {
-        return findWord(getWordsFromList(extractText(document)), searchTerm);
-    }
-
-    public static List<TextPositionSequence> findWord(List<TextPositionSequence> words, String searchTerm)
-            throws IOException {
-        return findWord(words, searchTerm::compareTo);
-    }
-
-    /**
-     * Finds the exact word in the document on the given page, ignoring case
-     * differences
-     * 
-     * @param document
-     *            the document that is searched through
-     * @param pageIndex
-     *            the page number of the document that is searched through
-     * @param searchTerm
-     *            the word that is searched for
-     * @return a list with all occurrences of the given word
-     * @throws IOException
-     */
-    public static List<TextPositionSequence> findWordIgnoreCase(PDDocument document, int pageIndex, String searchTerm)
-            throws IOException {
-        return findWordIgnoreCase(extractText(document, pageIndex).getWords(), searchTerm);
-    }
-
-    public static List<TextPositionSequence> findWordIgnoreCase(PDDocument document, String searchTerm)
-            throws IOException {
-        return findWordIgnoreCase(getWordsFromList(extractText(document)), searchTerm);
-    }
-
-    public static List<TextPositionSequence> findWordIgnoreCase(List<TextPositionSequence> words, String searchTerm)
-            throws IOException {
-        return findWord(words, searchTerm::compareToIgnoreCase);
-    }
-
-    private static List<TextPositionSequence> findWord(List<TextPositionSequence> words,
-            Function<String, Integer> compareTo) throws IOException {
-
-        return words.stream().filter(word -> compareTo.apply(word.toString()) == 0).collect(Collectors.toList());
-
-    }
-
     private static void runTextStripper(PDFTextStripper stripper, PDDocument document, int pageStartIndex,
             int pageEndIndex) throws IOException {
         stripper.setSortByPosition(true);
@@ -134,18 +85,24 @@ public class PDFTextExtractionUtil {
         stripper.getText(document);
     }
 
-    public static <T extends PDFObject> List<TextPositionSequence> getWordsFromList(List<T> pdfObjects) {
+    /**
+     * Extracts all words contained in the pdf data objects
+     * 
+     * For example you can use this function to get all words of a complete pdf
+     * document represented as a list of {@link PDFPage}
+     * 
+     * @param pdfObjects
+     *            the list of pdf objects that are to supply the source for the
+     *            word extractions
+     * @returns all words contained in this pdf data objects
+     */
+    public static <T extends PDFObject> List<TextPositionSequence> extractWords(List<T> pdfObjects) {
         List<TextPositionSequence> words = new ArrayList<>();
         pdfObjects.stream().forEach(pdfObject -> words.addAll(pdfObject.getWords()));
         return words;
     }
 
-    // Test function
-    // TODO: remove
-    public static List<TextFinding> getTextFindings(List<TextPositionSequence> textPositions) {
-        List<TextFinding> findings = new ArrayList<>();
-        textPositions.stream().forEach(e -> findings.add(new TextFinding(e)));
-        return findings;
+    private PDFTextExtractionUtil() {
+        // hide constructor, because this is a completely static class
     }
-
 }

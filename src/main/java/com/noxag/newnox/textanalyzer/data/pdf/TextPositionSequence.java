@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.pdfbox.text.TextPosition;
 
 /**
+ * This class represents a single word
  * 
  * @author Tobias.Schmidt@de.ibm.com
  *

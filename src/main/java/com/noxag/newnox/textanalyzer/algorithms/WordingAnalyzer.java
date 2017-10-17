@@ -17,7 +17,9 @@ import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
+import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
+import com.noxag.newnox.textanalyzer.util.PDFTextAnalyzerUtil;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 
 /**
@@ -58,13 +60,14 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
     }
 
     private List<TextFinding> findWordInDocument(PDDocument doc, String searchTerm) {
-        List<TextPositionSequence> textPositions = new ArrayList<>();
+        List<TextPositionSequence> hits = new ArrayList<>();
         try {
-            textPositions = PDFTextExtractionUtil.findWord(doc, searchTerm);
+            List<PDFPage> pages = PDFTextExtractionUtil.extractText(doc);
+            hits = PDFTextAnalyzerUtil.find(pages, searchTerm, PDFTextAnalyzerUtil::findWordIgnoreCase);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not search through document", e);
         }
-        return generateTextFindings(textPositions);
+        return generateTextFindings(hits);
     }
 
     private List<TextFinding> generateTextFindings(List<TextPositionSequence> textPositions) {
