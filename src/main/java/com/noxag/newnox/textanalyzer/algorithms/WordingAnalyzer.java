@@ -1,7 +1,5 @@
 package com.noxag.newnox.textanalyzer.algorithms;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
@@ -21,6 +18,7 @@ import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 import com.noxag.newnox.textanalyzer.util.PDFTextAnalyzerUtil;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
+import com.opencsv.CSVReader;
 
 /**
  * This class can be used to find all words that shouldn't be used in an
@@ -50,28 +48,30 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public List<Finding> run(PDDocument doc) {
-        List<Finding> findings = new ArrayList<>();
-        wordingBlacklist.stream().forEach(word -> findings.addAll(findWordInDocument(doc, word)));
-        return findings;
-    }
-
-    public String getUIName() {
-        return WordingAnalyzer.class.getSimpleName();
-    }
-
-    private List<TextFinding> findWordInDocument(PDDocument doc, String searchTerm) {
-        List<TextPositionSequence> hits = new ArrayList<>();
+        List<PDFPage> pages = new ArrayList<>();
         try {
-            List<PDFPage> pages = PDFTextExtractionUtil.extractText(doc);
-            hits = PDFTextAnalyzerUtil.find(pages, searchTerm, PDFTextAnalyzerUtil::findWordIgnoreCase);
+            pages = PDFTextExtractionUtil.extractText(doc);
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not search through document", e);
+            LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
-        return generateTextFindings(hits);
+
+        return generateTextFindings(findMatches(pages, wordingBlacklist));
     }
 
-    private List<TextFinding> generateTextFindings(List<TextPositionSequence> textPositions) {
-        List<TextFinding> textFindings = new ArrayList<>();
+    private List<TextPositionSequence> findMatches(List<PDFPage> pages, List<String> wordsToFind) {
+        List<TextPositionSequence> hits = new ArrayList<>();
+        wordsToFind.stream().forEach(word -> hits.addAll(findMatches(pages, word)));
+        return hits;
+    }
+
+    private List<TextPositionSequence> findMatches(List<PDFPage> pages, String word) {
+        List<TextPositionSequence> hits = new ArrayList<>();
+        hits = PDFTextAnalyzerUtil.find(pages, word, PDFTextAnalyzerUtil::findWordIgnoreCase);
+        return hits;
+    }
+
+    private List<Finding> generateTextFindings(List<TextPositionSequence> textPositions) {
+        List<Finding> textFindings = new ArrayList<>();
         textPositions.stream()
                 .forEach(textPosition -> textFindings.add(new TextFinding(textPosition, TextFindingType.POOR_WORDING)));
         return textFindings;
@@ -79,19 +79,21 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
 
     private List<String> readWordingBlackListFile(String wordingBlacklistPath) {
         List<String> wordingBlacklist = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(BLACKLIST_PATH));) {
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                wordingBlacklist.addAll(Arrays.stream(line.split(",")).collect(Collectors.toList()));
+        try {
+            CSVReader reader = new CSVReader(new FileReader(BLACKLIST_PATH));
+            String[] line;
+            while ((line = reader.readNext()) != null) {
+                Arrays.stream(line).forEach(wordingBlacklist::add);
             }
-            // remove all whitespaces
-            wordingBlacklist.stream().forEach(word -> word.replaceAll(" ", ""));
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.WARNING, "Configuration file could not be found", e);
+            reader.close();
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Configuration file could not be read", e);
         }
         return wordingBlacklist;
+    }
+
+    public String getUIName() {
+        return WordingAnalyzer.class.getSimpleName();
     }
 
 }

@@ -13,5 +13,5 @@ repositories {
 dependencies {
       compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.7'
       compile group: 'org.apache.pdfbox', name: 'xmpbox', version: '2.0.7'
-      testCompile "junit:junit:4.12"
+      compile group: 'com.opencsv', name: 'opencsv', version: '3.3'
 }
