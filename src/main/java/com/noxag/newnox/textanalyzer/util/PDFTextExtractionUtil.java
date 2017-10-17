@@ -77,12 +77,12 @@ public class PDFTextExtractionUtil {
         return pages;
     }
 
-    private static void runTextStripper(PDFTextStripper stripper, PDDocument document, int pageStartIndex,
+    private static String runTextStripper(PDFTextStripper stripper, PDDocument document, int pageStartIndex,
             int pageEndIndex) throws IOException {
         stripper.setSortByPosition(true);
         stripper.setStartPage(pageStartIndex);
         stripper.setEndPage(pageEndIndex);
-        stripper.getText(document);
+        return stripper.getText(document);
     }
 
     /**
