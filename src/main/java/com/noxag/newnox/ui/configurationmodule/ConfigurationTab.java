@@ -34,8 +34,6 @@ public class ConfigurationTab extends Tab {
 
         AlgorithmUINames.stream().forEach(element -> {
             CheckBox checkbox = new CheckBox(element);
-            checkbox.prefHeightProperty()
-                    .bind(checkboxPane.heightProperty().multiply(1 / (1 + AlgorithmUINames.size())));
             VBox.setMargin(checkbox, new Insets(2.0, 2.0, 2.0, 2.0));
             checkboxPane.getChildren().add(checkbox);
         });
