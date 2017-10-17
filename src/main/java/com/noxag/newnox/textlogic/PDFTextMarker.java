@@ -16,13 +16,34 @@ import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 import com.noxag.newnox.textanalyzer.util.PDFColors;
 
+/**
+ * This class transforms {@link TextFinding}s to TextMarkups and adds those to a
+ * {@link PDDocument}
+ * 
+ * @author Tobias.Schmidt@de.ibm.com
+ *
+ */
 public class PDFTextMarker {
 
-    private static final Logger LOGGER = Logger.getLogger(PDFTextMarker.class.getName());
+    private PDFTextMarker() {
+        // hide constructor, because this is a completely static class
+    }
 
+    private static final Logger LOGGER = Logger.getLogger(PDFTextMarker.class.getName());
     private static final PDColor DEFAULT_COLOR = PDFColors.YELLOW;
     private static final String DEFAULT_SUB_TYPE = PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
 
+    /**
+     * Transforms each {@link TextFinding} into a Textmarkup and adds it to the
+     * {@link PDDocument}
+     * 
+     * @param pdfDoc
+     *            the document that contains the text that should be marked
+     * @param textFindings
+     *            the textFindings to be transformed
+     * @throws IOException
+     *             if the annotations of the document can't be accessed
+     */
     public static void addTextMarkups(PDDocument pdfDoc, List<TextFinding> textFindings) throws IOException {
         for (TextFinding finding : textFindings) {
             addTextMarkup(pdfDoc, finding.getTextPositionSequence(), toColor(finding.getType()),
@@ -30,24 +51,15 @@ public class PDFTextMarker {
         }
     }
 
-    public static void addTextMarkup(PDDocument doc, TextPositionSequence annotationPosition) throws IOException {
-        addTextMarkup(doc, annotationPosition, DEFAULT_COLOR);
-    }
-
-    public static void addTextMarkup(PDDocument doc, TextPositionSequence annotationPosition, PDColor color)
+    private static void addTextMarkup(PDDocument doc, TextPositionSequence textPosition, PDColor color, String subType)
             throws IOException {
-        addTextMarkup(doc, annotationPosition, color, DEFAULT_SUB_TYPE);
+        doc.getPage(textPosition.getPageIndex() - 1).getAnnotations()
+                .add(generateTextMarkupAnnotation(textPosition, color, subType));
     }
 
-    public static void addTextMarkup(PDDocument doc, TextPositionSequence annotationPosition, PDColor color,
-            String subType) throws IOException {
-        doc.getPage(annotationPosition.getPageIndex() - 1).getAnnotations()
-                .add(generateTextMarkupAnnotation(annotationPosition, color, subType));
-    }
-
-    private static PDAnnotation generateTextMarkupAnnotation(TextPositionSequence annotationPosition, PDColor color,
+    private static PDAnnotation generateTextMarkupAnnotation(TextPositionSequence textPosition, PDColor color,
             String subType) {
-        return generateTextMarkupAnnotation(annotationPosition, color, subType, 1f);
+        return generateTextMarkupAnnotation(textPosition, color, subType, 1f);
     }
 
     private static PDAnnotation generateTextMarkupAnnotation(TextPositionSequence annotationPosition, PDColor color,

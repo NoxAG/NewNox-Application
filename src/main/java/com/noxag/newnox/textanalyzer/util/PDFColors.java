@@ -3,6 +3,12 @@ package com.noxag.newnox.textanalyzer.util;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
+/**
+ * This class provides {@link PDColor} constants
+ * 
+ * @author Tobias.Schmidt@de.ibm.com
+ *
+ */
 public class PDFColors {
     public static final PDColor RED = new PDColor(new float[] { 1, 0, 0 }, PDDeviceRGB.INSTANCE);
     public static final PDColor ORANGE = new PDColor(new float[] { 1, 0.502f, 0 }, PDDeviceRGB.INSTANCE);
@@ -21,5 +27,9 @@ public class PDFColors {
     public static final PDColor GREY = new PDColor(new float[] { 0.627f, 0.627f, 0.627f }, PDDeviceRGB.INSTANCE);
     public static final PDColor DARK_GREY = new PDColor(new float[] { 0.376f, 0.376f, 0.376f }, PDDeviceRGB.INSTANCE);
     public static final PDColor BLACK = new PDColor(new float[] { 0, 0, 0 }, PDDeviceRGB.INSTANCE);
+
+    private PDFColors() {
+        // hide constructor, because this is a completely static class
+    }
 
 }
