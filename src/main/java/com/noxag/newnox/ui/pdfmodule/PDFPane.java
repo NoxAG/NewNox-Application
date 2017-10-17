@@ -51,11 +51,14 @@ public class PDFPane extends VBox {
         this.getChildren().addAll(fileLocationPane, scrollPane);
     }
 
+    private void updateScrollPane() {
+        scrollPane.setContent(createPDFPane());
+    }
+
     private ScrollPane createScrollPane() {
-        VBox pdfPane = createPDFPane();
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setStyle("-fx-background: #CCCCCC;");
-        scrollPane.setContent(pdfPane);
+        scrollPane.setContent(createPDFPane());
 
         return scrollPane;
     }
@@ -136,7 +139,7 @@ public class PDFPane extends VBox {
 
     public void setTextMarkupOverlay(List<BufferedImage> textMarkupOverlay) {
         this.textMarkupOverlay = textMarkupOverlay;
-        reloadPage();
+        updateScrollPane();
     }
 
     public List<BufferedImage> getPDFTextOverlay() {
@@ -145,7 +148,7 @@ public class PDFPane extends VBox {
 
     public void setPDFTextOverlay(List<BufferedImage> pdfTextOverlay) {
         this.pdfTextOverlay = pdfTextOverlay;
-        reloadPage();
+        updateScrollPane();
     }
 
     public void setFileDescription(String description) {
