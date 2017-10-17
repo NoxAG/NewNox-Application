@@ -15,6 +15,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * This class represents the PDFPane for the User Interface
+ * 
+ * @author Lars.Dittert@de.ibm.com
+ *
+ */
+
 public class PDFPane extends VBox {
     private ScrollPane scrollPane;
     private BorderPane fileLocationPane;
