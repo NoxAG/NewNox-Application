@@ -50,4 +50,10 @@ public class PDFArticle implements PDFObject {
         return new TextPositionSequence(charPositions,
                 this.getFirstParagraph().getTextPositionSequence().getPageIndex());
     }
+
+    public void add(PDFParagraph pdfParagraph) {
+        if (!pdfParagraph.getLines().isEmpty()) {
+            this.getParagraphs().add(pdfParagraph);
+        }
+    }
 }

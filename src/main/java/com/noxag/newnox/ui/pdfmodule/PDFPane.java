@@ -43,7 +43,6 @@ public class PDFPane extends VBox {
         reloadPage();
     }
 
-    // new
     public void reloadPage() {
         scrollPane = createScrollPane();
         fileLocationPane = createFileLocationPane();
@@ -71,47 +70,34 @@ public class PDFPane extends VBox {
     }
 
     public List<StackPane> getListsAndCreateStacks() {
-        List<StackPane> StackList = new ArrayList<StackPane>();
+        List<StackPane> stackList = new ArrayList<StackPane>();
 
         for (int i = 0; i < pdfTextOverlay.size(); i++) {
             // new
             if (textMarkupOverlay.size() <= i) {
-                StackList.add(createStackPane(pdfTextOverlay.get(i)));
+                stackList.add(createStackPane(null, pdfTextOverlay.get(i)));
             } else {
-                StackList.add(createStackPane(textMarkupOverlay.get(i), pdfTextOverlay.get(i)));
+                stackList.add(createStackPane(textMarkupOverlay.get(i), pdfTextOverlay.get(i)));
             }
         }
-        return StackList;
-    }
-
-    // new(to refactor)
-    private StackPane createStackPane(BufferedImage pdfTextOverlay) {
-        BufferedImage imageBackground = createBackgroundImage(pdfTextOverlay.getWidth(null),
-                pdfTextOverlay.getHeight(null));
-
-        ImageView backgroundImageView = createImageView(imageBackground);
-
-        ImageView pdfTextImageView = createImageView(pdfTextOverlay);
-
-        return stackImageViews(backgroundImageView, new ImageView(), pdfTextImageView);
+        return stackList;
     }
 
     private StackPane createStackPane(BufferedImage textHighlightingOverlay, BufferedImage pdfTextOverlay) {
         BufferedImage imageBackground = createBackgroundImage(pdfTextOverlay.getWidth(null),
                 pdfTextOverlay.getHeight(null));
 
-        ImageView backgroundImageView = createImageView(imageBackground);
-
         ImageView textHighlightingImageView = textHighlightingOverlay == null ? new ImageView()
                 : createImageView(textHighlightingOverlay);
 
+        ImageView backgroundImageView = createImageView(imageBackground);
         ImageView pdfTextImageView = createImageView(pdfTextOverlay);
 
         return stackImageViews(backgroundImageView, textHighlightingImageView, pdfTextImageView);
     }
 
     private BufferedImage createBackgroundImage(int width, int height) {
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.getGraphics();
         g.setColor(java.awt.Color.WHITE);
         g.fillRect(0, 0, width, height);
@@ -122,7 +108,7 @@ public class PDFPane extends VBox {
     private ImageView createImageView(BufferedImage image) {
         Image img = SwingFXUtils.toFXImage((BufferedImage) image, null);
         ImageView imgView = new ImageView(img);
-        imgView.fitWidthProperty().bind(this.widthProperty().multiply(0.95));
+        imgView.fitWidthProperty().bind(this.widthProperty().subtract(15));
         imgView.setPreserveRatio(true);
         return imgView;
     }

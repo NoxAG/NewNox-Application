@@ -96,4 +96,10 @@ public class PDFPage implements PDFObject {
         return new TextPositionSequence(charPositions, this.getFirstArticle().getTextPositionSequence().getPageIndex());
     }
 
+    public void add(PDFArticle pdfArticle) {
+        if (!pdfArticle.getParagraphs().isEmpty()) {
+            this.getArticles().add(pdfArticle);
+        }
+    }
+
 }

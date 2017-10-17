@@ -85,7 +85,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
                 wordingBlacklist.addAll(Arrays.stream(line.split(",")).collect(Collectors.toList()));
             }
             // remove all whitespaces
-            wordingBlacklist.stream().forEach(word -> word.replaceAll("\\s", ""));
+            wordingBlacklist.stream().forEach(word -> word.replaceAll(" ", ""));
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.WARNING, "Configuration file could not be found", e);
         } catch (IOException e) {

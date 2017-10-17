@@ -8,6 +8,10 @@ import org.apache.pdfbox.text.TextPosition;
 public class PDFParagraph implements PDFObject {
     private List<PDFLine> lines;
 
+    public PDFParagraph() {
+        lines = new ArrayList<>();
+    }
+
     public List<PDFLine> getLines() {
         return lines;
     }
@@ -40,6 +44,12 @@ public class PDFParagraph implements PDFObject {
         List<TextPositionSequence> words = new ArrayList<>();
         lines.stream().forEach(line -> words.addAll(line.getWords()));
         return words;
+    }
+
+    public void add(PDFLine pdfLine) {
+        if (!pdfLine.getWords().isEmpty()) {
+            this.getLines().add(pdfLine);
+        }
     }
 
 }

@@ -92,7 +92,6 @@ public class NewNoxWindow extends Application {
         left.minWidthProperty().bind(main.widthProperty().multiply(LEFT_WIDTH_FACTOR));
 
         configPane = createConfigPane();
-        // new
         createActionEventsForConfigPane(configPane);
         statisticPane = createStatisticPane();
 
@@ -161,12 +160,10 @@ public class NewNoxWindow extends Application {
         this.openPDFBtnCallBack = openPDFCallBack;
     }
 
-    // TODO call this method when analyzer button has been pressed
     public void triggerAnalyzeEvent(List<String> algorithms) {
         this.analyzeBtnCallBack.accept(algorithms);
     }
 
-    // TODO call this method when open button has been pressed
     public void triggerOpenPDFEvent(File file) {
         this.openPDFBtnCallBack.accept(file);
         this.pdfPane.setFileDescription(file.getName());

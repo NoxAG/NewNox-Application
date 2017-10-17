@@ -10,7 +10,7 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 public class PDFPageRenderer {
-    private final static int SCALING_FACTOR = 2;
+    private final static float SCALING_FACTOR = 1.5f;
 
     public static List<BufferedImage> renderTextMarkupOverlay(PDDocument doc) {
         return PDFPageRenderer.renderTextMarkupOverlay(doc, 0, doc.getNumberOfPages() - 1);

@@ -27,6 +27,7 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
     public PDFTextPositionSequenceStripper() throws IOException {
         super();
         resetCurrentPage();
+        document = new ArrayList<>();
         pdfPage = new PDFPage();
         pdfArticle = new PDFArticle();
         pdfParagraph = new PDFParagraph();
@@ -37,7 +38,6 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
     @Override
     protected void writeString(String text, List<TextPosition> textPositions) throws IOException {
         words.add(new TextPositionSequence(textPositions, currentPage));
-        super.writeString(text, textPositions);
     }
 
     @Override
@@ -49,37 +49,31 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
     protected void startPage(PDPage page) throws IOException {
         currentPage++;
         pdfPage = new PDFPage();
-        super.startPage(page);
     }
 
     @Override
     protected void startArticle(boolean isLTR) throws IOException {
-        if (pdfArticle != null && pdfParagraph != null) {
-            pdfArticle.getParagraphs().add(pdfParagraph);
-        }
+        pdfArticle.add(pdfParagraph);
+        pdfPage.add(pdfArticle);
+
         pdfArticle = new PDFArticle();
         pdfParagraph = new PDFParagraph();
-        super.startArticle();
     }
 
     @Override
     protected void writeParagraphSeparator() throws IOException {
-        if (pdfParagraph != null && pdfLine != null) {
-            pdfParagraph.getLines().add(pdfLine);
-        }
+        pdfParagraph.add(pdfLine);
+        pdfArticle.add(pdfParagraph);
         pdfParagraph = new PDFParagraph();
         pdfLine = new PDFLine();
-        super.writeParagraphSeparator();
     }
 
     @Override
     protected void writeLineSeparator() throws IOException {
-        if (pdfLine != null && pdfLine != null) {
-            pdfLine.getWords().addAll(words);
-        }
+        pdfLine.add(words);
+        pdfParagraph.add(pdfLine);
         pdfLine = new PDFLine();
         words = new ArrayList<>();
-        super.writeLineSeparator();
     }
 
     @Override
@@ -87,21 +81,13 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
         TextPositionSequence lastWord = words.get(words.size() - 1);
         words.remove(words.size() - 1);
         words.add(new TextPositionSequence(lastWord, true));
-        super.writeWordSeparator();
     }
 
     @Override
     protected void endPage(PDPage page) throws IOException {
-        if (document != null && pdfPage != null) {
-            document.add(pdfPage);
-        }
+        pdfPage.add(pdfArticle);
+        document.add(pdfPage);
         pdfPage = new PDFPage();
-        super.endPage(page);
-    }
-
-    @Override
-    protected void endDocument(PDDocument document) throws IOException {
-        super.endDocument(document);
     }
 
     @Override
@@ -115,8 +101,7 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
     }
 
     private void resetCurrentPage() {
-
-        this.currentPage = getStartPage();
+        this.currentPage = getStartPage() - 1;
     }
 
 }

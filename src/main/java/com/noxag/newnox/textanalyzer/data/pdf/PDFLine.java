@@ -49,4 +49,10 @@ public class PDFLine implements PDFObject {
         return new TextPositionSequence(charPositions, this.getFirstWord().getPageIndex());
     }
 
+    public void add(List<TextPositionSequence> words) {
+        if (!words.isEmpty()) {
+            this.getWords().addAll(words);
+        }
+    }
+
 }
