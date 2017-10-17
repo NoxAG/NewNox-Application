@@ -179,6 +179,7 @@ public class NewNoxWindow extends Application {
     // TODO call this method when open button has been pressed
     public void triggerOpenPDFEvent(File file) {
         this.openPDFBtnCallBack.accept(file);
+        this.pdfPane.setPath(file.getAbsolutePath());
     }
 
     public void setTextanalyzerAlgorithms(List<String> textanalyzerUINames) {

@@ -104,10 +104,10 @@ public class PDFPane extends VBox {
     }
 
     private BufferedImage createBackgroundImage(int width, int height) {
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         g.setColor(java.awt.Color.WHITE);
-        g.drawRect(0, 0, width, height);
+        g.fillRect(0, 0, width, height);
         g.dispose();
         return image;
     }
@@ -151,6 +151,6 @@ public class PDFPane extends VBox {
 
     public void setPath(String path) {
         fileLocationPane.getChildren().clear();
-        fileLocationPane.setCenter(new Label("Path of the imported File: " + path));
+        fileLocationPane.setCenter(new Label("Dateipfad: " + path));
     }
 }
