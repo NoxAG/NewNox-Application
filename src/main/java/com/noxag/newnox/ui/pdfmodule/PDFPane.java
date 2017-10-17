@@ -131,7 +131,8 @@ public class PDFPane extends VBox {
 
     private BorderPane createFileLocationPane() {
         BorderPane fileLocationPane = new BorderPane();
-        fileLocationPane.setCenter(new Label("Path of the imported File: "));
+
+        fileLocationPane.setCenter(new Label("There is no file opened yet"));
         fileLocationPane.minHeightProperty().bind(this.heightProperty().multiply(0.03));
         fileLocationPane.maxHeightProperty().bind(this.heightProperty().multiply(0.03));
 
@@ -156,8 +157,8 @@ public class PDFPane extends VBox {
         reloadPage();
     }
 
-    public void setPath(String path) {
+    public void setFileDescription(String description) {
         fileLocationPane.getChildren().clear();
-        fileLocationPane.setCenter(new Label("Dateipfad: " + path));
+        fileLocationPane.setCenter(new Label(description));
     }
 }

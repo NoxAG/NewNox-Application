@@ -2,15 +2,10 @@ package com.noxag.newnox.ui;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
-import com.noxag.newnox.textanalyzer.data.StatisticFinding;
-import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
-import com.noxag.newnox.textanalyzer.data.StatisticFindingData;
-import com.noxag.newnox.textlogic.ChartGenerator;
 import com.noxag.newnox.ui.configurationmodule.ConfigurationPane;
 import com.noxag.newnox.ui.pdfmodule.PDFPane;
 import com.noxag.newnox.ui.statisticmodule.StatisticPane;
@@ -23,6 +18,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
@@ -59,16 +56,9 @@ public class NewNoxWindow extends Application {
     public void start(Stage stage) throws Exception {
         main = new SplitPane();
 
-        // new???
-        registerOpenPDFEvent((x) -> System.out.println("Registered OpenPDFEvent"));
-        registerAnalyzeEvent((x) -> System.out.println("Registered AnalyzeEvent"));
-
         initStage(stage);
         initLeftSide();
         initRightSide();
-
-        // Only for testing purpose
-        updateStatisticView();
 
         main.getItems().addAll(left, pdfPane);
         stage.show();
@@ -118,14 +108,12 @@ public class NewNoxWindow extends Application {
     }
 
     private void createActionEventForRunButton(ConfigurationPane configPane, Button btnRun) {
-        final List<String> selectedAnalyzer = new ArrayList<>();
         btnRun.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent e) {
-                selectedAnalyzer.addAll(configPane.getSelectedAnalyzers());
+                triggerAnalyzeEvent(configPane.getSelectedAnalyzers());
             }
         });
-        this.triggerAnalyzeEvent(selectedAnalyzer);
     }
 
     private void createActionEventForOpenButton(Button btnOpen, Button btnRun, FileChooser fileChooser) {
@@ -181,7 +169,8 @@ public class NewNoxWindow extends Application {
     // TODO call this method when open button has been pressed
     public void triggerOpenPDFEvent(File file) {
         this.openPDFBtnCallBack.accept(file);
-        this.pdfPane.setPath(file.getAbsolutePath());
+        this.pdfPane.setFileDescription(file.getName());
+
     }
 
     public void setTextanalyzerAlgorithms(List<String> textanalyzerUINames) {
@@ -206,35 +195,11 @@ public class NewNoxWindow extends Application {
     }
 
     public void popupAlert(String alertmessage) {
-        // TODO: create alert window with alertmessage
-    }
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Alert");
+        alert.setHeaderText(null);
+        alert.setContentText(alertmessage);
 
-    // Following section is only for testing purposes
-    public void updateStatisticView() {
-        statisticPane.setCharts(ChartGenerator.generateBarCharts(createTestFindings(15)));
-        statisticPane.setCommentFindings(createSampleComments(15));
-    }
-
-    private static List<CommentaryFinding> createSampleComments(int num) {
-        List<CommentaryFinding> comments = new ArrayList<>();
-        for (int i = 0; i < num; i++) {
-            comments.add(new CommentaryFinding("BLABLBALBASPODJPAOIAS\nDOI", "Typ " + i, i, i * 10));
-        }
-        return comments;
-    }
-
-    private List<StatisticFinding> createTestFindings(int num) {
-        List<StatisticFinding> findingList = new ArrayList<StatisticFinding>();
-        for (int i = 0; i < num; i++) {
-            StatisticFinding finding = new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION);
-            for (int k = 0; k < 10; k++) {
-                StatisticFindingData data = new StatisticFindingData("Test" + k, k);
-                finding.addStatisticData(data);
-            }
-            finding.setChartName("Test");
-
-            findingList.add(finding);
-        }
-        return findingList;
+        alert.showAndWait();
     }
 }

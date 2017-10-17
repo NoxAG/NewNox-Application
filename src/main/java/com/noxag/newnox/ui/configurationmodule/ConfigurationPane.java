@@ -1,5 +1,6 @@
 package com.noxag.newnox.ui.configurationmodule;
 
+import java.io.File;
 import java.util.List;
 
 import javafx.geometry.Insets;
@@ -55,9 +56,18 @@ public class ConfigurationPane extends BorderPane {
     private FileChooser createFileChooser() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open File...");
-        fileChooser.getExtensionFilters().addAll(new ExtensionFilter("PDF Files", "*.pdf"),
-                new ExtensionFilter("All Files", "*.*"));
+        fileChooser.getExtensionFilters().clear();
+        fileChooser.getExtensionFilters().add(new ExtensionFilter("PDF Files", "*.pdf"));
+        fileChooser.setInitialDirectory(getUserDocumentDirectory());
         return fileChooser;
+    }
+
+    private File getUserDocumentDirectory() {
+        File userDirectory = new File(System.getProperty("user.home") + "/Documents");
+        if (!userDirectory.canRead()) {
+            userDirectory = new File("c:/");
+        }
+        return userDirectory;
     }
 
     public Button getRunButton() {
