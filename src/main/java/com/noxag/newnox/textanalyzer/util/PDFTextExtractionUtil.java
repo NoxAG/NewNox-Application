@@ -77,7 +77,7 @@ public class PDFTextExtractionUtil {
         return pages;
     }
 
-    private static String runTextStripper(PDFTextStripper stripper, PDDocument document, int pageStartIndex,
+    public static String runTextStripper(PDFTextStripper stripper, PDDocument document, int pageStartIndex,
             int pageEndIndex) throws IOException {
         stripper.setSortByPosition(true);
         stripper.setStartPage(pageStartIndex);
@@ -102,7 +102,7 @@ public class PDFTextExtractionUtil {
         return words;
     }
 
-    private PDFTextExtractionUtil() {
+    public PDFTextExtractionUtil() {
         // hide constructor, because this is a completely static class
     }
 }
