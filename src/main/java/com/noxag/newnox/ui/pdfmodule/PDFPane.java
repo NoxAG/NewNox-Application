@@ -47,9 +47,8 @@ public class PDFPane extends VBox {
 
     private ScrollPane createScrollPane() {
         VBox pdfPane = createPDFPane();
-
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setStyle("-fx-background: #ECDFE1;");
+        scrollPane.setStyle("-fx-background: #CCCCCC;");
         scrollPane.setContent(pdfPane);
 
         return scrollPane;
@@ -58,7 +57,6 @@ public class PDFPane extends VBox {
     private VBox createPDFPane() {
         VBox pdfPane = new VBox();
         pdfPane.prefHeightProperty().bind(this.heightProperty().multiply(0.95));
-        pdfPane.prefWidthProperty().bind(this.widthProperty().multiply(0.9));
 
         List<StackPane> imageStackPanes = getListsAndCreateStacks();
         pdfPane.getChildren().addAll(imageStackPanes);
@@ -117,7 +115,7 @@ public class PDFPane extends VBox {
     private ImageView createImageView(BufferedImage image) {
         Image img = SwingFXUtils.toFXImage((BufferedImage) image, null);
         ImageView imgView = new ImageView(img);
-        imgView.fitWidthProperty().bind(this.widthProperty().multiply(0.8));
+        imgView.fitWidthProperty().bind(this.widthProperty().multiply(0.95));
         imgView.setPreserveRatio(true);
         return imgView;
     }
@@ -127,7 +125,7 @@ public class PDFPane extends VBox {
         StackPane imageStackPane = new StackPane();
         imageStackPane.getChildren().addAll(backgroundImageView, textHighlightingImageView, pdfTextImageView);
         imageStackPane.setPadding(new Insets(10, 0, 10, 0));
-        // imageStackPane.paddingProperty().
+
         return imageStackPane;
     }
 
