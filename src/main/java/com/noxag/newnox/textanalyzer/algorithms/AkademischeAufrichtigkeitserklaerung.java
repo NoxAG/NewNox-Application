@@ -15,4 +15,9 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
         return null;
     }
 
+    @Override
+    public String getUIName() {
+        return AkademischeAufrichtigkeitserklaerung.class.getSimpleName();
+    }
+
 }

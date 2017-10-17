@@ -2,17 +2,37 @@ package com.noxag.newnox.application;
 
 import com.noxag.newnox.ui.NewNoxWindow;
 
-public class NewNox {
-    public static void main(String[] args) {
-        MainController mainController = new MainController();
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-        NewNoxWindow mainWindow = new NewNoxWindow();
+public class NewNox extends Application {
+    private NewNoxWindow mainWindow;
+    private MainController mainController;
+
+    public NewNox() {
+        mainWindow = new NewNoxWindow();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        mainController = new MainController();
+        mainWindow.start(stage);
+
+        mainWindow.setTextanalyzerAlgorithms(mainController.getTextanalyzerUINames());
+        mainWindow.setStatisticanalyzerAlgorithms(mainController.getStatisticanalyzerUINames());
 
         mainWindow.registerOpenPDFEvent(mainController::openPDFDocument);
         mainWindow.registerAnalyzeEvent(mainController::analyzePDFDocument);
-        mainWindow.setTextanalyzerAlgorithms(mainController.getTextanalyzerUINames());
-        mainWindow.setBounds(600, 150, 800, 600);
-        mainWindow.setVisible(true);
-        mainWindow.setAlwaysOnTop(true);
+
+        mainController.registerPDFImagesUpdateEvent(mainWindow::updatePDFImages);
+        mainController.registerTextMarkupImagesUpdateEvent(mainWindow::updateTextMarkupImages);
+        mainController.registerStatisticViewUpdateEvent(mainWindow::updateStatisticView);
+        mainController.registerAlertPopupEvent(mainWindow::popupAlert);
     }
+
 }

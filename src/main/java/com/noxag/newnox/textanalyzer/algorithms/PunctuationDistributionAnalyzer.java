@@ -22,4 +22,9 @@ public class PunctuationDistributionAnalyzer implements TextanalyzerAlgorithm {
         return null;
     }
 
+    @Override
+    public String getUIName() {
+        return PunctuationDistributionAnalyzer.class.getSimpleName();
+    }
+
 }

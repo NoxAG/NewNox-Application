@@ -15,4 +15,9 @@ public class LineSpacingAnalyzer implements TextanalyzerAlgorithm {
         return null;
     }
 
+    @Override
+    public String getUIName() {
+        return LineSpacingAnalyzer.class.getSimpleName();
+    }
+
 }
