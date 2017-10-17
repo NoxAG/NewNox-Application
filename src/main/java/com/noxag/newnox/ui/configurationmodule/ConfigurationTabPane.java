@@ -12,8 +12,8 @@ public class ConfigurationTabPane extends TabPane {
 
     public ConfigurationTabPane() {
 
-        textAlgorithmsTab = createAlgorithmTab("Textanalysen");
-        statisticAlgorithmsTab = createAlgorithmTab("Statistikanalysen");
+        textAlgorithmsTab = createAlgorithmTab("Text Analyses");
+        statisticAlgorithmsTab = createAlgorithmTab("Statistic Analyses");
 
         addTabs();
     }
@@ -42,9 +42,11 @@ public class ConfigurationTabPane extends TabPane {
 
     public void setTextanalyzerUInames(List<String> AlgorithmUINames) {
         this.textAlgorithmsTab.setAlgorithms(AlgorithmUINames);
+        textAlgorithmsTab.updateHeight(this.heightProperty());
     }
 
     public void setStatisticanalyzerUInames(List<String> AlgorithmUINames) {
         this.statisticAlgorithmsTab.setAlgorithms(AlgorithmUINames);
+        textAlgorithmsTab.updateHeight(this.heightProperty());
     }
 }
