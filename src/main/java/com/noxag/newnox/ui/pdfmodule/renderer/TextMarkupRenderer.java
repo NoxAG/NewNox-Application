@@ -9,8 +9,8 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.rendering.PageDrawerParameters;
 
-public class TextHighlightingRenderer extends PDFRenderer {
-    TextHighlightingRenderer(PDDocument document) {
+public class TextMarkupRenderer extends PDFRenderer {
+    TextMarkupRenderer(PDDocument document) {
         super(document);
     }
 
@@ -21,6 +21,6 @@ public class TextHighlightingRenderer extends PDFRenderer {
 
     @Override
     protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException {
-        return new TextHighlightingDrawer(parameters);
+        return new TextMarkupDrawer(parameters);
     }
 }

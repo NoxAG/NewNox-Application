@@ -25,7 +25,7 @@ public class PDFPageRenderer {
     }
 
     public static BufferedImage renderTextMarkupOverlay(PDDocument doc, int pageIndex) {
-        TextHighlightingRenderer renderer = new TextHighlightingRenderer(doc);
+        TextMarkupRenderer renderer = new TextMarkupRenderer(doc);
         try {
             return renderer.renderImage(pageIndex, SCALING_FACTOR);
         } catch (IOException e) {

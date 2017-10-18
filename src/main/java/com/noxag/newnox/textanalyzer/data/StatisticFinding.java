@@ -43,7 +43,7 @@ public class StatisticFinding extends Finding {
     private String chartName, xAxisLabel, yAxisLabel, dataLineLabel;
 
     public enum StatisticFindingType {
-        VOCABULARY_DISTRIBUTION, PUNCTUATION_DISTRIBUTION, COMMON_ABBREVIATION, COMMON_FOREIGN_WORD, POOR_WORDING, SENTENCE_COMPLEXITY;
+        VOCABULARY_DISTRIBUTION, PUNCTUATION_DISTRIBUTION, COMMON_ABBREVIATION, COMMON_FOREIGN_WORD, WORDING, SENTENCE_COMPLEXITY;
     }
 
     public StatisticFinding() {
@@ -138,7 +138,7 @@ public class StatisticFinding extends Finding {
         case COMMON_FOREIGN_WORD:
             this.chartName = FOREIGN_TITLE;
             break;
-        case POOR_WORDING:
+        case WORDING:
             this.chartName = WORDING_TITLE;
             break;
         case SENTENCE_COMPLEXITY:
@@ -165,7 +165,7 @@ public class StatisticFinding extends Finding {
             this.xAxisLabel = FOREIGN_XLABEL;
             this.yAxisLabel = FOREIGN_YLABEL;
             break;
-        case POOR_WORDING:
+        case WORDING:
             this.xAxisLabel = WORDING_XLABEL;
             this.yAxisLabel = WORDING_YLABEL;
             break;
@@ -190,7 +190,7 @@ public class StatisticFinding extends Finding {
         case COMMON_FOREIGN_WORD:
             this.chartName = FOREIGN_DATALINE;
             break;
-        case POOR_WORDING:
+        case WORDING:
             this.chartName = WORDING_DATALINE;
             break;
         case SENTENCE_COMPLEXITY:

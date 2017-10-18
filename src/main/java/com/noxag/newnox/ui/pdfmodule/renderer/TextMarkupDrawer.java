@@ -17,10 +17,10 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.rendering.PageDrawerParameters;
 
-public class TextHighlightingDrawer extends PageDrawer {
-    private static final Logger LOGGER = Logger.getLogger(TextHighlightingDrawer.class.getName());
+public class TextMarkupDrawer extends PageDrawer {
+    private static final Logger LOGGER = Logger.getLogger(TextMarkupDrawer.class.getName());
 
-    TextHighlightingDrawer(PageDrawerParameters parameters) throws IOException {
+    TextMarkupDrawer(PageDrawerParameters parameters) throws IOException {
         super(parameters);
     }
 

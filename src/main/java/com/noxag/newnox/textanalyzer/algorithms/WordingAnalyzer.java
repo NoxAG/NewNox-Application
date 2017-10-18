@@ -4,14 +4,23 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.data.Finding;
+import com.noxag.newnox.textanalyzer.data.StatisticFinding;
+import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
+import com.noxag.newnox.textanalyzer.data.StatisticFindingData;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
@@ -48,14 +57,17 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public List<Finding> run(PDDocument doc) {
+        List<Finding> findings = new ArrayList<>();
         List<PDFPage> pages = new ArrayList<>();
         try {
             pages = PDFTextExtractionUtil.extractText(doc);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
-
-        return generateTextFindings(findMatches(pages, wordingBlacklist));
+        List<TextPositionSequence> matches = findMatches(pages, wordingBlacklist);
+        findings.addAll(generateTextFindings(matches));
+        findings.add(generateStatisticFinding(matches));
+        return findings;
     }
 
     private List<TextPositionSequence> findMatches(List<PDFPage> pages, List<String> wordsToFind) {
@@ -70,11 +82,29 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
         return hits;
     }
 
-    private List<Finding> generateTextFindings(List<TextPositionSequence> textPositions) {
-        List<Finding> textFindings = new ArrayList<>();
+    private List<? extends Finding> generateTextFindings(List<TextPositionSequence> textPositions) {
+        List<TextFinding> textFindings = new ArrayList<>();
         textPositions.stream()
-                .forEach(textPosition -> textFindings.add(new TextFinding(textPosition, TextFindingType.POOR_WORDING)));
+                .forEach(textPosition -> textFindings.add(new TextFinding(textPosition, TextFindingType.WORDING)));
         return textFindings;
+    }
+
+    private <T extends Finding> T generateStatisticFinding(List<TextPositionSequence> matches) {
+        List<StatisticFindingData> data = new ArrayList<>();
+
+        List<String> matchesAsLowercase = matches.stream().map(TextPositionSequence::toString).map(String::toLowerCase)
+                .collect(Collectors.toList());
+
+        Map<String, Long> matchesGroupedByName = matchesAsLowercase.stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        List<Entry<String, Long>> entryList = matchesGroupedByName.entrySet().stream().collect(Collectors.toList());
+        entryList.sort(Collections.reverseOrder(Comparator.comparing(Entry::getValue)));
+
+        entryList.stream()
+                .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
+
+        return (T) new StatisticFinding(StatisticFindingType.WORDING, data);
     }
 
     private List<String> readWordingBlackListFile(String wordingBlacklistPath) {
