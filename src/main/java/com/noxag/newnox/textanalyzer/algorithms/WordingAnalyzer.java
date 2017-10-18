@@ -4,11 +4,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -98,10 +95,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
         Map<String, Long> matchesGroupedByName = matchesAsLowercase.stream()
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-        List<Entry<String, Long>> entryList = matchesGroupedByName.entrySet().stream().collect(Collectors.toList());
-        entryList.sort(Collections.reverseOrder(Comparator.comparing(Entry::getValue)));
-
-        entryList.stream()
+        matchesGroupedByName.entrySet().stream()
                 .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
 
         return (T) new StatisticFinding(StatisticFindingType.WORDING, data);

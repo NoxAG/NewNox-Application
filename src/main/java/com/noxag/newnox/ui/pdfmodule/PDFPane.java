@@ -140,6 +140,7 @@ public class PDFPane extends VBox {
     public void setTextMarkupOverlay(List<BufferedImage> textMarkupOverlay) {
         this.textMarkupOverlay = textMarkupOverlay;
         updateScrollPane();
+        reloadPage();
     }
 
     public List<BufferedImage> getPDFTextOverlay() {
@@ -149,6 +150,8 @@ public class PDFPane extends VBox {
     public void setPDFTextOverlay(List<BufferedImage> pdfTextOverlay) {
         this.pdfTextOverlay = pdfTextOverlay;
         updateScrollPane();
+        this.textMarkupOverlay = new ArrayList<BufferedImage>();
+        reloadPage();
     }
 
     public void setFileDescription(String description) {
