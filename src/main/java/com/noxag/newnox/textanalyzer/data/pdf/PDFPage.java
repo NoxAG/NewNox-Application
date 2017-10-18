@@ -102,4 +102,10 @@ public class PDFPage implements PDFObject {
         }
     }
 
+    public List<PDFLine> getLines() {
+        List<PDFLine> lines = new ArrayList<>();
+        articles.stream().forEach(article -> lines.addAll(article.getLines()));
+        return lines;
+    }
+
 }

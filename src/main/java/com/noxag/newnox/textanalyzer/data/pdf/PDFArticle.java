@@ -56,4 +56,10 @@ public class PDFArticle implements PDFObject {
             this.getParagraphs().add(pdfParagraph);
         }
     }
+
+    public List<PDFLine> getLines() {
+        List<PDFLine> lines = new ArrayList<>();
+        paragraphs.stream().forEach(paragraph -> lines.addAll(paragraph.getLines()));
+        return lines;
+    }
 }
