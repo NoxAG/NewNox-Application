@@ -10,33 +10,6 @@ import java.util.List;
  *
  */
 public class StatisticFinding extends Finding {
-    private static final String VOCABULARY_TITLE = "Vocabulary";
-    private static final String PUNCTUATION_TITLE = "Punctuation Character";
-    private static final String ABBREVIATION_TITLE = "Abbreviations";
-    private static final String FOREIGN_TITLE = "Loanword";
-    private static final String WORDING_TITLE = "Wording";
-    private static final String SENTENCE_COMPLEXITY_TITLE = "Sentence Length";
-
-    private static final String VOCABULARY_XLABEL = "Word";
-    private static final String PUNCTUATION_XLABEL = "Punctuation Mark";
-    private static final String ABBREVIATION_XLABEL = "Abbreviations";
-    private static final String FOREIGN_XLABEL = "Loanword";
-    private static final String WORDING_XLABEL = "Word";
-    private static final String SENTENCE_COMPLEXITY_XLABEL = "Complexity";
-
-    private static final String VOCABULARY_YLABEL = "Frequency";
-    private static final String PUNCTUATION_YLABEL = "Frequency";
-    private static final String ABBREVIATION_YLABEL = "Frequency";
-    private static final String FOREIGN_YLABEL = "Frequency";
-    private static final String WORDING_YLABEL = "Frequency";
-    private static final String SENTENCE_COMPLEXITY_YLABEL = "Frequency";
-
-    private static final String VOCABULARY_DATALINE = "Vocabulary";
-    private static final String PUNCTUATION_DATALINE = "Punctuation Character";
-    private static final String ABBREVIATION_DATALINE = "Abbreviations";
-    private static final String FOREIGN_DATALINE = "Loandword";
-    private static final String WORDING_DATALINE = "Wording";
-    private static final String SENTENCE_COMPLEXITY_DATALINE = "Sentence Length";
 
     private StatisticFindingType type;
     private List<StatisticFindingData> statisticData;
@@ -127,22 +100,22 @@ public class StatisticFinding extends Finding {
     private void assignChartName(StatisticFindingType typ) {
         switch (typ) {
         case VOCABULARY_DISTRIBUTION:
-            this.chartName = VOCABULARY_TITLE;
+            this.chartName = StatisticFindingConstants.VOCABULARY_TITLE;
             break;
         case PUNCTUATION_DISTRIBUTION:
-            this.chartName = PUNCTUATION_TITLE;
+            this.chartName = StatisticFindingConstants.PUNCTUATION_TITLE;
             break;
         case COMMON_ABBREVIATION:
-            this.chartName = ABBREVIATION_TITLE;
+            this.chartName = StatisticFindingConstants.ABBREVIATION_TITLE;
             break;
         case COMMON_FOREIGN_WORD:
-            this.chartName = FOREIGN_TITLE;
+            this.chartName = StatisticFindingConstants.FOREIGN_TITLE;
             break;
         case WORDING:
-            this.chartName = WORDING_TITLE;
+            this.chartName = StatisticFindingConstants.WORDING_TITLE;
             break;
         case SENTENCE_COMPLEXITY:
-            this.chartName = SENTENCE_COMPLEXITY_TITLE;
+            this.chartName = StatisticFindingConstants.SENTENCE_COMPLEXITY_TITLE;
             break;
         }
     }
@@ -150,28 +123,28 @@ public class StatisticFinding extends Finding {
     private void assignAxisLabel(StatisticFindingType typ) {
         switch (typ) {
         case VOCABULARY_DISTRIBUTION:
-            this.xAxisLabel = VOCABULARY_XLABEL;
-            this.yAxisLabel = VOCABULARY_YLABEL;
+            this.xAxisLabel = StatisticFindingConstants.VOCABULARY_XLABEL;
+            this.yAxisLabel = StatisticFindingConstants.VOCABULARY_YLABEL;
             break;
         case PUNCTUATION_DISTRIBUTION:
-            this.xAxisLabel = PUNCTUATION_XLABEL;
-            this.yAxisLabel = PUNCTUATION_YLABEL;
+            this.xAxisLabel = StatisticFindingConstants.PUNCTUATION_XLABEL;
+            this.yAxisLabel = StatisticFindingConstants.PUNCTUATION_YLABEL;
             break;
         case COMMON_ABBREVIATION:
-            this.xAxisLabel = ABBREVIATION_XLABEL;
-            this.yAxisLabel = ABBREVIATION_YLABEL;
+            this.xAxisLabel = StatisticFindingConstants.ABBREVIATION_XLABEL;
+            this.yAxisLabel = StatisticFindingConstants.ABBREVIATION_YLABEL;
             break;
         case COMMON_FOREIGN_WORD:
-            this.xAxisLabel = FOREIGN_XLABEL;
-            this.yAxisLabel = FOREIGN_YLABEL;
+            this.xAxisLabel = StatisticFindingConstants.FOREIGN_XLABEL;
+            this.yAxisLabel = StatisticFindingConstants.FOREIGN_YLABEL;
             break;
         case WORDING:
-            this.xAxisLabel = WORDING_XLABEL;
-            this.yAxisLabel = WORDING_YLABEL;
+            this.xAxisLabel = StatisticFindingConstants.WORDING_XLABEL;
+            this.yAxisLabel = StatisticFindingConstants.WORDING_YLABEL;
             break;
         case SENTENCE_COMPLEXITY:
-            this.xAxisLabel = SENTENCE_COMPLEXITY_XLABEL;
-            this.yAxisLabel = SENTENCE_COMPLEXITY_YLABEL;
+            this.xAxisLabel = StatisticFindingConstants.SENTENCE_COMPLEXITY_XLABEL;
+            this.yAxisLabel = StatisticFindingConstants.SENTENCE_COMPLEXITY_YLABEL;
             break;
         }
     }
@@ -179,22 +152,22 @@ public class StatisticFinding extends Finding {
     private void assignDataLineLabel(StatisticFindingType typ) {
         switch (typ) {
         case VOCABULARY_DISTRIBUTION:
-            this.chartName = VOCABULARY_DATALINE;
+            this.chartName = StatisticFindingConstants.VOCABULARY_DATALINE;
             break;
         case PUNCTUATION_DISTRIBUTION:
-            this.chartName = PUNCTUATION_DATALINE;
+            this.chartName = StatisticFindingConstants.PUNCTUATION_DATALINE;
             break;
         case COMMON_ABBREVIATION:
-            this.chartName = ABBREVIATION_DATALINE;
+            this.chartName = StatisticFindingConstants.ABBREVIATION_DATALINE;
             break;
         case COMMON_FOREIGN_WORD:
-            this.chartName = FOREIGN_DATALINE;
+            this.chartName = StatisticFindingConstants.FOREIGN_DATALINE;
             break;
         case WORDING:
-            this.chartName = WORDING_DATALINE;
+            this.chartName = StatisticFindingConstants.WORDING_DATALINE;
             break;
         case SENTENCE_COMPLEXITY:
-            this.chartName = SENTENCE_COMPLEXITY_DATALINE;
+            this.chartName = StatisticFindingConstants.SENTENCE_COMPLEXITY_DATALINE;
             break;
         }
     }

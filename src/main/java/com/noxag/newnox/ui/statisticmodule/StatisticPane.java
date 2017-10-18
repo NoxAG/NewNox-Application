@@ -163,10 +163,14 @@ public class StatisticPane extends BorderPane {
 
     // Calculate number of pages to be shown
     private void calculatePager() {
+        int commentPageAdd = commentFindings.size() == 0 ? 0 : 1;
+        // Following line forcing callback because of pageCountChanging.
+        // Else it could be same amounts of page sas before => no reload
+        pager.setPageCount(100);
         if (charts != null) {
             int numOfChartPages = (int) Math.ceil(charts.size() / (float) chartsPerPageCounter);
             if (numOfChartPages != 0) {
-                pager.setPageCount(numOfChartPages + 1);
+                pager.setPageCount(numOfChartPages + commentPageAdd);
             } else {
                 pager.setPageCount(1);
             }
