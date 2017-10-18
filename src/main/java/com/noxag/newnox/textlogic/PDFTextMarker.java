@@ -87,7 +87,7 @@ public class PDFTextMarker {
             return PDFColors.RED;
         }
         switch (type) {
-        case POOR_WORDING:
+        case WORDING:
             return PDFColors.RED;
         case SENTENCE_COMPLEXITY:
             return PDFColors.MAGENTA;
@@ -111,7 +111,7 @@ public class PDFTextMarker {
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
         }
         switch (type) {
-        case POOR_WORDING:
+        case WORDING:
             return PDAnnotationTextMarkup.SUB_TYPE_STRIKEOUT;
         case SENTENCE_COMPLEXITY:
             return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;

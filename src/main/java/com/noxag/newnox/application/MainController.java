@@ -96,7 +96,6 @@ public class MainController {
             this.triggerAlertPopupEvent(ERROR_MESSAGE_TEXT_COULD_NOT_BE_MARKED);
         }
 
-        // this.triggerPDFImagesUpdateEvent(renderPDFTextOverlay(this.pdfDoc));
         this.triggerTextMarkupImagesUpdateEvent(renderTextMarkupOverlay(this.pdfDoc));
         this.triggerStatisticViewUpdateEvent(ChartGenerator.generateBarCharts(statisticFindings), commentaryFinding);
     }
