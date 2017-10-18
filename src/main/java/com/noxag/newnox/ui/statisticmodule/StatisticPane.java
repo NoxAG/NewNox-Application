@@ -17,8 +17,11 @@ import javafx.scene.control.Pagination;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 
@@ -34,6 +37,8 @@ public class StatisticPane extends BorderPane {
     private static final int MIN_CHARTS = 1;
     private static final double TABLE_VIEW_WIDTH_FACTOR = 0.8;
     private static final double TABLE_VIEW_HEIGHT_FACTOR = 0.9;
+
+    private static final String DHBW_LOGO_PATH = "file:src/main/resources/dhbwLogo.png";
 
     private Button incrementButton, decrementButton;
     private Pagination pager;
@@ -106,21 +111,47 @@ public class StatisticPane extends BorderPane {
     private void apendPagesToPager() {
         pager.setPageFactory(new Callback<Integer, Node>() {
             public Node call(Integer pageIndex) {
-                // As long as we have unadded charts left, they will be added.
-                // If all charts are already added, commentPages will be added.
-                if ((int) Math.ceil((float) charts.size() / (float) chartsPerPageCounter) > pageIndex) {
-                    GridPane page = new GridPane();
-                    page.setAlignment(Pos.CENTER);
-                    buildCharts(page, pageIndex);
-                    return page;
-                } else {
-                    StackPane page = new StackPane();
-                    page.setAlignment(Pos.CENTER);
-                    buildCommentPage(page, pageIndex);
-                    return page;
+                // If we have no charts or comments the DHBW Logo will be shown
+                // Else, as long as we have unadded charts, they will be added
+                // If all charts are added, commentPages will be added if exists
+                if (charts.size() + commentFindings.size() == 0) {
+                    return createDHBWLogoPage();
                 }
+                if ((int) Math.ceil((float) charts.size() / (float) chartsPerPageCounter) > pageIndex) {
+                    return createChartPage(pageIndex);
+                } else if (commentFindings.size() != 0) {
+                    return createCommentFindingPage(pageIndex);
+                }
+                return new StackPane();
             }
         });
+    }
+
+    private HBox createDHBWLogoPage() {
+        HBox page = new HBox();
+        page.setAlignment(Pos.CENTER);
+
+        Image dhbwImg = new Image(DHBW_LOGO_PATH);
+        ImageView dhbwImgView = new ImageView(dhbwImg);
+        dhbwImgView.setPreserveRatio(true);
+
+        dhbwImgView.setFitWidth(300);
+        page.getChildren().add(dhbwImgView);
+        return page;
+    }
+
+    private GridPane createChartPage(int pageIndex) {
+        GridPane page = new GridPane();
+        page.setAlignment(Pos.CENTER);
+        buildCharts(page, pageIndex);
+        return page;
+    }
+
+    private StackPane createCommentFindingPage(int pageIndex) {
+        StackPane page = new StackPane();
+        page.setAlignment(Pos.CENTER);
+        buildCommentPage(page, pageIndex);
+        return page;
     }
 
     // Page reload actions

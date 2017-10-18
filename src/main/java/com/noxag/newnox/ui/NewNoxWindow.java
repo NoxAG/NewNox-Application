@@ -146,6 +146,7 @@ public class NewNoxWindow extends Application {
         statisticPane.maxHeightProperty()
                 .bind(left.heightProperty().multiply(STATISTICPANE_HEIGHT_FACTOR).add(STATISTICPANE_HEIGHT_INCREASE));
         statisticPane.prefWidthProperty().bind(left.widthProperty().multiply(STATISTICPANE_WIDTH_FACTOR));
+
         return statisticPane;
     }
 

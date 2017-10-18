@@ -47,6 +47,6 @@ public class ConfigurationTabPane extends TabPane {
 
     public void setStatisticanalyzerUInames(List<String> AlgorithmUINames) {
         this.statisticAlgorithmsTab.setAlgorithms(AlgorithmUINames);
-        textAlgorithmsTab.updateHeight(this.heightProperty());
+        statisticAlgorithmsTab.updateHeight(this.heightProperty());
     }
 }
