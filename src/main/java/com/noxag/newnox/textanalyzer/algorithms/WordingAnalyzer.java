@@ -110,7 +110,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
     private List<String> readWordingBlackListFile(String wordingBlacklistPath) {
         List<String> wordingBlacklist = new ArrayList<>();
         try {
-            CSVReader reader = new CSVReader(new FileReader(BLACKLIST_PATH));
+            CSVReader reader = new CSVReader(new FileReader(wordingBlacklistPath));
             String[] line;
             while ((line = reader.readNext()) != null) {
                 Arrays.stream(line).forEach(wordingBlacklist::add);
