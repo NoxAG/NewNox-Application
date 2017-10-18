@@ -19,6 +19,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import com.noxag.newnox.textanalyzer.Textanalyzer;
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.algorithms.CommonAbbreviationAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.SentenceComplexityAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.VocabularyDistributionAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.WordingAnalyzer;
 import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
@@ -237,6 +238,8 @@ public class MainController {
     private void initTextanalyzerAlgorithms() {
         this.textanalyzerAlgorithms = new ArrayList<>();
         this.textanalyzerAlgorithms.add(new WordingAnalyzer());
+        this.textanalyzerAlgorithms.add(new SentenceComplexityAnalyzer());
+
     }
 
     private void initStatisticanalyzerAlgorithms() {

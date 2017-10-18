@@ -1,5 +1,8 @@
 package com.noxag.newnox.textanalyzer.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 
 /**
@@ -9,7 +12,7 @@ import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
  *
  */
 public class TextFinding extends Finding {
-    private TextPositionSequence textPositionSequence;
+    private List<TextPositionSequence> textPositionSequences;
     private TextFindingType type;
 
     public TextFinding() {
@@ -21,16 +24,21 @@ public class TextFinding extends Finding {
     }
 
     public TextFinding(TextPositionSequence textPositionSequence, TextFindingType type) {
-        this.textPositionSequence = textPositionSequence;
+        this.textPositionSequences = new ArrayList<>();
+        this.textPositionSequences.add(textPositionSequence);
         this.type = type;
     }
 
-    public TextPositionSequence getTextPositionSequence() {
-        return textPositionSequence;
+    public List<TextPositionSequence> getTextPositionSequences() {
+        return textPositionSequences;
     }
 
-    public void setTextPositionSequence(TextPositionSequence textPositionSequence) {
-        this.textPositionSequence = textPositionSequence;
+    public void setTextPositionSequences(List<TextPositionSequence> textPositionSequences) {
+        this.textPositionSequences = textPositionSequences;
+    }
+
+    public void addTextPositionSequence(TextPositionSequence textPositionSequence) {
+        this.textPositionSequences.add(textPositionSequence);
     }
 
     public TextFindingType getType() {
