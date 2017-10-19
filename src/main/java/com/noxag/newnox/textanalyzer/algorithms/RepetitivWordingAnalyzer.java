@@ -22,6 +22,13 @@ import com.noxag.newnox.textanalyzer.util.PDFTextAnalyzerUtil;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 import com.opencsv.CSVReader;
 
+/**
+ * Algorithm for finding word repetitons
+ * 
+ * @author Pascal.Schroeder@de.ibm.com
+ *
+ */
+
 public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(CommonAbbreviationAnalyzer.class.getName());
     private static final String REPETITIV_WORDING_EXCEPTION_PATH = "src/main/resources/analyzer-conf/repetitiv-wording-exceptions.csv";
