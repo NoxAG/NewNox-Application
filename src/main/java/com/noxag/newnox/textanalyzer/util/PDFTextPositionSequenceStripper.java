@@ -28,11 +28,6 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
         super();
         resetCurrentPage();
         document = new ArrayList<>();
-        pdfPage = new PDFPage();
-        pdfArticle = new PDFArticle();
-        pdfParagraph = new PDFParagraph();
-        pdfLine = new PDFLine();
-        words = new ArrayList<>();
     }
 
     @Override
@@ -49,6 +44,10 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
     protected void startPage(PDPage page) throws IOException {
         currentPage++;
         pdfPage = new PDFPage();
+        pdfArticle = new PDFArticle();
+        pdfParagraph = new PDFParagraph();
+        pdfLine = new PDFLine();
+        words = new ArrayList<>();
     }
 
     @Override
@@ -85,6 +84,8 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
 
     @Override
     protected void endPage(PDPage page) throws IOException {
+        pdfParagraph.add(pdfLine);
+        pdfArticle.add(pdfParagraph);
         pdfPage.add(pdfArticle);
         document.add(pdfPage);
         pdfPage = new PDFPage();

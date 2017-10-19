@@ -95,6 +95,10 @@ public class PDFTextMarker {
             return PDFColors.ORANGE;
         case PAGINATION:
             return PDFColors.VIOLET;
+        case BIBLIOGRAPHY:
+            return PDFColors.RED;
+        case POSITIVE_BIBLIOGRAPHY:
+            return PDFColors.GREEN;
         case TABLE_OF_CONTENT:
             return PDFColors.ORANGE;
         case LIST_OF_ABBREVIATIONS:

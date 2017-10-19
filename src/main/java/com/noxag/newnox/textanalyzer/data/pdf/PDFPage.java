@@ -14,7 +14,6 @@ public class PDFPage implements PDFObject {
     private List<PDFArticle> articles;
     private boolean isContentPage;
     private int pageNum;
-    private int pageIndex;
 
     public PDFPage() {
         articles = new ArrayList<>();
@@ -24,13 +23,8 @@ public class PDFPage implements PDFObject {
         this(articles, (Integer) null);
     }
 
-    public PDFPage(List<PDFArticle> articles, int pageIndex) {
-        this(articles, pageIndex, (Integer) null);
-    }
-
-    public PDFPage(List<PDFArticle> articles, int pageIndex, int pageNum) {
+    public PDFPage(List<PDFArticle> articles, int pageNum) {
         this.setArticles(articles);
-        this.setPageIndex(pageIndex);
         this.setPageNum(pageNum);
     }
 
@@ -61,6 +55,14 @@ public class PDFPage implements PDFObject {
         this.isContentPage = isContentPage;
     }
 
+    public TextPositionSequence getFirstWord() {
+        return this.getFirstArticle().getFirstParagraph().getFirstLine().getFirstWord();
+    }
+
+    public TextPositionSequence getLastWord() {
+        return this.getLastArticle().getLastParagraph().getLastLine().getLastWord();
+    }
+
     public int getPageNum() {
         return pageNum;
     }
@@ -70,11 +72,7 @@ public class PDFPage implements PDFObject {
     }
 
     public int getPageIndex() {
-        return pageIndex;
-    }
-
-    public void setPageIndex(int pageIndex) {
-        this.pageIndex = pageIndex;
+        return this.getFirstWord().getPageIndex();
     }
 
     public PDFArticle getFirstArticle() {
