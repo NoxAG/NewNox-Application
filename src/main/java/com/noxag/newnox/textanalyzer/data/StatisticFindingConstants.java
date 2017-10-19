@@ -13,7 +13,7 @@ public class StatisticFindingConstants {
     public static final String ABBREVIATION_XLABEL = "Abbreviations";
     public static final String FOREIGN_XLABEL = "Loanword";
     public static final String WORDING_XLABEL = "Word";
-    public static final String SENTENCE_COMPLEXITY_XLABEL = "Complexity";
+    public static final String SENTENCE_COMPLEXITY_XLABEL = "Word count";
 
     public static final String VOCABULARY_YLABEL = "Frequency";
     public static final String PUNCTUATION_YLABEL = "Frequency";
