@@ -100,4 +100,16 @@ public class PDFPage implements PDFObject {
         }
     }
 
+    public List<PDFLine> getLines() {
+        List<PDFLine> lines = new ArrayList<>();
+        articles.stream().forEach(article -> lines.addAll(article.getLines()));
+        return lines;
+    }
+
+    public List<PDFParagraph> getParagraphss() {
+        List<PDFParagraph> paragraphs = new ArrayList<>();
+        articles.stream().forEach(article -> paragraphs.addAll(article.getParagraphs()));
+        return paragraphs;
+    }
+
 }

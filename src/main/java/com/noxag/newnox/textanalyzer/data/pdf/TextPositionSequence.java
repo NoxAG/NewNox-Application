@@ -22,6 +22,10 @@ public class TextPositionSequence implements CharSequence, PDFObject {
         this(textPositions, 0, textPositions.size() - 1, pageIndex);
     }
 
+    public TextPositionSequence(List<TextPosition> textPositions, int pageIndex, boolean hasWordSeperator) {
+        this(new TextPositionSequence(textPositions, pageIndex), hasWordSeperator);
+    }
+
     public TextPositionSequence(List<TextPosition> textPositions, int start, int end, int pageIndex) {
         this(textPositions, start, end, pageIndex, false);
     }

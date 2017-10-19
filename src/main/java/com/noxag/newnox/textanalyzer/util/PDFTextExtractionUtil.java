@@ -7,8 +7,10 @@ import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
+import com.noxag.newnox.textanalyzer.data.pdf.PDFLine;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFObject;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
+import com.noxag.newnox.textanalyzer.data.pdf.PDFParagraph;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 
 /**
@@ -104,6 +106,18 @@ public class PDFTextExtractionUtil {
         List<TextPositionSequence> words = new ArrayList<>();
         pdfObjects.stream().forEach(pdfObject -> words.addAll(pdfObject.getWords()));
         return words;
+    }
+
+    public static List<PDFLine> extractLines(List<PDFPage> pages) {
+        List<PDFLine> lines = new ArrayList<>();
+        pages.stream().forEach(page -> lines.addAll(page.getLines()));
+        return lines;
+    }
+
+    public static List<PDFParagraph> extractParagraphs(List<PDFPage> pages) {
+        List<PDFParagraph> paragraphs = new ArrayList<>();
+        pages.stream().forEach(page -> paragraphs.addAll(page.getParagraphss()));
+        return paragraphs;
     }
 
     private PDFTextExtractionUtil() {
