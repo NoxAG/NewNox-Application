@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -20,75 +21,109 @@ import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 import com.opencsv.CSVReader;
 
+/**
+ * Algorithm for finding referenced 'Sources' without an entry in Bibliography
+ * 
+ * @author Pascal.Schroeder@de.ibm.com
+ *
+ */
 public class BibliographyAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(CommonAbbreviationAnalyzer.class.getName());
     private static final String BIBLIOGRAPHY_IDENTIFICATION_LIST_PATH = "src/main/resources/analyzer-conf/bibliography-identifications.csv";
 
+    private List<String> bibliographyHints;
+
+    public BibliographyAnalyzer() {
+        bibliographyHints = readBibliographyIdentificationListFile(BIBLIOGRAPHY_IDENTIFICATION_LIST_PATH);
+    }
+
     @Override
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
+        List<PDFPage> pages = new ArrayList<>();
         try {
-            findings.addAll(getReferencesWithoutSource(doc));
+            pages = PDFTextExtractionUtil.extractText(doc);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not strip text from document", e);
         }
+        findings.addAll(getReferencesWithoutBibliographyEntry(doc, pages));
+        findings.addAll(getReferencedBibliographyEntries(doc, pages));
         return findings;
     }
 
-    private List<Finding> getReferencesWithoutSource(PDDocument doc) throws IOException {
+    private List<Finding> getReferencesWithoutBibliographyEntry(PDDocument doc, List<PDFPage> pages) {
+        return compareReferenceWithBibliographyEntries(doc, pages,
+                this::checkIfReferencesAreMarkedInBibliographyReferences);
+    }
+
+    private List<Finding> getReferencedBibliographyEntries(PDDocument doc, List<PDFPage> pages) {
+        return compareReferenceWithBibliographyEntries(doc, pages, this::checkIfBibliographyEntriesHaveReferences);
+    }
+
+    private List<Finding> compareReferenceWithBibliographyEntries(PDDocument doc, List<PDFPage> pages,
+            BiFunction<List<TextPositionSequence>, List<TextPositionSequence>, List<Finding>> method) {
         List<Finding> findings = new ArrayList<>();
-        List<PDFPage> pages = PDFTextExtractionUtil.extractText(doc);
-        List<String> bibliographyHints = readBibliographyIdentificationListFile(BIBLIOGRAPHY_IDENTIFICATION_LIST_PATH);
         pages.stream().forEach(page -> {
             TextPositionSequence firstWordOfPage = page.getFirstWord();
             if (bibliographyHints.stream().anyMatch(firstWordOfPage.toString().toLowerCase()::contains)) {
-                List<TextPositionSequence> markedSources = getAllSources(pages, firstWordOfPage.getPageIndex());
-                List<TextPositionSequence> referencedSources = getAllReferences(pages, firstWordOfPage.getPageIndex());
-                findings.addAll(compareReferencesWithSources(referencedSources, markedSources));
+                List<PDFPage> contentPages = getAllInTextReferences(pages, firstWordOfPage.getPageIndex());
+                List<PDFPage> bibliographyPages = getAllBibliographyEntries(pages, firstWordOfPage.getPageIndex());
+                List<TextPositionSequence> bibliographyReferences = getBibliographyReference(contentPages);
+                List<TextPositionSequence> bibliographyEntries = getBibliographyReference(bibliographyPages);
+                findings.addAll(method.apply(bibliographyReferences, bibliographyEntries));
             }
         });
         return findings;
     }
 
-    // Gets all references to sources of content pages
-    private List<TextPositionSequence> getAllReferences(List<PDFPage> pages, int sourcePageIndex) {
-        List<PDFPage> contentPages = pages.stream().filter(page -> page.getPageIndex() < sourcePageIndex)
-                .collect(Collectors.toList());
-        return getSourceList(contentPages);
+    private List<PDFPage> getAllInTextReferences(List<PDFPage> pages, int bibliographyPageIndex) {
+        return pages.stream().filter(page -> page.getPageIndex() < bibliographyPageIndex).collect(Collectors.toList());
     }
 
-    // Gets all sources in bibliography
-    private List<TextPositionSequence> getAllSources(List<PDFPage> pages, int sourcePageIndex) {
-        List<PDFPage> sourcePages = pages.stream().filter(page -> page.getPageIndex() >= sourcePageIndex)
-                .collect(Collectors.toList());
-        return getSourceList(sourcePages);
+    private List<PDFPage> getAllBibliographyEntries(List<PDFPage> pages, int bibliographyPageIndex) {
+        return pages.stream().filter(page -> page.getPageIndex() >= bibliographyPageIndex).collect(Collectors.toList());
     }
 
-    // Reads all sources/references out of given list of PDFPages
-    private List<TextPositionSequence> getSourceList(List<PDFPage> pageList) {
-        List<TextPositionSequence> wordsOfBibliography = PDFTextExtractionUtil.extractWords(pageList);
-        List<TextPositionSequence> markedSources = new ArrayList<>();
-        wordsOfBibliography.stream().forEach(word -> {
-            if (word.toString().contains("[") && word.toString().contains("]")) {
-                markedSources.add(word);
-            }
-        });
-        return markedSources;
+    // Reads all references out of given list of PDFPages
+    private List<TextPositionSequence> getBibliographyReference(List<PDFPage> pageList) {
+        List<TextPositionSequence> wordsContainedInPageList = PDFTextExtractionUtil.extractWords(pageList);
+        List<TextPositionSequence> foundReferences = new ArrayList<>();
+        wordsContainedInPageList.stream().filter(word -> word.toString().contains("[") && word.toString().contains("]"))
+                .forEach(word -> {
+                    foundReferences.add(word);
+                });
+        return foundReferences;
     }
 
-    // Compares, if reference has been stored in bibliography
-    private List<Finding> compareReferencesWithSources(List<TextPositionSequence> referencedSources,
-            List<TextPositionSequence> markedSources) {
+    private List<Finding> checkIfReferencesAreMarkedInBibliographyReferences(
+            List<TextPositionSequence> bibliographyReferences, List<TextPositionSequence> bibliographyEntries) {
         List<Finding> findings = new ArrayList<>();
-        referencedSources.stream().forEach(referencedSource -> {
-            // Reads reference part out of whole word
-            String reference = referencedSource.toString().substring(referencedSource.toString().indexOf("["),
-                    referencedSource.toString().indexOf("]") + 1);
-            if (!markedSources.toString().contains(reference)) {
-                findings.add(new TextFinding(referencedSource, TextFindingType.BIBLIOGRAPHY));
+        bibliographyReferences.stream().forEach(bibliographyReference -> {
+            String reference = readReferenceOutOfWord(bibliographyReference);
+
+            if (!bibliographyEntries.toString().contains(reference)) {
+                findings.add(new TextFinding(bibliographyReference, TextFindingType.BIBLIOGRAPHY));
             }
         });
         return findings;
+    }
+
+    private List<Finding> checkIfBibliographyEntriesHaveReferences(List<TextPositionSequence> bibliographyReferences,
+            List<TextPositionSequence> bibliographyEntries) {
+        List<Finding> findings = new ArrayList<>();
+        bibliographyEntries.stream().forEach(bibliographyEntry -> {
+            String entry = readReferenceOutOfWord(bibliographyEntry);
+            if (bibliographyReferences.toString().contains(entry)) {
+                findings.add(new TextFinding(bibliographyEntry, TextFindingType.POSITIVE_BIBLIOGRAPHY));
+            }
+        });
+        return findings;
+    }
+
+    private String readReferenceOutOfWord(TextPositionSequence bibliographyReference) {
+        int startIndex = bibliographyReference.toString().indexOf("[");
+        int endIndex = bibliographyReference.toString().indexOf("]") + 1;
+        return bibliographyReference.toString().substring(startIndex, endIndex);
     }
 
     private List<String> readBibliographyIdentificationListFile(String bibliographyIdentificationListPath) {
