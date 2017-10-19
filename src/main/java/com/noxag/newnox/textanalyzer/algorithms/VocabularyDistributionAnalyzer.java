@@ -46,19 +46,11 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
         return VocabularyDistributionAnalyzer.class.getSimpleName();
     }
 
-    public VocabularyDistributionAnalyzer() {
-
-    }
-
     private <T extends Finding> T generateStatisticFinding(Map<String, Long> matches) {
         List<StatisticFindingData> data = new ArrayList<>();
         matches.entrySet().stream()
                 .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
         return (T) new StatisticFinding(StatisticFindingType.WORDING, data);
-    }
-
-    public void getStatistics() {
-
     }
 
     public Map<String, Long> splitStringIntoWordsAndPutIntoList(String document) {
