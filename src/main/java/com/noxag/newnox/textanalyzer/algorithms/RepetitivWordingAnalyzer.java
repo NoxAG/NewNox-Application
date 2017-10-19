@@ -1,5 +1,6 @@
 package com.noxag.newnox.textanalyzer.algorithms;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,11 +20,20 @@ import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 import com.noxag.newnox.textanalyzer.util.PDFTextAnalyzerUtil;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
+import com.opencsv.CSVReader;
 
 public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(CommonAbbreviationAnalyzer.class.getName());
+    private static final String REPETITIV_WORDING_EXCEPTION_PATH = "src/main/resources/analyzer-conf/repetitiv-wording-exceptions.csv";
+
     private static final int AMOUNT_OF_WORDS_TO_COMPARE = 20;
     private static final int ALLOWED_REPETITIONS_BY_DEFAULT = 2;
+
+    private Map<String, Integer> repretitivWordingExceptions;
+
+    public RepetitivWordingAnalyzer() {
+        repretitivWordingExceptions = readRepetitiveWordingExceptionFile(REPETITIV_WORDING_EXCEPTION_PATH);
+    }
 
     @Override
     public List<Finding> run(PDDocument doc) {
@@ -76,10 +86,15 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
     private List<Finding> addMultiplesToFindings(Map<String, Integer> repetitivWordMap,
             List<TextPositionSequence> actuallyWordBlock) {
         List<Finding> findings = new ArrayList<>();
-        repetitivWordMap.entrySet().stream().filter(entry -> entry.getValue() > ALLOWED_REPETITIONS_BY_DEFAULT)
-                .forEach(repetitiveEntry -> {
-                    findings.addAll(getAllPositionSequencesThroughString(actuallyWordBlock, repetitiveEntry));
-                });
+        repetitivWordMap.entrySet().stream().filter(entry -> {
+            if (repretitivWordingExceptions.containsKey(entry.getKey())) {
+                return entry.getValue() > repretitivWordingExceptions.get(entry.getKey());
+            } else {
+                return entry.getValue() > ALLOWED_REPETITIONS_BY_DEFAULT;
+            }
+        }).forEach(repetitiveEntry -> {
+            findings.addAll(getAllPositionSequencesThroughString(actuallyWordBlock, repetitiveEntry));
+        });
         return findings;
     }
 
@@ -92,6 +107,24 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
                             .add(new TextFinding(entryPositionSequence, TextFindingType.REPETITIV_WORDING));
                 });
         return foundPositionSequences;
+    }
+
+    private Map<String, Integer> readRepetitiveWordingExceptionFile(String repetitiveWordingExceptionPath) {
+        Map<String, Integer> exceptionMap = new HashMap<>();
+        try {
+            CSVReader reader = new CSVReader(new FileReader(repetitiveWordingExceptionPath));
+
+            String[] line;
+            while ((line = reader.readNext()) != null) {
+                if (isInteger(line[1])) {
+                    exceptionMap.put(line[0], Integer.parseInt(line[1]));
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Configuration file could not be read", e);
+        }
+        return exceptionMap;
     }
 
     private boolean isInteger(String string) {
