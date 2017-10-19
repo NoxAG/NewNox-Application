@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
+import com.noxag.newnox.textanalyzer.data.pdf.PDFArticle;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFLine;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFObject;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
@@ -126,14 +127,62 @@ public class PDFTextExtractionUtil {
     }
 
     public static List<PDFPage> extractTableOfContentPages(List<PDFPage> pages) {
-        PDFPage firstContentPage = pages.stream().filter(
-                page -> page.getFirstWord().toString().matches("Inhaltsverzeichnis|Content|Table of Contents|Contents"))
-                .findFirst().get();
+        PDFPage firstToCPage = pages.stream().filter(page -> {
+            boolean match = page.getFirstWord().toString()
+                    .matches("Inhaltsverzeichnis|Content|Table of Contents|Contents");
+            return match;
+        }).findFirst().get();
 
-        float H1FontSize = firstContentPage.getFirstWord().getFirstTextPosition().getFontSize();
-        int firstContentPageIndex = firstContentPage.getFirstWord().getPageIndex();
+        float H1FontSize = firstToCPage.getFirstWord().getFirstTextPosition().getFontSize();
+        int firstToCPageIndex = firstToCPage.getFirstWord().getPageIndex();
+        PDFPage firstPageAfterToC = pages.stream().filter(page -> {
+            TextPositionSequence firstWord = page.getFirstWord();
+            boolean sameFontSize = firstWord.getFirstTextPosition().getFontSize() == H1FontSize;
+            boolean pageAfterTableOfConent = firstWord.getPageIndex() > firstToCPageIndex;
+            return sameFontSize && pageAfterTableOfConent;
+        }).findFirst().get();
+        int firstPageAfterToCIndex = firstPageAfterToC.getFirstWord().getPageIndex();
 
-        return pages.stream().filter(PDFPage::isContentPage).collect(Collectors.toList());
+        return pages.subList(firstToCPageIndex - 1, firstPageAfterToCIndex - 1);
+    }
+
+    /**
+     * This method only returns content pages and removes every line that is
+     * actual content like headlines and pagenumbers, etc.
+     * 
+     * @param pages
+     */
+    public static List<PDFPage> reduceToContent(List<PDFPage> pages) {
+        List<PDFPage> contentPages = extractContentPages(pages);
+
+        double minContentFontSize = 10;
+        double maxContentFontSize = 14;
+        List<PDFPage> reducedContent = new ArrayList<>();
+        PDFPage reducedContentPage = new PDFPage();
+        PDFArticle reducedContentArticle = new PDFArticle();
+        PDFParagraph reducedContentParagraph = new PDFParagraph();
+        for (PDFPage page : contentPages) {
+            for (PDFArticle article : page.getArticles()) {
+                for (PDFParagraph paragraph : article.getParagraphs()) {
+                    paragraph.getLines().stream().filter(line -> {
+                        float lineFontSize = line.getFirstWord().getFirstTextPosition().getFontSize();
+                        return minContentFontSize <= lineFontSize && lineFontSize <= maxContentFontSize;
+                    }).forEach(reducedContentParagraph::add);
+                    reducedContentArticle.add(reducedContentParagraph);
+                    reducedContentParagraph = new PDFParagraph();
+                }
+                reducedContentPage.add(reducedContentArticle);
+                reducedContentArticle = new PDFArticle();
+            }
+            // remove last line because this is the page num
+            reducedContentPage.getLastArticle().getLastParagraph().removeLastLine();
+
+            reducedContent.add(reducedContentPage);
+            reducedContentPage = new PDFPage();
+        }
+
+        return reducedContent;
+
     }
 
     private PDFTextExtractionUtil() {

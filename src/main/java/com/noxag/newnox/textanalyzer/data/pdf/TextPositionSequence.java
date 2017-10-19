@@ -93,6 +93,10 @@ public class TextPositionSequence implements CharSequence, PDFObject {
         return first.getHeightDir() * 1.1f;
     }
 
+    /**
+     * 
+     * @returns the 1-base pageIndex
+     */
     public int getPageIndex() {
         return pageIndex;
     }

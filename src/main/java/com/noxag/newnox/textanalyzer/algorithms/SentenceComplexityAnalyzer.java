@@ -2,6 +2,7 @@ package com.noxag.newnox.textanalyzer.algorithms;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -32,14 +33,15 @@ import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 
 public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(WordingAnalyzer.class.getName());
-    private static final int MAX_WORDS_IN_SENCTENCE = 1;
+    private static final int MAX_WORDS_IN_SENCTENCE = 25;
 
     @Override
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
         List<PDFPage> pages = new ArrayList<>();
         try {
-            pages = PDFTextExtractionUtil.extractContentPages(PDFTextExtractionUtil.extractText(doc));
+            pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
+
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
@@ -54,7 +56,9 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
         sentences.stream().forEach(sentence -> {
             int wordCount = sentence.getWords().stream().filter(word -> !PDFTextAnalyzerUtil.isPunctuationMark(word))
                     .collect(Collectors.toList()).size();
-            complexityMapping.put(sentence, wordCount);
+            if (wordCount >= 1) {
+                complexityMapping.put(sentence, wordCount);
+            }
         });
         return complexityMapping;
     }
@@ -108,8 +112,10 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
 
     private boolean isPunctuationMark(TextPositionSequence currentWord, TextPositionSequence nextWord) {
         List<TextPosition> textPositions = currentWord.getTextPositions();
+        String[] punctutationMarkers = { ".", ":" };
         boolean correctSize = textPositions.size() == 1;
-        boolean puncuationmarkCharacter = textPositions.get(0).toString().equals(".");
+        boolean puncuationmarkCharacter = Arrays.stream(punctutationMarkers)
+                .anyMatch(marker -> textPositions.get(0).toString().equals(marker));
         boolean nextWordIsUpperCase = nextWord != null && Character.isUpperCase(nextWord.charAt(0));
 
         return correctSize && puncuationmarkCharacter && nextWordIsUpperCase;
@@ -129,7 +135,7 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
                 .collect(Collectors.groupingBy(Entry::getValue, Collectors.counting()));
 
         List<Entry<Integer, Long>> sentenceMapEntries = sentencesGroupedByWordcount.entrySet().stream()
-                .collect(Collectors.toList());
+                .filter(entry -> entry.getValue() > 1).collect(Collectors.toList());
         sentenceMapEntries.sort(Comparator.comparing(Entry::getKey));
         sentenceMapEntries.stream().forEach(entry -> {
             String word = entry.getKey() >= 2 ? "words" : "word";

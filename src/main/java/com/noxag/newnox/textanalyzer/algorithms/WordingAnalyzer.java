@@ -94,7 +94,6 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
 
         Map<String, Long> matchesGroupedByName = matchesAsLowercase.stream()
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
         matchesGroupedByName.entrySet().stream()
                 .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
 
