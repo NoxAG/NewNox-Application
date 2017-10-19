@@ -6,11 +6,18 @@ package com.noxag.newnox.textanalyzer.algorithms;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.data.Finding;
+import com.noxag.newnox.textanalyzer.data.StatisticFinding;
+import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
+import com.noxag.newnox.textanalyzer.data.StatisticFindingData;
+import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 
 /**
  * This class produces a statistic to show which words have been used often
@@ -22,7 +29,15 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public List<Finding> run(PDDocument doc) {
-        // TODO Auto-generated method stub
+        List<Finding> findings = new ArrayList<>();
+        try {
+            String document = PDFTextExtractionUtil.runTextStripper(doc);
+            Map<String, Long> matches = generateStatisticFinding(splitStringIntoWordsAndPutIntoList(document));
+            findings.add(generateStatisticFinding(matches));
+            return findings;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -35,51 +50,29 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
 
     }
 
+    private <T extends Finding> T generateStatisticFinding(Map<String, Long> matches) {
+        List<StatisticFindingData> data = new ArrayList<>();
+        matches.entrySet().stream()
+                .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
+        return (T) new StatisticFinding(StatisticFindingType.WORDING, data);
+    }
+
     public void getStatistics() {
-        splitStringIntoWordsAndPutIntoList();
+
     }
 
-    public void createStringOutOfPDF() throws IOException {
-        // PDFTextStripper stripper = new PDFTextStripper();
-        // PDFTextExtractionUtil zugriff = new PDFTextExtractionUtil();
-        // zugriff.runTextStripper(stripper, document, 1, pageEndIndex)
-    }
-
-    public Object[] splitStringIntoWordsAndPutIntoList() {
-        List<String> arrayListWithoutPunctuationCharacter = new ArrayList<String>();
-        List<String> notCaseSensitiveListWithoutPunctuationCharacter = new ArrayList<>();
-        List<Integer> wordsCounter = new ArrayList<Integer>();
-        String test = "Lorem lorem ipsum 123 dolor Lorem sit amet, consetetur Lorem sadipscing elitr, sed Lorem diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.";
-        String[] parts = test.split(" ");
+    public Map<String, Long> splitStringIntoWordsAndPutIntoList(String document) {
+        List<String> ListWithoutPunctuationCharacterIgnoreCase = new ArrayList<>();
+        String[] parts = document.split(" ");
 
         for (int i = 0; i < parts.length; i++) {
-            arrayListWithoutPunctuationCharacter.add(parts[i].replaceAll("[^\\p{Alpha}]+", ""));
-            notCaseSensitiveListWithoutPunctuationCharacter
-                    .add((arrayListWithoutPunctuationCharacter.get(i)).toLowerCase());
+            ListWithoutPunctuationCharacterIgnoreCase.add(parts[i].replaceAll("[^\\p{Alpha}]+", "").toLowerCase());
         }
 
-        for (int k = 0; k < parts.length; k++) {
-            wordsCounter.add(1);
-        }
+        Map<String, Long> matchesGroupedByName = ListWithoutPunctuationCharacterIgnoreCase.stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-        for (int j = 0; j < arrayListWithoutPunctuationCharacter.size(); j++) {
-            String wordWhichShouldBeProofed = notCaseSensitiveListWithoutPunctuationCharacter.get(j);
-            for (int l = 0; l < arrayListWithoutPunctuationCharacter.size(); l++) {
-                if (j != l) {
-                    if (notCaseSensitiveListWithoutPunctuationCharacter.get(l).equals(wordWhichShouldBeProofed)) {
-                        // 1.increase counter
-                        wordsCounter.set(j, (wordsCounter.get(j) + 1));
-                        // 2.delete duplicate
-                        notCaseSensitiveListWithoutPunctuationCharacter.remove(l);
-                        arrayListWithoutPunctuationCharacter.remove(l);
-                        // 3.delete counter of duplicate
-                        wordsCounter.remove(l);
-                    }
-                }
-            }
-
-        }
-        return new Object[] { arrayListWithoutPunctuationCharacter, wordsCounter };
+        return matchesGroupedByName;
     }
 
 }
