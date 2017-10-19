@@ -34,11 +34,10 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
             String document = PDFTextExtractionUtil.runTextStripper(doc);
             Map<String, Long> matches = generateStatisticFinding(splitStringIntoWordsAndPutIntoList(document));
             findings.add(generateStatisticFinding(matches));
-            return findings;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return findings;
     }
 
     @Override
