@@ -16,6 +16,8 @@ import com.noxag.newnox.textanalyzer.data.pdf.PDFParagraph;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 
 public class PDFTextPositionSequenceStripper extends PDFTextStripper {
+    private List<String> punctuationMarks;
+
     private int currentPage;
     private List<PDFPage> document;
     private PDFPage pdfPage;
@@ -33,11 +35,39 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
         pdfParagraph = new PDFParagraph();
         pdfLine = new PDFLine();
         words = new ArrayList<>();
+
+        punctuationMarks = new ArrayList<>();
+        punctuationMarks.add(".");
+        punctuationMarks.add(":");
+        punctuationMarks.add(";");
+        punctuationMarks.add("?");
+        punctuationMarks.add("!");
+        punctuationMarks.add(",");
     }
 
     @Override
     protected void writeString(String text, List<TextPosition> textPositions) throws IOException {
+        if (containsPunctutationMark(textPositions)) {
+            divideWriteStringCall(text, textPositions);
+            return;
+        }
+
         words.add(new TextPositionSequence(textPositions, currentPage));
+    }
+
+    private void divideWriteStringCall(String text, List<TextPosition> textPositions) throws IOException {
+        int lastTextIndex = textPositions.size();
+        List<TextPosition> firstPositions = textPositions.subList(0, lastTextIndex - 1);
+        List<TextPosition> punctuationPosition = textPositions.subList(lastTextIndex - 1, lastTextIndex);
+        String firstText = text.substring(0, lastTextIndex - 1);
+        String punctuationText = text.substring(lastTextIndex - 1, lastTextIndex);
+        writeString(firstText, firstPositions);
+        writeString(punctuationText, punctuationPosition);
+    }
+
+    private boolean containsPunctutationMark(List<TextPosition> textPositions) {
+        return textPositions.size() > 1
+                && punctuationMarks.stream().anyMatch(textPositions.get(textPositions.size() - 1).toString()::equals);
     }
 
     @Override

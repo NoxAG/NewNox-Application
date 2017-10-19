@@ -53,30 +53,34 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
 
     private List<PDFParagraph> getSentences(List<PDFPage> pages) {
         List<PDFParagraph> sentences = new ArrayList<>();
-        List<PDFLine> lines = PDFTextExtractionUtil.extractLines(pages);
+        List<PDFParagraph> paragraphs = PDFTextExtractionUtil.extractParagraphs(pages);
 
         PDFParagraph sentence = new PDFParagraph();
         PDFLine sentenceLine = new PDFLine();
         TextPositionSequence currentWord = null;
-        for (PDFLine line : lines) {
-            for (TextPositionSequence nextWord : line.getWords()) {
-                if (currentWord != null) {
-                    sentenceLine.getWords().add(currentWord);
-                    if (isPunctuationMark(currentWord, nextWord)) {
-                        sentences.add(sentence);
-                        sentence = new PDFParagraph();
+        for (PDFParagraph paragraph : paragraphs) {
+            for (PDFLine line : paragraph.getLines()) {
+                for (TextPositionSequence nextWord : line.getWords()) {
+                    if (currentWord != null) {
+                        sentenceLine.getWords().add(currentWord);
+                        if (isPunctuationMark(currentWord, nextWord)) {
+                            sentence.add(sentenceLine);
+                            sentences.add(sentence);
+                            sentence = new PDFParagraph();
+                            sentenceLine = new PDFLine();
+                        }
                     }
+                    currentWord = nextWord;
                 }
-                currentWord = nextWord;
+                sentenceLine.getWords().add(currentWord);
+                sentence.add(sentenceLine);
+                sentenceLine = new PDFLine();
+                currentWord = null;
             }
-            sentenceLine.getWords().add(currentWord);
-            sentence.getLines().add(sentenceLine);
-            sentenceLine = new PDFLine();
-            currentWord = null;
         }
         // add the last word
         sentenceLine.getWords().add(currentWord);
-        sentence.getLines().add(sentenceLine);
+        sentence.add(sentenceLine);
         sentences.add(sentence);
 
         return sentences;
@@ -84,8 +88,11 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
 
     private boolean isPunctuationMark(TextPositionSequence currentWord, TextPositionSequence nextWord) {
         List<TextPosition> textPositions = currentWord.getTextPositions();
-        return textPositions.size() == 1 && textPositions.get(0).getUnicode().equals(".")
-                && Character.isUpperCase(nextWord.charAt(0));
+        boolean correctSize = textPositions.size() == 1;
+        boolean puncuationmarkCharacter = textPositions.get(0).toString().equals(".");
+        boolean nextWordIsUpperCase = Character.isUpperCase(nextWord.charAt(0));
+
+        return correctSize && puncuationmarkCharacter && nextWordIsUpperCase;
     }
 
     private List<? extends Finding> generateTextFindings(Map<PDFParagraph, Integer> sentences) {
