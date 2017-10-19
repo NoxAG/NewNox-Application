@@ -3,6 +3,7 @@ package com.noxag.newnox.textanalyzer.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -118,6 +119,21 @@ public class PDFTextExtractionUtil {
         List<PDFParagraph> paragraphs = new ArrayList<>();
         pages.stream().forEach(page -> paragraphs.addAll(page.getParagraphss()));
         return paragraphs;
+    }
+
+    public static List<PDFPage> extractContentPages(List<PDFPage> pages) {
+        return pages.stream().filter(PDFPage::isContentPage).collect(Collectors.toList());
+    }
+
+    public static List<PDFPage> extractTableOfContentPages(List<PDFPage> pages) {
+        PDFPage firstContentPage = pages.stream().filter(
+                page -> page.getFirstWord().toString().matches("Inhaltsverzeichnis|Content|Table of Contents|Contents"))
+                .findFirst().get();
+
+        float H1FontSize = firstContentPage.getFirstWord().getFirstTextPosition().getFontSize();
+        int firstContentPageIndex = firstContentPage.getFirstWord().getPageIndex();
+
+        return pages.stream().filter(PDFPage::isContentPage).collect(Collectors.toList());
     }
 
     private PDFTextExtractionUtil() {

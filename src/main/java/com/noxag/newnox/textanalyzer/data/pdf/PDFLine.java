@@ -43,15 +43,24 @@ public class PDFLine implements PDFObject {
         if (words.isEmpty()) {
             return null;
         }
+        if (this.getFirstWord() == null) {
+            return null;
+        }
         List<TextPosition> charPositions = new ArrayList<>();
         charPositions.add(this.getFirstWord().getFirstTextPosition());
         charPositions.add(this.getLastWord().getLastTextPosition());
         return new TextPositionSequence(charPositions, this.getFirstWord().getPageIndex());
     }
 
-    public void add(List<TextPositionSequence> words) {
+    public void addAll(List<TextPositionSequence> words) {
         if (!words.isEmpty()) {
             this.getWords().addAll(words);
+        }
+    }
+
+    public void add(TextPositionSequence word) {
+        if (word != null) {
+            this.getWords().add(word);
         }
     }
 

@@ -2,8 +2,11 @@ package com.noxag.newnox.textanalyzer.algorithms;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -24,18 +27,19 @@ import com.noxag.newnox.textanalyzer.data.pdf.PDFLine;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFParagraph;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
+import com.noxag.newnox.textanalyzer.util.PDFTextAnalyzerUtil;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 
 public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(WordingAnalyzer.class.getName());
-    private static final int MAX_WORDS_IN_SENCTENCE = 20;
+    private static final int MAX_WORDS_IN_SENCTENCE = 1;
 
     @Override
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
         List<PDFPage> pages = new ArrayList<>();
         try {
-            pages = PDFTextExtractionUtil.extractText(doc);
+            pages = PDFTextExtractionUtil.extractContentPages(PDFTextExtractionUtil.extractText(doc));
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
@@ -47,7 +51,11 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
 
     private Map<PDFParagraph, Integer> getComplexity(List<PDFParagraph> sentences) {
         Map<PDFParagraph, Integer> complexityMapping = new HashMap<>();
-        sentences.stream().forEach(sentence -> complexityMapping.put(sentence, sentence.getWords().size()));
+        sentences.stream().forEach(sentence -> {
+            int wordCount = sentence.getWords().stream().filter(word -> !PDFTextAnalyzerUtil.isPunctuationMark(word))
+                    .collect(Collectors.toList()).size();
+            complexityMapping.put(sentence, wordCount);
+        });
         return complexityMapping;
     }
 
@@ -58,39 +66,51 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
         PDFParagraph sentence = new PDFParagraph();
         PDFLine sentenceLine = new PDFLine();
         TextPositionSequence currentWord = null;
+        TextPositionSequence nextWord;
         for (PDFParagraph paragraph : paragraphs) {
-            for (PDFLine line : paragraph.getLines()) {
-                for (TextPositionSequence nextWord : line.getWords()) {
-                    if (currentWord != null) {
-                        sentenceLine.getWords().add(currentWord);
-                        if (isPunctuationMark(currentWord, nextWord)) {
-                            sentence.add(sentenceLine);
-                            sentences.add(sentence);
-                            sentence = new PDFParagraph();
-                            sentenceLine = new PDFLine();
-                        }
+            ListIterator<PDFLine> lineIterator = paragraph.getLines().stream()
+                    .collect(Collectors.toCollection(LinkedList::new)).listIterator();
+            while (lineIterator.hasNext()) {
+                PDFLine currrentLine = lineIterator.next();
+                ListIterator<TextPositionSequence> wordIterator = currrentLine.getWords().stream()
+                        .collect(Collectors.toCollection(LinkedList::new)).listIterator();
+                while (wordIterator.hasNext()) {
+                    currentWord = wordIterator.next();
+                    if (wordIterator.hasNext()) {
+                        nextWord = wordIterator.next();
+                        wordIterator.previous();
+                    } else if (lineIterator.hasNext()) {
+                        nextWord = lineIterator.next().getFirstWord();
+                        lineIterator.previous();
+                    } else {
+                        nextWord = null;
                     }
-                    currentWord = nextWord;
+
+                    sentenceLine.getWords().add(currentWord);
+                    if (isPunctuationMark(currentWord, nextWord)) {
+                        sentence.add(sentenceLine);
+                        sentences.add(sentence);
+                        sentence = new PDFParagraph();
+                        sentenceLine = new PDFLine();
+
+                    }
                 }
-                sentenceLine.getWords().add(currentWord);
                 sentence.add(sentenceLine);
                 sentenceLine = new PDFLine();
-                currentWord = null;
             }
+            sentences.add(sentence);
+            sentence = new PDFParagraph();
         }
-        // add the last word
-        sentenceLine.getWords().add(currentWord);
-        sentence.add(sentenceLine);
-        sentences.add(sentence);
 
         return sentences;
+
     }
 
     private boolean isPunctuationMark(TextPositionSequence currentWord, TextPositionSequence nextWord) {
         List<TextPosition> textPositions = currentWord.getTextPositions();
         boolean correctSize = textPositions.size() == 1;
         boolean puncuationmarkCharacter = textPositions.get(0).toString().equals(".");
-        boolean nextWordIsUpperCase = Character.isUpperCase(nextWord.charAt(0));
+        boolean nextWordIsUpperCase = nextWord != null && Character.isUpperCase(nextWord.charAt(0));
 
         return correctSize && puncuationmarkCharacter && nextWordIsUpperCase;
     }
@@ -108,12 +128,15 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
         Map<Integer, Long> sentencesGroupedByWordcount = sentences.entrySet().stream()
                 .collect(Collectors.groupingBy(Entry::getValue, Collectors.counting()));
 
-        sentencesGroupedByWordcount.entrySet().stream().forEach(entry -> {
+        List<Entry<Integer, Long>> sentenceMapEntries = sentencesGroupedByWordcount.entrySet().stream()
+                .collect(Collectors.toList());
+        sentenceMapEntries.sort(Comparator.comparing(Entry::getKey));
+        sentenceMapEntries.stream().forEach(entry -> {
             String word = entry.getKey() >= 2 ? "words" : "word";
-            data.add(new StatisticFindingData(entry.getKey() + " " + word, entry.getValue()));
+            data.add(new StatisticFindingData(entry.getKey() + " " + word, entry.getValue() - 1));
         });
 
-        return (T) new StatisticFinding(StatisticFindingType.SENTENCE_COMPLEXITY, data);
+        return (T) new StatisticFinding(StatisticFindingType.SENTENCE_COMPLEXITY, data, false);
     }
 
     @Override

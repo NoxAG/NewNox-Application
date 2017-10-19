@@ -61,13 +61,15 @@ public class ChartGenerator {
     private static Series<String, Number> createSeriesForChart(StatisticFinding finding) {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName(finding.getDataLineLabel());
-        addDataToSeries(series, finding.getStatisticData());
+        addDataToSeries(series, finding.getStatisticData(), finding.isSort());
         return series;
     }
 
-    private static void addDataToSeries(XYChart.Series<String, Number> series,
-            List<StatisticFindingData> statisticData) {
-        statisticData.sort(Collections.reverseOrder(Comparator.comparing(StatisticFindingData::getValue)));
+    private static void addDataToSeries(XYChart.Series<String, Number> series, List<StatisticFindingData> statisticData,
+            boolean isSort) {
+        if (isSort) {
+            statisticData.sort(Collections.reverseOrder(Comparator.comparing(StatisticFindingData::getValue)));
+        }
         statisticData.stream().forEach(data -> {
             series.getData().add(new XYChart.Data<String, Number>(data.getDesignation(), data.getValue()));
         });

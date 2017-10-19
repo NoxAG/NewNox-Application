@@ -2,10 +2,13 @@ package com.noxag.newnox.textanalyzer.util;
 
 import static com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil.extractWords;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.apache.pdfbox.text.TextPosition;
 
 import com.noxag.newnox.textanalyzer.data.pdf.PDFObject;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
@@ -17,6 +20,16 @@ import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
  *
  */
 public class PDFTextAnalyzerUtil {
+    private static String[] punctuationMarks = { ",", ".", ":", ";", "!", "?" };
+
+    public static boolean containsPunctuationMark(List<TextPosition> textPositions) {
+        return Arrays.stream(punctuationMarks).anyMatch(textPositions.get(textPositions.size() - 1).toString()::equals);
+    }
+
+    public static boolean isPunctuationMark(TextPositionSequence posSequence) {
+        return posSequence.getTextPositions().size() == 1 && containsPunctuationMark(posSequence.getTextPositions());
+    }
+
     /**
      * This method applies the finder function for every word contained in the
      * pdfObjects.

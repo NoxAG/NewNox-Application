@@ -12,25 +12,19 @@ import org.apache.pdfbox.text.TextPosition;
  */
 public class PDFPage implements PDFObject {
     private List<PDFArticle> articles;
-    private boolean isContentPage;
-    private int pageNum;
+    private Integer pageNum;
 
     public PDFPage() {
         articles = new ArrayList<>();
     }
 
     public PDFPage(List<PDFArticle> articles) {
-        this(articles, (Integer) null);
+        this(articles, null);
     }
 
-    public PDFPage(List<PDFArticle> articles, int pageNum) {
+    public PDFPage(List<PDFArticle> articles, Integer pageNum) {
         this.setArticles(articles);
         this.setPageNum(pageNum);
-    }
-
-    public PDFPage(List<PDFArticle> articles, boolean isContentPage) {
-        this(articles);
-        this.setContentPage(isContentPage);
     }
 
     public List<TextPositionSequence> getWords() {
@@ -48,11 +42,7 @@ public class PDFPage implements PDFObject {
     }
 
     public boolean isContentPage() {
-        return isContentPage;
-    }
-
-    public void setContentPage(boolean isContentPage) {
-        this.isContentPage = isContentPage;
+        return this.getPageNum() != null;
     }
 
     public TextPositionSequence getFirstWord() {
@@ -63,11 +53,19 @@ public class PDFPage implements PDFObject {
         return this.getLastArticle().getLastParagraph().getLastLine().getLastWord();
     }
 
-    public int getPageNum() {
+    public PDFLine getFirstLine() {
+        return this.getFirstArticle().getFirstParagraph().getFirstLine();
+    }
+
+    public PDFLine getLastLine() {
+        return this.getLastArticle().getLastParagraph().getLastLine();
+    }
+
+    public Integer getPageNum() {
         return pageNum;
     }
 
-    public void setPageNum(int pageNum) {
+    public void setPageNum(Integer pageNum) {
         this.pageNum = pageNum;
     }
 
