@@ -32,8 +32,7 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
         List<Finding> findings = new ArrayList<>();
         try {
             String document = PDFTextExtractionUtil.runTextStripper(doc);
-            Map<String, Long> matches = generateStatisticFinding(splitStringIntoWordsAndPutIntoList(document));
-            findings.add(generateStatisticFinding(matches));
+            findings.add(generateStatisticFinding(splitStringIntoWordsAndPutIntoList(document)));
         } catch (IOException e) {
             e.printStackTrace();
         }
