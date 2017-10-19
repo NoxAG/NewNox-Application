@@ -1,6 +1,8 @@
 package com.noxag.newnox.textlogic;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
@@ -26,16 +28,18 @@ public class ChartGenerator {
 
     public static List<BarChart<String, Number>> generateBarCharts(List<StatisticFinding> statisticFindings) {
         List<BarChart<String, Number>> barCharts = new ArrayList<BarChart<String, Number>>();
-        for (StatisticFinding finding : statisticFindings) {
+
+        statisticFindings.stream().forEach(finding -> {
             final CategoryAxis xAxis = new CategoryAxis();
             final NumberAxis yAxis = new NumberAxis();
+            yAxis.setTickUnit(1);
 
             BarChart<String, Number> bc = generateBarChart(finding.getChartName(), xAxis, yAxis);
             setLabelsToAxis(xAxis, yAxis, finding);
             XYChart.Series<String, Number> series = createSeriesForChart(finding);
             bc.getData().addAll(series);
             barCharts.add(bc);
-        }
+        });
         return barCharts;
     }
 
@@ -63,9 +67,10 @@ public class ChartGenerator {
 
     private static void addDataToSeries(XYChart.Series<String, Number> series,
             List<StatisticFindingData> statisticData) {
-        for (StatisticFindingData data : statisticData) {
+        statisticData.sort(Collections.reverseOrder(Comparator.comparing(StatisticFindingData::getValue)));
+        statisticData.stream().forEach(data -> {
             series.getData().add(new XYChart.Data<String, Number>(data.getDesignation(), data.getValue()));
-        }
+        });
     }
 
 }
