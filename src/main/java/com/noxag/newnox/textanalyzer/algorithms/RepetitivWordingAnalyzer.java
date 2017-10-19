@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +17,7 @@ import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
+import com.noxag.newnox.textanalyzer.util.PDFTextAnalyzerUtil;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 
 public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
@@ -23,16 +25,13 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
     private static final int AMOUNT_OF_WORDS_TO_COMPARE = 20;
     private static final int ALLOWED_REPETITIONS_BY_DEFAULT = 2;
 
-    private List<TextPositionSequence> wordInPDF;
-    private Map<String, Integer> repetitivWordMap = new HashMap<>();
-    private List<TextPositionSequence> actuallyWordBlock = new ArrayList<>();
-    private List<Finding> findings = new ArrayList<>();
-
     @Override
     public List<Finding> run(PDDocument doc) {
         List<PDFPage> pages = new ArrayList<>();
+        List<Finding> findings = new ArrayList<>();
+
         try {
-            pages = PDFTextExtractionUtil.extractText(doc);
+            pages = PDFTextExtractionUtil.extractContentPages(PDFTextExtractionUtil.extractText(doc));
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not strip text from document", e);
         }
@@ -41,41 +40,67 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
     }
 
     private List<Finding> getRepetitionsInWordBlock(List<PDFPage> pages) {
-        wordInPDF = PDFTextExtractionUtil.extractWords(pages);
+        List<TextPositionSequence> wordInPDF = PDFTextExtractionUtil.extractWords(pages);
         List<Finding> findings = new ArrayList<>();
 
-        wordInPDF.stream().forEach(word -> {
+        Map<String, Integer> repetitivWordMap = new HashMap<>();
+        List<TextPositionSequence> actuallyWordBlock = new ArrayList<>();
 
-            if (actuallyWordBlock.size() < AMOUNT_OF_WORDS_TO_COMPARE) {
-                repetitivWordMap.put(word.toString(),
-                        (repetitivWordMap.containsKey(word.toString()) ? repetitivWordMap.get(word.toString()) : 0)
-                                + 1);
-                actuallyWordBlock.add(word);
-            } else {
-                repetitivWordMap.put(actuallyWordBlock.get(0).toString(),
-                        repetitivWordMap.get(actuallyWordBlock.get(0).toString()) - 1);
-                if (repetitivWordMap.get(actuallyWordBlock.get(0).toString()) == 0) {
-                    repetitivWordMap.remove(actuallyWordBlock.get(0).toString());
-                }
-                actuallyWordBlock.remove(0);
-                repetitivWordMap.put(word.toString(),
-                        (repetitivWordMap.containsKey(word.toString()) ? repetitivWordMap.get(word.toString()) : 0)
-                                + 1);
-                actuallyWordBlock.add(word);
-            }
-
-            repetitivWordMap.entrySet().stream().filter(entry -> entry.getValue() > ALLOWED_REPETITIONS_BY_DEFAULT)
-                    .forEach(entry -> {
-                        System.out.println("test");
-                        actuallyWordBlock.stream()
-                                .filter(calculatedWords -> calculatedWords.toString().equals(entry.getKey()))
-                                .forEach(entryPositionSequence -> {
-                                    findings.add(
-                                            new TextFinding(entryPositionSequence, TextFindingType.REPETITIV_WORDING));
-                                });
-                    });
-        });
+        wordInPDF.stream().filter(word -> !PDFTextAnalyzerUtil.isPunctuationMark(word) && !isInteger(word.toString()))
+                .forEach(nextWord -> {
+                    if (actuallyWordBlock.size() < AMOUNT_OF_WORDS_TO_COMPARE) {
+                        repetitivWordMap.put(nextWord.toString(), calculateValueOfKey(nextWord, repetitivWordMap));
+                        actuallyWordBlock.add(nextWord);
+                    } else {
+                        removeKeyOutOfMap(repetitivWordMap, actuallyWordBlock.get(0).toString());
+                        repetitivWordMap.put(nextWord.toString(), calculateValueOfKey(nextWord, repetitivWordMap));
+                        actuallyWordBlock.remove(0);
+                        actuallyWordBlock.add(nextWord);
+                    }
+                    findings.addAll(addMultiplesToFindings(repetitivWordMap, actuallyWordBlock));
+                });
         return findings;
+    }
+
+    private Integer calculateValueOfKey(TextPositionSequence nextWord, Map<String, Integer> repetitivWordMap) {
+        return (repetitivWordMap.containsKey(nextWord.toString()) ? repetitivWordMap.get(nextWord.toString()) : 0) + 1;
+    }
+
+    private void removeKeyOutOfMap(Map<String, Integer> map, String key) {
+        map.put(key, map.get(key) - 1);
+        if (map.get(key) == 0) {
+            map.remove(key);
+        }
+    }
+
+    private List<Finding> addMultiplesToFindings(Map<String, Integer> repetitivWordMap,
+            List<TextPositionSequence> actuallyWordBlock) {
+        List<Finding> findings = new ArrayList<>();
+        repetitivWordMap.entrySet().stream().filter(entry -> entry.getValue() > ALLOWED_REPETITIONS_BY_DEFAULT)
+                .forEach(repetitiveEntry -> {
+                    findings.addAll(getAllPositionSequencesThroughString(actuallyWordBlock, repetitiveEntry));
+                });
+        return findings;
+    }
+
+    private List<Finding> getAllPositionSequencesThroughString(List<TextPositionSequence> actuallyWordBlock,
+            Entry<String, Integer> repetitiveEntry) {
+        List<Finding> foundPositionSequences = new ArrayList<>();
+        actuallyWordBlock.stream().filter(wordsOfBlock -> wordsOfBlock.toString().equals(repetitiveEntry.getKey()))
+                .forEach(entryPositionSequence -> {
+                    foundPositionSequences
+                            .add(new TextFinding(entryPositionSequence, TextFindingType.REPETITIV_WORDING));
+                });
+        return foundPositionSequences;
+    }
+
+    private boolean isInteger(String string) {
+        try {
+            Integer.parseInt(string);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
