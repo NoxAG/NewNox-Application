@@ -14,13 +14,14 @@ public class StatisticFinding extends Finding {
     private StatisticFindingType type;
     private List<StatisticFindingData> statisticData;
     private String chartName, xAxisLabel, yAxisLabel, dataLineLabel;
+    private boolean Sort;
 
     public enum StatisticFindingType {
         VOCABULARY_DISTRIBUTION, PUNCTUATION_DISTRIBUTION, COMMON_ABBREVIATION, COMMON_FOREIGN_WORD, WORDING, SENTENCE_COMPLEXITY;
     }
 
     public StatisticFinding() {
-        this(null, null);
+        this(null);
     }
 
     public StatisticFinding(StatisticFindingType typ) {
@@ -28,14 +29,19 @@ public class StatisticFinding extends Finding {
     }
 
     public StatisticFinding(StatisticFindingType typ, List<StatisticFindingData> data) {
-        this(typ, data, "Histogramm");
+        this(typ, data, "Histogramm", true);
     }
 
-    public StatisticFinding(StatisticFindingType typ, List<StatisticFindingData> data, String chartName) {
+    public StatisticFinding(StatisticFindingType typ, List<StatisticFindingData> data, boolean shouldSort) {
+        this(typ, data, "Histogramm", shouldSort);
+    }
+
+    public StatisticFinding(StatisticFindingType typ, List<StatisticFindingData> data, String chartName,
+            boolean shouldSort) {
         this.type = typ;
         this.statisticData = data;
         this.chartName = chartName;
-
+        this.Sort = shouldSort;
         assignChartName(this.type);
         assignAxisLabel(this.type);
         assignDataLineLabel(this.type);
@@ -171,4 +177,13 @@ public class StatisticFinding extends Finding {
             break;
         }
     }
+
+    public boolean isSort() {
+        return Sort;
+    }
+
+    public void setSort(boolean sort) {
+        Sort = sort;
+    }
+
 }

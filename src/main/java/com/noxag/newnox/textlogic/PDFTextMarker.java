@@ -46,9 +46,17 @@ public class PDFTextMarker {
      */
     public static void addTextMarkups(PDDocument pdfDoc, List<TextFinding> textFindings) throws IOException {
         for (TextFinding finding : textFindings) {
-            addTextMarkup(pdfDoc, finding.getTextPositionSequence(), toColor(finding.getType()),
+            addTextMarkup(pdfDoc, finding.getTextPositionSequences(), toColor(finding.getType()),
                     toTextMarkupSubType(finding.getType()));
         }
+    }
+
+    private static void addTextMarkup(PDDocument pdfDoc, List<TextPositionSequence> textPositionSequences,
+            PDColor color, String textMarkupSubType) throws IOException {
+        for (TextPositionSequence textPositionSequence : textPositionSequences) {
+            addTextMarkup(pdfDoc, textPositionSequence, color, textMarkupSubType);
+        }
+
     }
 
     private static void addTextMarkup(PDDocument doc, TextPositionSequence textPosition, PDColor color, String subType)
@@ -95,6 +103,10 @@ public class PDFTextMarker {
             return PDFColors.ORANGE;
         case PAGINATION:
             return PDFColors.VIOLET;
+        case BIBLIOGRAPHY:
+            return PDFColors.RED;
+        case POSITIVE_BIBLIOGRAPHY:
+            return PDFColors.GREEN;
         case TABLE_OF_CONTENT:
             return PDFColors.ORANGE;
         case LIST_OF_ABBREVIATIONS:

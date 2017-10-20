@@ -52,4 +52,8 @@ public class PDFParagraph implements PDFObject {
         }
     }
 
+    public void removeLastLine() {
+        this.getLines().remove(this.getLines().size() - 1);
+    }
+
 }

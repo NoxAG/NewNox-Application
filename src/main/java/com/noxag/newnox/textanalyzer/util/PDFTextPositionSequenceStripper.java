@@ -3,6 +3,7 @@ package com.noxag.newnox.textanalyzer.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -16,6 +17,7 @@ import com.noxag.newnox.textanalyzer.data.pdf.PDFParagraph;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 
 public class PDFTextPositionSequenceStripper extends PDFTextStripper {
+
     private int currentPage;
     private List<PDFPage> document;
     private PDFPage pdfPage;
@@ -23,6 +25,7 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
     private PDFParagraph pdfParagraph;
     private PDFLine pdfLine;
     private List<TextPositionSequence> words;
+    private Pattern pattern = Pattern.compile("\\d+");
 
     public PDFTextPositionSequenceStripper() throws IOException {
         super();
@@ -33,11 +36,30 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
         pdfParagraph = new PDFParagraph();
         pdfLine = new PDFLine();
         words = new ArrayList<>();
+
     }
 
     @Override
     protected void writeString(String text, List<TextPosition> textPositions) throws IOException {
+        if (containsPunctutationMark(textPositions)) {
+            divideWriteStringCall(text, textPositions);
+            return;
+        }
         words.add(new TextPositionSequence(textPositions, currentPage));
+    }
+
+    private void divideWriteStringCall(String text, List<TextPosition> textPositions) throws IOException {
+        int lastTextIndex = textPositions.size();
+        List<TextPosition> firstPositions = textPositions.subList(0, lastTextIndex - 1);
+        List<TextPosition> punctuationPosition = textPositions.subList(lastTextIndex - 1, lastTextIndex);
+        String firstText = text.substring(0, lastTextIndex - 1);
+        String punctuationText = text.substring(lastTextIndex - 1, lastTextIndex);
+        writeString(firstText, firstPositions);
+        writeString(punctuationText, punctuationPosition);
+    }
+
+    private boolean containsPunctutationMark(List<TextPosition> textPositions) {
+        return textPositions.size() > 1 && PDFTextAnalyzerUtil.containsPunctuationMark(textPositions);
     }
 
     @Override
@@ -49,6 +71,10 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
     protected void startPage(PDPage page) throws IOException {
         currentPage++;
         pdfPage = new PDFPage();
+        pdfArticle = new PDFArticle();
+        pdfParagraph = new PDFParagraph();
+        pdfLine = new PDFLine();
+        words = new ArrayList<>();
     }
 
     @Override
@@ -70,7 +96,7 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
 
     @Override
     protected void writeLineSeparator() throws IOException {
-        pdfLine.add(words);
+        pdfLine.addAll(words);
         pdfParagraph.add(pdfLine);
         pdfLine = new PDFLine();
         words = new ArrayList<>();
@@ -84,10 +110,25 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
     }
 
     @Override
-    protected void endPage(PDPage page) throws IOException {
+    protected void endPage(PDPage page) {
+        pdfLine.addAll(words);
+        pdfParagraph.add(pdfLine);
+        pdfArticle.add(pdfParagraph);
         pdfPage.add(pdfArticle);
+
+        String lastLine = pdfPage.getLastLine().getWords().stream().map(TextPositionSequence::toString).reduce("",
+                String::concat);
+
+        if (lastLine.matches("[0-9]+")) {
+            try {
+                pdfPage.setPageNum(Integer.parseInt(lastLine));
+            } catch (NumberFormatException e) {
+                // just proceed
+            }
+        }
         document.add(pdfPage);
         pdfPage = new PDFPage();
+
     }
 
     @Override

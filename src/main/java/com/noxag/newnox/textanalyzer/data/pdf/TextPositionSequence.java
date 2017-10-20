@@ -22,6 +22,10 @@ public class TextPositionSequence implements CharSequence, PDFObject {
         this(textPositions, 0, textPositions.size() - 1, pageIndex);
     }
 
+    public TextPositionSequence(List<TextPosition> textPositions, int pageIndex, boolean hasWordSeperator) {
+        this(new TextPositionSequence(textPositions, pageIndex), hasWordSeperator);
+    }
+
     public TextPositionSequence(List<TextPosition> textPositions, int start, int end, int pageIndex) {
         this(textPositions, start, end, pageIndex, false);
     }
@@ -89,6 +93,10 @@ public class TextPositionSequence implements CharSequence, PDFObject {
         return first.getHeightDir() * 1.1f;
     }
 
+    /**
+     * 
+     * @returns the 1-base pageIndex
+     */
     public int getPageIndex() {
         return pageIndex;
     }

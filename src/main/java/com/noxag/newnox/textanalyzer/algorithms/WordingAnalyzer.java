@@ -57,7 +57,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
         List<Finding> findings = new ArrayList<>();
         List<PDFPage> pages = new ArrayList<>();
         try {
-            pages = PDFTextExtractionUtil.extractText(doc);
+            pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
@@ -94,7 +94,6 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
 
         Map<String, Long> matchesGroupedByName = matchesAsLowercase.stream()
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
         matchesGroupedByName.entrySet().stream()
                 .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
 

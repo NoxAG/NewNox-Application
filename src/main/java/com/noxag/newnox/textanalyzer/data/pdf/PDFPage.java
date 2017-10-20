@@ -12,31 +12,19 @@ import org.apache.pdfbox.text.TextPosition;
  */
 public class PDFPage implements PDFObject {
     private List<PDFArticle> articles;
-    private boolean isContentPage;
-    private int pageNum;
-    private int pageIndex;
+    private Integer pageNum;
 
     public PDFPage() {
         articles = new ArrayList<>();
     }
 
     public PDFPage(List<PDFArticle> articles) {
-        this(articles, (Integer) null);
+        this(articles, null);
     }
 
-    public PDFPage(List<PDFArticle> articles, int pageIndex) {
-        this(articles, pageIndex, (Integer) null);
-    }
-
-    public PDFPage(List<PDFArticle> articles, int pageIndex, int pageNum) {
+    public PDFPage(List<PDFArticle> articles, Integer pageNum) {
         this.setArticles(articles);
-        this.setPageIndex(pageIndex);
         this.setPageNum(pageNum);
-    }
-
-    public PDFPage(List<PDFArticle> articles, boolean isContentPage) {
-        this(articles);
-        this.setContentPage(isContentPage);
     }
 
     public List<TextPositionSequence> getWords() {
@@ -54,27 +42,35 @@ public class PDFPage implements PDFObject {
     }
 
     public boolean isContentPage() {
-        return isContentPage;
+        return this.getPageNum() != null;
     }
 
-    public void setContentPage(boolean isContentPage) {
-        this.isContentPage = isContentPage;
+    public TextPositionSequence getFirstWord() {
+        return this.getFirstArticle().getFirstParagraph().getFirstLine().getFirstWord();
     }
 
-    public int getPageNum() {
+    public TextPositionSequence getLastWord() {
+        return this.getLastArticle().getLastParagraph().getLastLine().getLastWord();
+    }
+
+    public PDFLine getFirstLine() {
+        return this.getFirstArticle().getFirstParagraph().getFirstLine();
+    }
+
+    public PDFLine getLastLine() {
+        return this.getLastArticle().getLastParagraph().getLastLine();
+    }
+
+    public Integer getPageNum() {
         return pageNum;
     }
 
-    public void setPageNum(int pageNum) {
+    public void setPageNum(Integer pageNum) {
         this.pageNum = pageNum;
     }
 
     public int getPageIndex() {
-        return pageIndex;
-    }
-
-    public void setPageIndex(int pageIndex) {
-        this.pageIndex = pageIndex;
+        return this.getFirstWord().getPageIndex();
     }
 
     public PDFArticle getFirstArticle() {
@@ -100,6 +96,18 @@ public class PDFPage implements PDFObject {
         if (!pdfArticle.getParagraphs().isEmpty()) {
             this.getArticles().add(pdfArticle);
         }
+    }
+
+    public List<PDFLine> getLines() {
+        List<PDFLine> lines = new ArrayList<>();
+        articles.stream().forEach(article -> lines.addAll(article.getLines()));
+        return lines;
+    }
+
+    public List<PDFParagraph> getParagraphss() {
+        List<PDFParagraph> paragraphs = new ArrayList<>();
+        articles.stream().forEach(article -> paragraphs.addAll(article.getParagraphs()));
+        return paragraphs;
     }
 
 }
