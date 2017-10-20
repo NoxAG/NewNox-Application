@@ -45,15 +45,13 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
     @Override
     public List<Finding> run(PDDocument doc) {
         List<PDFPage> pages = new ArrayList<>();
-        List<Finding> findings = new ArrayList<>();
 
         try {
             pages = PDFTextExtractionUtil.extractContentPages(PDFTextExtractionUtil.extractText(doc));
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not strip text from document", e);
         }
-        findings.addAll(getRepetitionsInWordBlock(pages));
-        return findings;
+        return getRepetitionsInWordBlock(pages);
     }
 
     private List<Finding> getRepetitionsInWordBlock(List<PDFPage> pages) {
@@ -61,6 +59,8 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
         List<Finding> findings = new ArrayList<>();
 
         Map<String, Integer> repetitivWordMap = new HashMap<>();
+        // This var saves last 20 words as TextPositionSequence, which were
+        // analyzed in HashMap
         List<TextPositionSequence> actuallyWordBlock = new ArrayList<>();
 
         wordInPDF.stream().filter(word -> !PDFTextAnalyzerUtil.isPunctuationMark(word) && !isInteger(word.toString()))
@@ -74,13 +74,13 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
                         actuallyWordBlock.remove(0);
                         actuallyWordBlock.add(nextWord);
                     }
-                    findings.addAll(addMultiplesToFindings(repetitivWordMap, actuallyWordBlock));
+                    findings.addAll(addRepetitiveWordsToFindings(repetitivWordMap, actuallyWordBlock));
                 });
         return findings;
     }
 
     private Integer calculateValueOfKey(TextPositionSequence nextWord, Map<String, Integer> repetitivWordMap) {
-        return (repetitivWordMap.containsKey(nextWord.toString()) ? repetitivWordMap.get(nextWord.toString()) : 0) + 1;
+        return (repetitivWordMap.containsKey(nextWord.toString()) ? repetitivWordMap.get(nextWord.toString()) + 1 : 1);
     }
 
     private void removeKeyOutOfMap(Map<String, Integer> map, String key) {
@@ -90,19 +90,23 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
         }
     }
 
-    private List<Finding> addMultiplesToFindings(Map<String, Integer> repetitivWordMap,
+    private List<Finding> addRepetitiveWordsToFindings(Map<String, Integer> repetitivWordMap,
             List<TextPositionSequence> actuallyWordBlock) {
         List<Finding> findings = new ArrayList<>();
         repetitivWordMap.entrySet().stream().filter(entry -> {
-            if (repretitivWordingExceptions.containsKey(entry.getKey())) {
-                return entry.getValue() > repretitivWordingExceptions.get(entry.getKey());
-            } else {
-                return entry.getValue() > ALLOWED_REPETITIONS_BY_DEFAULT;
-            }
+            return getAllowedRepetitionsForEntry(entry);
         }).forEach(repetitiveEntry -> {
             findings.addAll(getAllPositionSequencesThroughString(actuallyWordBlock, repetitiveEntry));
         });
         return findings;
+    }
+
+    private boolean getAllowedRepetitionsForEntry(Entry<String, Integer> entry) {
+        if (repretitivWordingExceptions.containsKey(entry.getKey())) {
+            return entry.getValue() > repretitivWordingExceptions.get(entry.getKey());
+        } else {
+            return entry.getValue() > ALLOWED_REPETITIONS_BY_DEFAULT;
+        }
     }
 
     private List<Finding> getAllPositionSequencesThroughString(List<TextPositionSequence> actuallyWordBlock,
