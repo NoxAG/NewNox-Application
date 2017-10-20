@@ -95,6 +95,7 @@ public class MainController {
         List<CommentaryFinding> commentaryFinding = getFindingsOfSubInstances(findings, CommentaryFinding.class);
 
         try {
+            PDFTextMarker.clearDocumentFromTextMarkups(this.pdfDoc);
             PDFTextMarker.addTextMarkups(this.pdfDoc, textFindings);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, ERROR_MESSAGE_TEXT_COULD_NOT_BE_MARKED, e);
