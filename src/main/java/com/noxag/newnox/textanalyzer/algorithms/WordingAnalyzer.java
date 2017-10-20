@@ -57,7 +57,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
         List<Finding> findings = new ArrayList<>();
         List<PDFPage> pages = new ArrayList<>();
         try {
-            pages = PDFTextExtractionUtil.extractText(doc);
+            pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
