@@ -20,6 +20,8 @@ import com.noxag.newnox.textanalyzer.Textanalyzer;
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.algorithms.BibliographyAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.CommonAbbreviationAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.PunctuationDistributionAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.RepetitivWordingAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.FontAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.SentenceComplexityAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.VocabularyDistributionAnalyzer;
@@ -70,7 +72,7 @@ public class MainController {
     public void openPDFDocument(File file) {
         if (file == null) {
             this.triggerAlertPopupEvent(
-                    "PDF konnte nicht geladen werden. Möglicherweise ist es in einer anderen Anwendung geöffnet");
+                    "PDF konnte nicht geladen werden. Möglicherweise ist es in einer anderen Anwendung geÃ¶ffnet");
         } else {
             this.pdfDoc = readPDFFromFile(file);
             triggerPDFImagesUpdateEvent(renderPDFTextOverlay(pdfDoc));
@@ -94,6 +96,7 @@ public class MainController {
         List<CommentaryFinding> commentaryFinding = getFindingsOfSubInstances(findings, CommentaryFinding.class);
 
         try {
+            PDFTextMarker.clearDocumentFromTextMarkups(this.pdfDoc);
             PDFTextMarker.addTextMarkups(this.pdfDoc, textFindings);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, ERROR_MESSAGE_TEXT_COULD_NOT_BE_MARKED, e);
@@ -242,6 +245,7 @@ public class MainController {
         this.textanalyzerAlgorithms.add(new WordingAnalyzer());
         this.textanalyzerAlgorithms.add(new SentenceComplexityAnalyzer());
         this.textanalyzerAlgorithms.add(new BibliographyAnalyzer());
+        this.textanalyzerAlgorithms.add(new RepetitivWordingAnalyzer());
         this.textanalyzerAlgorithms.add(new FontAnalyzer());
     }
 
@@ -249,6 +253,7 @@ public class MainController {
         this.statisticanalyzerAlgorithms = new ArrayList<>();
         this.statisticanalyzerAlgorithms.add(new VocabularyDistributionAnalyzer());
         this.statisticanalyzerAlgorithms.add(new CommonAbbreviationAnalyzer());
+        this.statisticanalyzerAlgorithms.add(new PunctuationDistributionAnalyzer());
     }
 
     @Override

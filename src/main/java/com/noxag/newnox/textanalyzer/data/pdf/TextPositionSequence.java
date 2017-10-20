@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.pdfbox.text.TextPosition;
 
+import com.noxag.newnox.textanalyzer.util.PDFTextAnalyzerUtil;
+
 /**
  * This class represents a single word
  * 
@@ -136,6 +138,10 @@ public class TextPositionSequence implements CharSequence, PDFObject {
         ArrayList<TextPositionSequence> res = new ArrayList<TextPositionSequence>();
         res.add(this);
         return res;
+    }
+
+    public boolean isPunctuationMark() {
+        return PDFTextAnalyzerUtil.isPunctuationMark(this);
     }
 
 }

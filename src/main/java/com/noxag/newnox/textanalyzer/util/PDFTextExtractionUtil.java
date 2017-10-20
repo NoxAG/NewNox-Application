@@ -22,6 +22,7 @@ import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
  *
  */
 public class PDFTextExtractionUtil {
+
     /**
      * Extracts the text of a {@link PDDocument}
      * 

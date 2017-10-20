@@ -1,8 +1,8 @@
 package com.noxag.newnox.textlogic;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -81,12 +81,9 @@ public class PDFTextMarker {
     }
 
     public static void clearDocumentFromTextMarkups(PDDocument doc) {
-        try {
-            for (int pageNum = 1; pageNum <= doc.getNumberOfPages(); pageNum++) {
-                doc.getPage(pageNum - 1).getAnnotations().clear();
-            }
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "PDF could not acces annotations", e);
+
+        for (int pageNum = 1; pageNum <= doc.getNumberOfPages(); pageNum++) {
+            doc.getPage(pageNum - 1).setAnnotations(new ArrayList<PDAnnotation>());
         }
     }
 
