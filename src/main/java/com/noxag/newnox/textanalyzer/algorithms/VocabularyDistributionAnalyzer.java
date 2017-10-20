@@ -40,6 +40,7 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(WordingAnalyzer.class.getName());
     private static final String VOCABULARY_DISTRIBUTION_EXEPTIONS_PATH = "src/main/resources/analyzer-conf/vocabularydistributionanalyzer-blacklist.csv";
     private List<String> vocabularyDistributionExeptions;
+    private static final int MAX_STATISTIC_DATA_FINDINGS = 20;
 
     public VocabularyDistributionAnalyzer() {
         this(VOCABULARY_DISTRIBUTION_EXEPTIONS_PATH);
@@ -53,7 +54,6 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
         try {
-            // String document = PDFTextExtractionUtil.runTextStripper(doc);
             findings.add(generateStatisticFinding(splitStringIntoWordsAndPutIntoList(doc)));
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,16 +66,16 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
         return VocabularyDistributionAnalyzer.class.getSimpleName();
     }
 
-    private <T extends Finding> T generateStatisticFinding(Map<String, Long> map) {
+    private StatisticFinding generateStatisticFinding(Map<String, Long> map) {
         List<StatisticFindingData> data = new ArrayList<>();
 
         List<Entry<String, Long>> hashEntries = map.entrySet().stream().collect(Collectors.toList());
         hashEntries.sort(Collections.reverseOrder(Comparator.comparing(Entry::getValue)));
 
-        hashEntries.stream().limit(20)
+        hashEntries.stream().limit(MAX_STATISTIC_DATA_FINDINGS)
                 .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
 
-        return (T) new StatisticFinding(StatisticFindingType.WORDING, data);
+        return new StatisticFinding(StatisticFindingType.WORDING, data);
     }
 
     public Map<String, Long> splitStringIntoWordsAndPutIntoList(PDDocument doc) throws IOException {
