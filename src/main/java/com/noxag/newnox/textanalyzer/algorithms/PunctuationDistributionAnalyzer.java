@@ -52,10 +52,10 @@ public class PunctuationDistributionAnalyzer implements TextanalyzerAlgorithm {
     private Finding generateStatisticFinding(List<TextPositionSequence> matches) {
         List<StatisticFindingData> data = new ArrayList<>();
 
-        List<String> matchesAsLowercase = matches.stream().map(TextPositionSequence::toString)
+        List<String> matchesAsPunctionNames = matches.stream().map(TextPositionSequence::toString)
                 .map(this::toNameOfPunctuationMark).collect(Collectors.toList());
 
-        Map<String, Long> matchesGroupedByName = matchesAsLowercase.stream()
+        Map<String, Long> matchesGroupedByName = matchesAsPunctionNames.stream()
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         matchesGroupedByName.entrySet().stream()
                 .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
