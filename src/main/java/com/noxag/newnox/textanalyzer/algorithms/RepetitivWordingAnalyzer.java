@@ -93,15 +93,13 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
     private List<Finding> addRepetitiveWordsToFindings(Map<String, Integer> repetitivWordMap,
             List<TextPositionSequence> actuallyWordBlock) {
         List<Finding> findings = new ArrayList<>();
-        repetitivWordMap.entrySet().stream().filter(entry -> {
-            return getAllowedRepetitionsForEntry(entry);
-        }).forEach(repetitiveEntry -> {
-            findings.addAll(getAllPositionSequencesThroughString(actuallyWordBlock, repetitiveEntry));
+        repetitivWordMap.entrySet().stream().filter(this::getAllowedRepetitions).forEach(repetitiveEntry -> {
+            findings.addAll(generateTextFindings(getMatchingWords(actuallyWordBlock, repetitiveEntry.getKey())));
         });
         return findings;
     }
 
-    private boolean getAllowedRepetitionsForEntry(Entry<String, Integer> entry) {
+    private boolean getAllowedRepetitions(Entry<String, Integer> entry) {
         if (repretitivWordingExceptions.containsKey(entry.getKey())) {
             return entry.getValue() > repretitivWordingExceptions.get(entry.getKey());
         } else {
@@ -109,15 +107,21 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
         }
     }
 
-    private List<Finding> getAllPositionSequencesThroughString(List<TextPositionSequence> actuallyWordBlock,
-            Entry<String, Integer> repetitiveEntry) {
-        List<Finding> foundPositionSequences = new ArrayList<>();
-        actuallyWordBlock.stream().filter(wordsOfBlock -> wordsOfBlock.toString().equals(repetitiveEntry.getKey()))
+    private List<TextPositionSequence> getMatchingWords(List<TextPositionSequence> actuallyWordBlock,
+            String repetitiveEntry) {
+        List<TextPositionSequence> foundPositionSequences = new ArrayList<>();
+        actuallyWordBlock.stream().filter(wordsOfBlock -> wordsOfBlock.toString().equals(repetitiveEntry))
                 .forEach(entryPositionSequence -> {
-                    foundPositionSequences
-                            .add(new TextFinding(entryPositionSequence, TextFindingType.REPETITIV_WORDING));
+                    foundPositionSequences.add(entryPositionSequence);
                 });
         return foundPositionSequences;
+    }
+
+    private List<? extends Finding> generateTextFindings(List<TextPositionSequence> textPositions) {
+        List<TextFinding> textFindings = new ArrayList<>();
+        textPositions.stream().forEach(
+                textPosition -> textFindings.add(new TextFinding(textPosition, TextFindingType.REPETITIV_WORDING)));
+        return textFindings;
     }
 
     private Map<String, Integer> readRepetitiveWordingExceptionFile(String repetitiveWordingExceptionPath) {
