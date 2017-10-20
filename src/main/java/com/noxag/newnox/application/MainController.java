@@ -21,7 +21,7 @@ import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.algorithms.BibliographyAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.CommonAbbreviationAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.PunctuationDistributionAnalyzer;
-import com.noxag.newnox.textanalyzer.algorithms.RepetitivWordingAnalyzer
+import com.noxag.newnox.textanalyzer.algorithms.RepetitivWordingAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.SentenceComplexityAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.VocabularyDistributionAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.WordingAnalyzer;
