@@ -20,6 +20,7 @@ import com.noxag.newnox.textanalyzer.Textanalyzer;
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.algorithms.BibliographyAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.CommonAbbreviationAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.RepetitivWordingAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.SentenceComplexityAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.VocabularyDistributionAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.WordingAnalyzer;
@@ -69,7 +70,7 @@ public class MainController {
     public void openPDFDocument(File file) {
         if (file == null) {
             this.triggerAlertPopupEvent(
-                    "PDF konnte nicht geladen werden. Möglicherweise ist es in einer anderen Anwendung geöffnet");
+                    "PDF konnte nicht geladen werden. M�glicherweise ist es in einer anderen Anwendung geöffnet");
         } else {
             this.pdfDoc = readPDFFromFile(file);
             triggerPDFImagesUpdateEvent(renderPDFTextOverlay(pdfDoc));
@@ -241,6 +242,7 @@ public class MainController {
         this.textanalyzerAlgorithms.add(new WordingAnalyzer());
         this.textanalyzerAlgorithms.add(new SentenceComplexityAnalyzer());
         this.textanalyzerAlgorithms.add(new BibliographyAnalyzer());
+        this.textanalyzerAlgorithms.add(new RepetitivWordingAnalyzer());
     }
 
     private void initStatisticanalyzerAlgorithms() {
