@@ -92,7 +92,9 @@ public class TextPositionSequence implements CharSequence, PDFObject {
 
     public float getHeight() {
         TextPosition first = textPositions.get(start);
-        return first.getHeightDir() * 1.1f;
+        TextPosition last = textPositions.get(end);
+        float lineSpacing = first.getYDirAdj() - last.getYDirAdj();
+        return last.getHeightDir() * 1.1f + lineSpacing;
     }
 
     /**
