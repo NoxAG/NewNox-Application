@@ -124,9 +124,8 @@ public class NewNoxWindow extends Application {
                 File file = fileChooser.showOpenDialog(stage);
                 if (file != null) {
                     btnRun.setDisable(false);
+                    triggerOpenPDFEvent(file);
                 }
-                // new
-                triggerOpenPDFEvent(file);
             }
         });
     }
@@ -168,7 +167,6 @@ public class NewNoxWindow extends Application {
     public void triggerOpenPDFEvent(File file) {
         this.openPDFBtnCallBack.accept(file);
         this.pdfPane.setFileDescription(file.getName());
-
     }
 
     public void setTextanalyzerAlgorithms(List<String> textanalyzerUINames) {
