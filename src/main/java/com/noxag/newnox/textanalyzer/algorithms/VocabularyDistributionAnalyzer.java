@@ -33,7 +33,7 @@ import com.opencsv.CSVReader;
 /**
  * This class produces a statistic to show which words have been used often
  * 
- * @author Tobias.Schmidt@de.ibm.com, Lars.Dittert@de.ibm.com
+ * @author Lars.Dittert@de.ibm.com
  *
  */
 public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
