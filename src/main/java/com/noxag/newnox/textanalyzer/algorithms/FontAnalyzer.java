@@ -3,7 +3,6 @@ package com.noxag.newnox.textanalyzer.algorithms;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,49 +50,30 @@ public class FontAnalyzer implements TextanalyzerAlgorithm {
 
     private List<Finding> getWordsWithCorruptFontSize(List<TextPositionSequence> contentWords) {
         Function<TextPositionSequence, Float> fontSizeFunction = (x) -> x.getFirstTextPosition().getFontSize();
-        return getFontFindings(contentWords, fontSizeFunction);
+        return getFontFindings(contentWords, fontSizeFunction, TextFindingType.FONT_SIZE);
     }
 
     private List<Finding> getWordsWithCorruptFontType(List<TextPositionSequence> contentWords) {
         Function<TextPositionSequence, String> fontTypeFunction = (x) -> x.getFirstTextPosition().getFont()
                 .getFontDescriptor().getFontName();
-        return getFontFindings(contentWords, fontTypeFunction);
+        return getFontFindings(contentWords, fontTypeFunction, TextFindingType.FONT_TYPE);
     }
 
     private <T> List<Finding> getFontFindings(List<TextPositionSequence> contentWords,
-            Function<TextPositionSequence, T> fontFunction) {
+            Function<TextPositionSequence, T> fontFunction, TextFindingType findingType) {
         Map<T, List<TextPositionSequence>> wordFontSizeMap = mapFont(contentWords, fontFunction);
         List<Entry<T, List<TextPositionSequence>>> wordFontSizeEntryList = sortList(wordFontSizeMap);
 
-        return generateTextFindings(getAbnormalitiesOfList(wordFontSizeEntryList), TextFindingType.FONT_SIZE);
+        return generateTextFindings(getAbnormalitiesOfList(wordFontSizeEntryList), findingType);
     }
 
     private <T> Map<T, List<TextPositionSequence>> mapFont(List<TextPositionSequence> contentWords,
-            Function<TextPositionSequence, T> getDataForMapping) {
-        Map<T, List<TextPositionSequence>> wordSizeMap = new HashMap<>();
-        contentWords.stream().forEach(word -> {
-            /*
-             * Debugging Section T Test = getDataForMapping.apply(word);
-             * List<TextPositionSequence> testt = getValueForMap(wordSizeMap,
-             * word);
-             */
-            wordSizeMap.put(getDataForMapping.apply(word), getValueForMap(wordSizeMap, word));
-        });
+            Function<TextPositionSequence, T> classifier) {
+
+        Map<T, List<TextPositionSequence>> wordSizeMap = contentWords.stream()
+                .collect(Collectors.groupingBy(classifier));
+
         return wordSizeMap;
-    }
-
-    private <T> List<TextPositionSequence> getValueForMap(Map<T, List<TextPositionSequence>> wordSizeMap,
-            TextPositionSequence word) {
-        float fontSize = word.getFirstTextPosition().getFontSize();
-
-        if (!wordSizeMap.containsKey(fontSize)) {
-            List<TextPositionSequence> newList = new ArrayList<TextPositionSequence>();
-            newList.add(word);
-            return newList;
-        } else {
-            wordSizeMap.get(fontSize).add(word);
-            return wordSizeMap.get(fontSize);
-        }
     }
 
     private <T> List<Entry<T, List<TextPositionSequence>>> sortList(Map<T, List<TextPositionSequence>> wordSizeMap) {
