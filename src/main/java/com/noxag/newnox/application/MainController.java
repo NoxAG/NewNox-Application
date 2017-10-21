@@ -18,11 +18,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.Textanalyzer;
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.algorithms.AkademischeAufrichtigkeitserklaerung;
 import com.noxag.newnox.textanalyzer.algorithms.BibliographyAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.CommonAbbreviationAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.FontAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.PunctuationDistributionAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.RepetitivWordingAnalyzer;
-import com.noxag.newnox.textanalyzer.algorithms.FontAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.SentenceComplexityAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.VocabularyDistributionAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.WordingAnalyzer;
@@ -254,6 +255,7 @@ public class MainController {
         this.statisticanalyzerAlgorithms.add(new VocabularyDistributionAnalyzer());
         this.statisticanalyzerAlgorithms.add(new CommonAbbreviationAnalyzer());
         this.statisticanalyzerAlgorithms.add(new PunctuationDistributionAnalyzer());
+        this.statisticanalyzerAlgorithms.add(new AkademischeAufrichtigkeitserklaerung());
     }
 
     @Override
