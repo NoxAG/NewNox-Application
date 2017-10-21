@@ -37,24 +37,24 @@ import com.opencsv.CSVReader;
  *
  */
 public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
-    private static final Logger LOGGER = Logger.getLogger(WordingAnalyzer.class.getName());
-    private static final String VOCABULARY_DISTRIBUTION_EXEPTIONS_PATH = "src/main/resources/analyzer-conf/vocabularydistributionanalyzer-blacklist.csv";
-    private List<String> vocabularyDistributionExeptions;
+    private static final Logger LOGGER = Logger.getLogger(VocabularyDistributionAnalyzer.class.getName());
+    private static final String VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH = "src/main/resources/analyzer-conf/vocabularydistributionanalyzer-blacklist.csv";
+    private List<String> vocabularyDistributionExceptions;
     private static final int MAX_STATISTIC_DATA_FINDINGS = 20;
 
     public VocabularyDistributionAnalyzer() {
-        this(VOCABULARY_DISTRIBUTION_EXEPTIONS_PATH);
+        this(VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH);
     }
 
-    public VocabularyDistributionAnalyzer(String vocabularyDistributionExeptionsPath) {
-        this.vocabularyDistributionExeptions = readExeptionsFile(vocabularyDistributionExeptionsPath);
+    public VocabularyDistributionAnalyzer(String vocabularyDistributionExceptionsPath) {
+        this.vocabularyDistributionExceptions = readExceptionsFile(vocabularyDistributionExceptionsPath);
     }
 
     @Override
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
         try {
-            findings.add(generateStatisticFinding(splitStringIntoWordsAndPutIntoList(doc)));
+            findings.add(generateStatisticFinding(mapWordsWithFrequency(doc)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,10 +75,10 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
         hashEntries.stream().limit(MAX_STATISTIC_DATA_FINDINGS)
                 .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
 
-        return new StatisticFinding(StatisticFindingType.WORDING, data);
+        return new StatisticFinding(StatisticFindingType.VOCABULARY_DISTRIBUTION, data);
     }
 
-    public Map<String, Long> splitStringIntoWordsAndPutIntoList(PDDocument doc) throws IOException {
+    public Map<String, Long> mapWordsWithFrequency(PDDocument doc) throws IOException {
         List<PDFPage> pages = new ArrayList<>();
         List<TextPositionSequence> words = new ArrayList<>();
         pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
@@ -88,24 +88,24 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
                 .map(TextPositionSequence::toString).map(String::toLowerCase).collect(Collectors.toList());
 
         Map<String, Long> matchesGroupedByName = matchesAsString.stream()
-                .filter(word -> !vocabularyDistributionExeptions.contains(word))
+                .filter(word -> !vocabularyDistributionExceptions.contains(word))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         return matchesGroupedByName;
     }
 
-    private List<String> readExeptionsFile(String vocabularyDistributionExeptionsPath) {
-        List<String> vocabularyDistributionExeptions = new ArrayList<>();
+    private List<String> readExceptionsFile(String vocabularyDistributionExceptionsPath) {
+        List<String> vocabularyDistributionExceptions = new ArrayList<>();
         try {
-            CSVReader reader = new CSVReader(new FileReader(vocabularyDistributionExeptionsPath));
+            CSVReader reader = new CSVReader(new FileReader(vocabularyDistributionExceptionsPath));
             String[] line;
             while ((line = reader.readNext()) != null) {
-                Arrays.stream(line).map(String::toLowerCase).forEach(vocabularyDistributionExeptions::add);
+                Arrays.stream(line).map(String::toLowerCase).forEach(vocabularyDistributionExceptions::add);
             }
             reader.close();
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Configuration file could not be read", e);
         }
-        return vocabularyDistributionExeptions;
+        return vocabularyDistributionExceptions;
     }
 
 }
