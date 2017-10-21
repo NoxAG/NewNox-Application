@@ -22,11 +22,12 @@ public class PDFColors {
     public static final PDColor VIOLET = new PDColor(new float[] { 0.502f, 1, 0 }, PDDeviceRGB.INSTANCE);
     public static final PDColor MAGENTA = new PDColor(new float[] { 1, 1, 0 }, PDDeviceRGB.INSTANCE);
     public static final PDColor DEEP_PINK = new PDColor(new float[] { 1, 0.502f, 0 }, PDDeviceRGB.INSTANCE);
-    public static final PDColor WHITE = new PDColor(new float[] { 1, 1, 1 }, PDDeviceRGB.INSTANCE);
-    public static final PDColor LIGHT_GREY = new PDColor(new float[] { 0.753f, 0.753f, 0.753f }, PDDeviceRGB.INSTANCE);
     public static final PDColor GREY = new PDColor(new float[] { 0.627f, 0.627f, 0.627f }, PDDeviceRGB.INSTANCE);
     public static final PDColor DARK_GREY = new PDColor(new float[] { 0.376f, 0.376f, 0.376f }, PDDeviceRGB.INSTANCE);
     public static final PDColor BLACK = new PDColor(new float[] { 0, 0, 0 }, PDDeviceRGB.INSTANCE);
+    public static final PDColor WHITE = new PDColor(new float[] { 1, 1, 1 }, PDDeviceRGB.INSTANCE);
+    public static final PDColor LIGHT_GREY = new PDColor(new float[] { 0.753f, 0.753f, 0.753f }, PDDeviceRGB.INSTANCE);
+    public static final PDColor VERY_LIGHT_GREY = new PDColor(new float[] { 0.9f, 0.9f, 0.9f }, PDDeviceRGB.INSTANCE);
 
     private PDFColors() {
         // hide constructor, because this is a completely static class
