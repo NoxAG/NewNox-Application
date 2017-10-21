@@ -7,12 +7,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
+import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
+import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
+import com.noxag.newnox.textanalyzer.util.PDFTextAnalyzerUtil;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 import com.opencsv.CSVReader;
 
@@ -38,37 +42,46 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
         CommentaryFinding commentaryFinding;
-        // (String comment,
-        // String type, int
-        // page, int line)
-        try {
-            if (compareString(generateLowerCaseString(doc))) {
-                // true
-                commentaryFinding = new CommentaryFinding("Aufrichtigkeitserklaerung found", "", 0, 0);
-                findings.add(commentaryFinding);
-                return findings;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (compareString(generateLowerCaseString(getNotContentPages(doc)))) {
+            commentaryFinding = new CommentaryFinding("Aufrichtigkeitserklärung found", "",
+                    getPageNumberWhereAufrichtigkeitserklaerung(getNotContentPages(doc)), 0);
+            findings.add(commentaryFinding);
+            return findings;
         }
-        // false
         commentaryFinding = new CommentaryFinding("Aufrichtigkeitserklaerung not found", "", 0, 0);
         findings.add(commentaryFinding);
         return findings;
     }
 
-    public String generateLowerCaseString(PDDocument doc) throws IOException {
-        return PDFTextExtractionUtil.runTextStripper(doc);
+    public static List<PDFPage> getNotContentPages(PDDocument doc) {
+        List<PDFPage> pages = new ArrayList<>();
+        try {
+            pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return pages.stream().filter(page -> !page.isContentPage()).collect(Collectors.toList());
     }
 
-    public boolean compareString(String doc) {
-        if (aufrichtigkeitserklaerungHints.stream().anyMatch(doc::contains)) {
+    public static int getPageNumberWhereAufrichtigkeitserklaerung(List<PDFPage> pages) {
+        PDFPage PageNumberWhereAufrichtigkeitserklaerung = pages.get(0);
+        return PageNumberWhereAufrichtigkeitserklaerung.getPageIndex();
+    }
+
+    public List<String> generateLowerCaseString(List<PDFPage> pages) {
+        List<TextPositionSequence> words = new ArrayList<>();
+        words = PDFTextExtractionUtil.extractWords(pages);
+
+        return words.stream().filter(word -> !PDFTextAnalyzerUtil.isPunctuationMark(word))
+                .map(TextPositionSequence::toString).map(String::toLowerCase).collect(Collectors.toList());
+    }
+
+    public boolean compareString(List<String> words) {
+        if (aufrichtigkeitserklaerungHints.stream().anyMatch(words::contains)) {
             return true;
         }
         return false;
     }
-    // durchsuche alle Seite nach aufrichtigkeitserklaerung && !contentpage
-    // (methode vorhanden)
 
     private List<String> readAufrichtigkeitserklaerungIdentificationListFile(
             String aufrichtigkeitserklaerungIdentificationListPath) {
