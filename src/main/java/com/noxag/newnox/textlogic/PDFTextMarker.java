@@ -108,8 +108,14 @@ public class PDFTextMarker {
             return PDFColors.ORANGE;
         case LIST_OF_ABBREVIATIONS:
             return PDFColors.GREY;
+        case LINE_SPACING:
+            return PDFColors.VERY_LIGHT_GREY;
         case TABLE_OF_FIGURES:
             return PDFColors.DEEP_PINK;
+        case FONT_SIZE:
+            return PDFColors.CYAN;
+        case FONT_TYPE:
+            return PDFColors.CYAN_BLUE;
         default:
             return DEFAULT_COLOR;
         }

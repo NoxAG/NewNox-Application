@@ -161,6 +161,12 @@ public class StatisticPane extends BorderPane {
         checkDecrButton();
     }
 
+    public void resetPage() {
+        charts = new ArrayList<>();
+        commentFindings = new ArrayList<>();
+        reloadPage();
+    }
+
     // Calculate number of pages to be shown
     private void calculatePager() {
         int commentPageAdd = commentFindings.size() == 0 ? 0 : 1;
