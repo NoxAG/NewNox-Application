@@ -20,7 +20,8 @@ import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
  *
  */
 public class PDFTextAnalyzerUtil {
-    private static String[] punctuationMarks = { ",", ".", ":", ";", "!", "?", "(", ")", "-", "–", "—", "\"", "'" };
+    private static String[] punctuationMarks = { ",", ".", ":", ";", "!", "?", "(", ")", "-", "–", "—", "\"", "'",
+            "\u2022", "\u2023", "\u25E6", "\u2043", "\u2219" };
 
     public static boolean containsPunctuationMark(List<TextPosition> textPositions) {
         return Arrays.stream(punctuationMarks).anyMatch(textPositions.get(textPositions.size() - 1).toString()::equals);
