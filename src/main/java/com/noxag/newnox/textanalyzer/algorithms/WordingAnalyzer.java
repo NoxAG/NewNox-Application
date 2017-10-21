@@ -86,7 +86,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
         return textFindings;
     }
 
-    private <T extends Finding> T generateStatisticFinding(List<TextPositionSequence> matches) {
+    private Finding generateStatisticFinding(List<TextPositionSequence> matches) {
         List<StatisticFindingData> data = new ArrayList<>();
 
         List<String> matchesAsLowercase = matches.stream().map(TextPositionSequence::toString).map(String::toLowerCase)
@@ -97,7 +97,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
         matchesGroupedByName.entrySet().stream()
                 .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
 
-        return (T) new StatisticFinding(StatisticFindingType.WORDING, data);
+        return new StatisticFinding(StatisticFindingType.WORDING, data);
     }
 
     private List<String> readWordingBlackListFile(String wordingBlacklistPath) {

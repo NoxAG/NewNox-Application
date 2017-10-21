@@ -63,11 +63,11 @@ public class CommonAbbreviationAnalyzer implements TextanalyzerAlgorithm {
         return matches;
     }
 
-    private <T extends Finding> T generateStatisticFinding(Map<String, Integer> matches) {
+    private Finding generateStatisticFinding(Map<String, Integer> matches) {
         List<StatisticFindingData> data = new ArrayList<>();
         matches.entrySet().stream().filter(entry -> entry.getValue() >= 1)
                 .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
-        return (T) new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION, data);
+        return new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION, data);
     }
 
     private String getAbbreviationRegex(String abbreviation) {

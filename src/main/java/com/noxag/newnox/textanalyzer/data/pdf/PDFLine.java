@@ -38,7 +38,6 @@ public class PDFLine implements PDFObject {
         return words.get(words.size() - 1);
     }
 
-    @Override
     public TextPositionSequence getTextPositionSequence() {
         if (words.isEmpty()) {
             return null;
