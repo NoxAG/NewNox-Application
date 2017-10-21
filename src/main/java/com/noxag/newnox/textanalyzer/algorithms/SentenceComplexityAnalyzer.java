@@ -147,7 +147,7 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public String getUIName() {
-        return SentenceComplexityAnalyzer.class.getSimpleName();
+        return "Check for complex sentence";
     }
 
 }

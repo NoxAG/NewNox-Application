@@ -63,7 +63,7 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public String getUIName() {
-        return VocabularyDistributionAnalyzer.class.getSimpleName();
+        return "Vocabulary distribution";
     }
 
     private StatisticFinding generateStatisticFinding(Map<String, Long> map) {

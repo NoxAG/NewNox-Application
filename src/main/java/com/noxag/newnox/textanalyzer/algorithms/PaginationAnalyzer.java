@@ -101,7 +101,7 @@ public class PaginationAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public String getUIName() {
-        return PaginationAnalyzer.class.getSimpleName();
+        return "Check pagination";
     }
 
 }

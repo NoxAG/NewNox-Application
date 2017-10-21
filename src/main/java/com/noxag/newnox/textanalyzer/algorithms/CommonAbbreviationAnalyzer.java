@@ -76,7 +76,7 @@ public class CommonAbbreviationAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public String getUIName() {
-        return CommonAbbreviationAnalyzer.class.getSimpleName();
+        return "Search for abbreviations";
     }
 
     private List<String> readAbreviationListFile(String abbreviationListPath) {
