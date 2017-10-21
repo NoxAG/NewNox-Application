@@ -116,7 +116,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
     }
 
     public String getUIName() {
-        return WordingAnalyzer.class.getSimpleName();
+        return "Control wording";
     }
 
 }

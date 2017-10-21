@@ -149,7 +149,7 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public String getUIName() {
-        return RepetitivWordingAnalyzer.class.getSimpleName();
+        return "Mark repetitiv words";
     }
 
 }

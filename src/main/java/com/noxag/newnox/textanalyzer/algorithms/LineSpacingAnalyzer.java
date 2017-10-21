@@ -73,7 +73,7 @@ public class LineSpacingAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public String getUIName() {
-        return LineSpacingAnalyzer.class.getSimpleName();
+        return "Mark line distance";
     }
 
 }

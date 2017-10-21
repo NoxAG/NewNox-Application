@@ -109,7 +109,7 @@ public class FontAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public String getUIName() {
-        return FontAnalyzer.class.getSimpleName();
+        return "Review font";
     }
 
 }

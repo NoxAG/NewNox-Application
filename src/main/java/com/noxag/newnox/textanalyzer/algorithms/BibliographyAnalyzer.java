@@ -159,7 +159,7 @@ public class BibliographyAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public String getUIName() {
-        return BibliographyAnalyzer.class.getSimpleName();
+        return "Bibliography Analyzer";
     }
 
 }
