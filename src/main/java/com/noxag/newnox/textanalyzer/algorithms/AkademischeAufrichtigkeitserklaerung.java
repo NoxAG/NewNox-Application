@@ -43,12 +43,12 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
         List<Finding> findings = new ArrayList<>();
         CommentaryFinding commentaryFinding;
         if (compareString(generateLowerCaseString(getNotContentPages(doc)))) {
-            commentaryFinding = new CommentaryFinding("Aufrichtigkeitserklärung found", "",
+            commentaryFinding = new CommentaryFinding("Aufrichtigkeitserklärung found", "Aufrichtigkeit",
                     getPageNumberWhereAufrichtigkeitserklaerung(getNotContentPages(doc)), 0);
             findings.add(commentaryFinding);
             return findings;
         }
-        commentaryFinding = new CommentaryFinding("Aufrichtigkeitserklaerung not found", "", 0, 0);
+        commentaryFinding = new CommentaryFinding("Aufrichtigkeitserklaerung not found", "Aufrichtigkeit", 0, 0);
         findings.add(commentaryFinding);
         return findings;
     }
