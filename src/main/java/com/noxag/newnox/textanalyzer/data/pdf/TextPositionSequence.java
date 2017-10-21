@@ -146,4 +146,8 @@ public class TextPositionSequence implements CharSequence, PDFObject {
         return PDFTextAnalyzerUtil.isPunctuationMark(this);
     }
 
+    public boolean isNotPunctuationMark() {
+        return !this.isPunctuationMark();
+    }
+
 }

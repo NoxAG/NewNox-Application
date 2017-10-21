@@ -134,12 +134,17 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
         Map<Integer, Long> sentencesGroupedByWordcount = sentences.entrySet().stream()
                 .collect(Collectors.groupingBy(Entry::getValue, Collectors.counting()));
 
+        // only entries with at least two words and entries that occur at least
+        // one time
         List<Entry<Integer, Long>> sentenceMapEntries = sentencesGroupedByWordcount.entrySet().stream()
-                .filter(entry -> entry.getValue() > 1).collect(Collectors.toList());
+                .filter(entry -> entry.getKey() > 1).filter(entry -> entry.getValue() >= 1)
+                .collect(Collectors.toList());
+
         sentenceMapEntries.sort(Comparator.comparing(Entry::getKey));
+
         sentenceMapEntries.stream().forEach(entry -> {
             String word = entry.getKey() >= 2 ? "words" : "word";
-            data.add(new StatisticFindingData(entry.getKey() + " " + word, entry.getValue() - 1));
+            data.add(new StatisticFindingData(entry.getKey() + " " + word, entry.getValue()));
         });
 
         return (T) new StatisticFinding(StatisticFindingType.SENTENCE_COMPLEXITY, data, false);
