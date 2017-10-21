@@ -31,7 +31,7 @@ import com.opencsv.CSVReader;
 
 public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(CommonAbbreviationAnalyzer.class.getName());
-    private static final String REPETITIV_WORDING_EXCEPTION_PATH = "src/main/resources/analyzer-conf/repetitiv-wording-exceptions.csv";
+    private static final String REPETITIV_WORDING_EXCEPTION_PATH = "src/main/resources/analyzer-conf/repetitive-wording-exceptions.csv";
 
     private static final int AMOUNT_OF_WORDS_TO_COMPARE = 20;
     private static final int ALLOWED_REPETITIONS_BY_DEFAULT = 2;
