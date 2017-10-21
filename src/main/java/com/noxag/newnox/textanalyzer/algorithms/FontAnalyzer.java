@@ -15,6 +15,14 @@ import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 
+/**
+ * 
+ * This class analyzes font size and font type
+ * 
+ * @author Schroeder
+ *
+ */
+
 public class FontAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(CommonAbbreviationAnalyzer.class.getName());
     private static String[] punctuationMarks = { ",", ".", ":", ";", "!", "?" };
