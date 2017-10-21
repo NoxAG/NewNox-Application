@@ -40,6 +40,8 @@ public class FontAnalyzer implements TextanalyzerAlgorithm {
         try {
             List<PDFPage> contentPages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
             contentWords = PDFTextExtractionUtil.extractWords(contentPages);
+            contentWords = contentWords.stream().filter(TextPositionSequence::isNotPunctuationMark)
+                    .collect(Collectors.toList());
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not strip text from document", e);
         }
