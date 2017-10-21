@@ -103,7 +103,7 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
 
     @Override
     public String getUIName() {
-        return AkademischeAufrichtigkeitserklaerung.class.getSimpleName();
+        return "Check for Aufrichtigkeitserklärung";
     }
 
 }

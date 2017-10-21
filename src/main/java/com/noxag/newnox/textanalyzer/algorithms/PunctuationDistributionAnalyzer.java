@@ -83,9 +83,9 @@ public class PunctuationDistributionAnalyzer implements TextanalyzerAlgorithm {
             return "braces";
         case "-":
             return "dash";
-        case "–":
+        case "â€“":
             return "dash";
-        case "—":
+        case "â€”":
             return "dash";
         case "\"":
             return "quotation Marks";
@@ -100,7 +100,7 @@ public class PunctuationDistributionAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public String getUIName() {
-        return PunctuationDistributionAnalyzer.class.getSimpleName();
+        return "Compare punctuation character";
     }
 
 }
