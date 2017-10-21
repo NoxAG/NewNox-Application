@@ -43,12 +43,12 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
         List<Finding> findings = new ArrayList<>();
         CommentaryFinding commentaryFinding;
         if (compareString(generateLowerCaseString(getNotContentPages(doc)))) {
-            commentaryFinding = new CommentaryFinding("Aufrichtigkeitserklärung found", "Aufrichtigkeit",
+            commentaryFinding = new CommentaryFinding("Declaration of sincerity found", "DeclarationOfSincerity",
                     getPageNumberWhereAufrichtigkeitserklaerung(getNotContentPages(doc)), 0);
             findings.add(commentaryFinding);
             return findings;
         }
-        commentaryFinding = new CommentaryFinding("Aufrichtigkeitserklaerung not found", "Aufrichtigkeit", 0, 0);
+        commentaryFinding = new CommentaryFinding("Declaration of sincerity not found", "DeclarationOfSincerity", 0, 0);
         findings.add(commentaryFinding);
         return findings;
     }
@@ -103,7 +103,7 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
 
     @Override
     public String getUIName() {
-        return "Check for Aufrichtigkeitserklärung";
+        return "Check for declaration of sincerity";
     }
 
 }
