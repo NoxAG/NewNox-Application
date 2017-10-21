@@ -178,6 +178,7 @@ public class NewNoxWindow extends Application {
     }
 
     public void updatePDFImages(List<BufferedImage> pdfTextOverlay) {
+        statisticPane.resetPage();
         pdfPane.setPDFTextOverlay(pdfTextOverlay);
     }
 

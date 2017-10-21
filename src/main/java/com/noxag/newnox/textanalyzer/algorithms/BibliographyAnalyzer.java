@@ -88,7 +88,7 @@ public class BibliographyAnalyzer implements TextanalyzerAlgorithm {
     private List<TextPositionSequence> getBibliographyReference(List<PDFPage> pageList) {
         List<TextPositionSequence> wordsContainedInPageList = PDFTextExtractionUtil.extractWords(pageList);
         List<TextPositionSequence> foundReferences = new ArrayList<>();
-        wordsContainedInPageList.stream().filter(word -> word.toString().contains("[") && word.toString().contains("]"))
+        wordsContainedInPageList.stream().filter(word -> containsBibliographyReference(word.toString()))
                 .forEach(word -> {
                     foundReferences.add(word);
                 });
@@ -99,11 +99,12 @@ public class BibliographyAnalyzer implements TextanalyzerAlgorithm {
             List<TextPositionSequence> bibliographyReferences, List<TextPositionSequence> bibliographyEntries) {
         List<Finding> findings = new ArrayList<>();
         bibliographyReferences.stream().forEach(bibliographyReference -> {
-            String reference = readReferenceOutOfWord(bibliographyReference);
-
-            if (!bibliographyEntries.toString().contains(reference)) {
-                findings.add(new TextFinding(bibliographyReference, TextFindingType.BIBLIOGRAPHY));
-            }
+            List<String> references = readReferenceOutOfWord(bibliographyReference);
+            references.stream().forEach(reference -> {
+                if (!bibliographyEntries.toString().contains(reference)) {
+                    findings.add(new TextFinding(bibliographyReference, TextFindingType.BIBLIOGRAPHY));
+                }
+            });
         });
         return findings;
     }
@@ -112,18 +113,27 @@ public class BibliographyAnalyzer implements TextanalyzerAlgorithm {
             List<TextPositionSequence> bibliographyEntries) {
         List<Finding> findings = new ArrayList<>();
         bibliographyEntries.stream().forEach(bibliographyEntry -> {
-            String entry = readReferenceOutOfWord(bibliographyEntry);
-            if (bibliographyReferences.toString().contains(entry)) {
-                findings.add(new TextFinding(bibliographyEntry, TextFindingType.POSITIVE_BIBLIOGRAPHY));
-            }
+            List<String> entries = readReferenceOutOfWord(bibliographyEntry);
+            entries.stream().forEach(entry -> {
+                if (bibliographyReferences.toString().contains(entry)) {
+                    findings.add(new TextFinding(bibliographyEntry, TextFindingType.POSITIVE_BIBLIOGRAPHY));
+                }
+            });
         });
         return findings;
     }
 
-    private String readReferenceOutOfWord(TextPositionSequence bibliographyReference) {
-        int startIndex = bibliographyReference.toString().indexOf("[");
-        int endIndex = bibliographyReference.toString().indexOf("]") + 1;
-        return bibliographyReference.toString().substring(startIndex, endIndex);
+    private List<String> readReferenceOutOfWord(TextPositionSequence wordWithReference) {
+        List<String> bibliographyReferences = new ArrayList<>();
+        String referenceString = wordWithReference.toString();
+        while (containsBibliographyReference(referenceString)) {
+            int startIndex = referenceString.toString().indexOf("[");
+            int endIndex = referenceString.toString().indexOf("]") + 1;
+            bibliographyReferences.add(referenceString.substring(startIndex, endIndex));
+
+            referenceString = referenceString.substring(endIndex, referenceString.length());
+        }
+        return bibliographyReferences;
     }
 
     private List<String> readBibliographyIdentificationListFile(String bibliographyIdentificationListPath) {
@@ -141,6 +151,10 @@ public class BibliographyAnalyzer implements TextanalyzerAlgorithm {
             LOGGER.log(Level.WARNING, "Configuration file could not be read", e);
         }
         return bibliographyIdentificationList;
+    }
+
+    private boolean containsBibliographyReference(String string) {
+        return string.matches(".*\\[(\\d+)\\].*");
     }
 
     @Override
