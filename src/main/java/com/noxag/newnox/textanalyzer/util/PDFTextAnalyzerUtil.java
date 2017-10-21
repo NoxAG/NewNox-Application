@@ -23,8 +23,21 @@ public class PDFTextAnalyzerUtil {
     private static String[] punctuationMarks = { ",", ".", ":", ";", "!", "?", "(", ")", "-", "–", "—", "\"", "'",
             "\u2022", "\u2023", "\u25E6", "\u2043", "\u2219" };
 
+    public static int getPunctuationMarkIndex(List<TextPosition> textPositions) {
+        int index = 0;
+        for (TextPosition pos : textPositions) {
+            if (Arrays.asList(punctuationMarks).contains(pos.toString())) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
     public static boolean containsPunctuationMark(List<TextPosition> textPositions) {
-        return Arrays.stream(punctuationMarks).anyMatch(textPositions.get(textPositions.size() - 1).toString()::equals);
+        return textPositions.stream().anyMatch(textPosition -> {
+            return Arrays.stream(punctuationMarks).anyMatch(textPosition.toString()::contains);
+        });
     }
 
     public static boolean isPunctuationMark(TextPositionSequence posSequence) {

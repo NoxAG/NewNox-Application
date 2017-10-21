@@ -17,6 +17,7 @@ import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
+import com.noxag.newnox.textanalyzer.data.pdf.PDFLine;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
@@ -105,8 +106,39 @@ public class FontAnalyzer implements TextanalyzerAlgorithm {
 
     private List<Finding> generateTextFindings(List<TextPositionSequence> textPositions, TextFindingType findingType) {
         List<Finding> textFindings = new ArrayList<>();
+        textPositions = combineIfSameLine(textPositions);
         textPositions.stream().forEach(textPosition -> textFindings.add(new TextFinding(textPosition, findingType)));
         return textFindings;
+    }
+
+    private List<TextPositionSequence> combineIfSameLine(List<TextPositionSequence> textPositions) {
+        List<TextPositionSequence> words = new ArrayList<>();
+        // if second word same posY as firstWord --> return combination
+        // else return first word and combine second and third
+        TextPositionSequence firstWord = textPositions.get(0);
+        if (textPositions.size() == 1) {
+            words.add(firstWord);
+            return words;
+        }
+        TextPositionSequence secondWord = textPositions.get(1);
+        @SuppressWarnings("unused")
+        float res = Math.abs(firstWord.getFirstTextPosition().getY() - secondWord.getFirstTextPosition().getY());
+        if (firstWord.getPageIndex() == secondWord.getPageIndex()
+                && Math.abs(firstWord.getFirstTextPosition().getY() - secondWord.getFirstTextPosition().getY()) <= 1
+                && Math.abs(firstWord.getLastTextPosition().getX() - secondWord.getFirstTextPosition().getX()) <= 50) {
+            TextPositionSequence newFirstWord = new PDFLine(firstWord, secondWord).getTextPositionSequence();
+            if (textPositions.size() > 2) {
+                List<TextPositionSequence> newTextPositions = new ArrayList<>();
+                newTextPositions.add(newFirstWord);
+                newTextPositions.addAll(textPositions.subList(2, textPositions.size()));
+                words.addAll(combineIfSameLine(newTextPositions));
+            }
+            return words;
+        } else {
+            words.add(firstWord);
+            words.addAll(combineIfSameLine(textPositions.subList(1, textPositions.size())));
+            return words;
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.noxag.newnox.textanalyzer.data.pdf;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.pdfbox.text.TextPosition;
@@ -15,6 +16,10 @@ public class PDFLine implements PDFObject {
 
     public PDFLine() {
         words = new ArrayList<>();
+    }
+
+    public PDFLine(TextPositionSequence... words) {
+        this.setWords(Arrays.asList(words));
     }
 
     public PDFLine(List<TextPositionSequence> words) {
@@ -46,8 +51,8 @@ public class PDFLine implements PDFObject {
             return null;
         }
         List<TextPosition> charPositions = new ArrayList<>();
-        charPositions.add(this.getFirstWord().getFirstTextPosition());
-        charPositions.add(this.getLastWord().getLastTextPosition());
+        charPositions.addAll(this.getFirstWord().getTextPositions());
+        charPositions.addAll(this.getLastWord().getTextPositions());
         return new TextPositionSequence(charPositions, this.getFirstWord().getPageIndex());
     }
 
