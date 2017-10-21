@@ -129,7 +129,7 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
         return textFindings;
     }
 
-    private <T extends Finding> T generateStatisticFinding(Map<PDFParagraph, Integer> sentences) {
+    private Finding generateStatisticFinding(Map<PDFParagraph, Integer> sentences) {
         List<StatisticFindingData> data = new ArrayList<>();
         Map<Integer, Long> sentencesGroupedByWordcount = sentences.entrySet().stream()
                 .collect(Collectors.groupingBy(Entry::getValue, Collectors.counting()));
@@ -142,7 +142,7 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
             data.add(new StatisticFindingData(entry.getKey() + " " + word, entry.getValue() - 1));
         });
 
-        return (T) new StatisticFinding(StatisticFindingType.SENTENCE_COMPLEXITY, data, false);
+        return new StatisticFinding(StatisticFindingType.SENTENCE_COMPLEXITY, data, false);
     }
 
     @Override
