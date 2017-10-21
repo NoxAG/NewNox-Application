@@ -93,6 +93,16 @@ public class PunctuationDistributionAnalyzer implements TextanalyzerAlgorithm {
             return "slash";
         case "'":
             return "apostrophe";
+        case "\u2022":
+            return "bullet";
+        case "\u2023":
+            return "bullet";
+        case "\u25E6":
+            return "bullet";
+        case "\u2043":
+            return "bullet";
+        case "\u2219":
+            return "bullet";
         default:
             return mark;
         }
