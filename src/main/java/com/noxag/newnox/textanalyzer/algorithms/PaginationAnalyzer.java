@@ -17,6 +17,14 @@ import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 
+/**
+ * 
+ * This class analyzes the correct pagination of the pdf
+ * 
+ * @author Pascal.Schroeder@de.ibm.com
+ *
+ */
+
 public class PaginationAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(CommonAbbreviationAnalyzer.class.getName());
 
