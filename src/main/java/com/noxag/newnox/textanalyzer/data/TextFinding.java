@@ -67,8 +67,8 @@ public class TextFinding extends Finding {
     }
 
     public enum TextFindingType {
-        WORDING("Wording"), SENTENCE_COMPLEXITY("Sentence Complexity"), REPETITIV_WORDING(
-                "Repetitiv Wording"), PAGINATION(
+        COMMON_ABBREVIATION("Abbreviations"), WORDING("Wording"), SENTENCE_COMPLEXITY(
+                "Sentence Complexity"), REPETITIV_WORDING("Repetitiv Wording"), PAGINATION(
                         "Pagination"), BIBLIOGRAPHY("References to Bibliography without Entry"), POSITIVE_BIBLIOGRAPHY(
                                 "Found Reference in Bibliography"), LIST_OF_ABBREVIATIONS(
                                         "List of Abbreviations"), FONT_SIZE(
