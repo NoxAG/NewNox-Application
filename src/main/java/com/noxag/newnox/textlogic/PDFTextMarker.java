@@ -96,7 +96,7 @@ public class PDFTextMarker {
             return PDFColors.RED;
         case SENTENCE_COMPLEXITY:
             return PDFColors.MAGENTA;
-        case REPETITIV_WORDING:
+        case REPETITIVE_WORDING:
             return PDFColors.ORANGE;
         case PAGINATION:
             return PDFColors.VIOLET;
@@ -126,7 +126,7 @@ public class PDFTextMarker {
             return PDAnnotationTextMarkup.SUB_TYPE_STRIKEOUT;
         case SENTENCE_COMPLEXITY:
             return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
-        case REPETITIV_WORDING:
+        case REPETITIVE_WORDING:
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
         case PAGINATION:
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
