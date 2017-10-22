@@ -41,6 +41,7 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
     private static final String VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH = "src/main/resources/analyzer-conf/vocabularydistributionanalyzer-blacklist.csv";
     private List<String> vocabularyDistributionExceptions;
     private static final int MAX_STATISTIC_DATA_FINDINGS = 20;
+    private static final String ERROR_MESSAGE_FINDINGS_COULD_NOT_BE_CREATE = "Findings could not be create.";
 
     public VocabularyDistributionAnalyzer() {
         this(VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH);
@@ -56,6 +57,7 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
         try {
             findings.add(generateStatisticFinding(mapWordsWithFrequency(doc)));
         } catch (IOException e) {
+            LOGGER.log(Level.WARNING, ERROR_MESSAGE_FINDINGS_COULD_NOT_BE_CREATE, e);
             e.printStackTrace();
         }
         return findings;

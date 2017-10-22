@@ -120,11 +120,7 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
                 String::concat);
 
         if (lastLine.matches("[0-9]+")) {
-            try {
-                pdfPage.setPageNum(Integer.parseInt(lastLine));
-            } catch (NumberFormatException e) {
-                // just proceed
-            }
+            pdfPage.setPageNum(Integer.parseInt(lastLine));
         }
         document.add(pdfPage);
         pdfPage = new PDFPage();
