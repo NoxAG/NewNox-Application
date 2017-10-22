@@ -89,8 +89,13 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
                 .map(TextPositionSequence::toString).map(String::toLowerCase).collect(Collectors.toList());
     }
 
-    public boolean compareString(List<PDFParagraph> paragraph) {
-        return aufrichtigkeitserklaerungHints.stream().allMatch(paragraph::contains);
+    public boolean compareString(List<PDFParagraph> paragraphs) {
+        for (PDFParagraph paragraph : paragraphs) {
+            if (aufrichtigkeitserklaerungHints.stream().allMatch(paragraph.toString()::contains)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<String> readAufrichtigkeitserklaerungIdentificationListFile(
@@ -117,6 +122,3 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
     }
 
 }
-
-// statt jedes wort in ein string, sondern in liste von paragraphen, und dann
-// schauen, ob ein paragraph alles enthält
