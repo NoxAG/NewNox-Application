@@ -1,6 +1,7 @@
 package com.noxag.newnox.textanalyzer.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.noxag.newnox.textanalyzer.data.pdf.PDFLine;
@@ -24,16 +25,24 @@ public class TextFinding extends Finding {
         this(textPositionSequence, null);
     }
 
+    public TextFinding(PDFLine line) {
+        this(line, null);
+    }
+
     public TextFinding(TextPositionSequence textPositionSequence, TextFindingType type) {
         this.textPositionSequences = new ArrayList<>();
         this.textPositionSequences.add(textPositionSequence);
         this.type = type;
     }
 
+    public TextFinding(PDFLine lines, TextFindingType type) {
+        this(new ArrayList<PDFLine>(Arrays.asList(lines)), type);
+    }
+
     public TextFinding(List<PDFLine> lines, TextFindingType type) {
-        this.textPositionSequences = new ArrayList<>();
         this.type = type;
-        lines.stream().forEach(line -> this.textPositionSequences.add(line.getTextPositionSequence()));
+        this.textPositionSequences = new ArrayList<>();
+        lines.stream().map(PDFLine::getTextPositionSequence).forEach(textPositionSequences::add);
 
     }
 
@@ -58,6 +67,20 @@ public class TextFinding extends Finding {
     }
 
     public enum TextFindingType {
-        WORDING, SENTENCE_COMPLEXITY, REPETITIV_WORDING, PAGINATION, BIBLIOGRAPHY, POSITIVE_BIBLIOGRAPHY, TABLE_OF_CONTENT, LIST_OF_ABBREVIATIONS, TABLE_OF_FIGURES, FONT_SIZE, FONT_TYPE, LINE_SPACING;
+        PAGINATION("Pagination"), WORDING("Wording"), FONT_TYPE("Font Type"), FONT_SIZE(
+                "Font Size"), COMMON_ABBREVIATION("Abbreviations"), BIBLIOGRAPHY(
+                        "References to Bibliography without Entry"), POSITIVE_BIBLIOGRAPHY(
+                                "Found Reference in Bibliography"), LINE_SPACING("Line Spacing"), SENTENCE_COMPLEXITY(
+                                        "Sentence Complexity"), REPETITIVE_WORDING("Repetitiv Wording");
+        String fieldDescriptor;
+
+        TextFindingType(String value) {
+            fieldDescriptor = value;
+
+        }
+
+        public String getFieldDescriptor() {
+            return fieldDescriptor;
+        }
     }
 }

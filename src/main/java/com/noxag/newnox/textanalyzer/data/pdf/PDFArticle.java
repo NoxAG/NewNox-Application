@@ -3,8 +3,6 @@ package com.noxag.newnox.textanalyzer.data.pdf;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.pdfbox.text.TextPosition;
-
 public class PDFArticle implements PDFObject {
     private List<PDFParagraph> paragraphs;
 
@@ -37,18 +35,6 @@ public class PDFArticle implements PDFObject {
 
     public PDFParagraph getLastParagraph() {
         return paragraphs.get(paragraphs.size() - 1);
-    }
-
-    @Override
-    public TextPositionSequence getTextPositionSequence() {
-        if (paragraphs.isEmpty()) {
-            return null;
-        }
-        List<TextPosition> charPositions = new ArrayList<>();
-        charPositions.add(this.getFirstParagraph().getTextPositionSequence().getFirstTextPosition());
-        charPositions.add(this.getLastParagraph().getTextPositionSequence().getLastTextPosition());
-        return new TextPositionSequence(charPositions,
-                this.getFirstParagraph().getTextPositionSequence().getPageIndex());
     }
 
     public void add(PDFParagraph pdfParagraph) {

@@ -18,6 +18,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.TextPosition;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
@@ -46,8 +47,12 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
             LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
         Map<PDFParagraph, Integer> sentences = getComplexity(getSentences(pages));
-        findings.addAll(generateTextFindings(sentences));
-        findings.add(generateStatisticFinding(sentences));
+        if (sentences.entrySet().isEmpty()) {
+            findings.add(new CommentaryFinding("No sentences found", this.getUIName(), 0, 0));
+        } else {
+            findings.add(generateStatisticFinding(sentences));
+            findings.addAll(generateTextFindings(sentences));
+        }
         return findings;
     }
 
@@ -129,20 +134,25 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
         return textFindings;
     }
 
-    private <T extends Finding> T generateStatisticFinding(Map<PDFParagraph, Integer> sentences) {
+    private Finding generateStatisticFinding(Map<PDFParagraph, Integer> sentences) {
         List<StatisticFindingData> data = new ArrayList<>();
         Map<Integer, Long> sentencesGroupedByWordcount = sentences.entrySet().stream()
                 .collect(Collectors.groupingBy(Entry::getValue, Collectors.counting()));
 
+        // only entries with at least two words and entries that occur at least
+        // one time
         List<Entry<Integer, Long>> sentenceMapEntries = sentencesGroupedByWordcount.entrySet().stream()
-                .filter(entry -> entry.getValue() > 1).collect(Collectors.toList());
+                .filter(entry -> entry.getKey() > 1).filter(entry -> entry.getValue() >= 1)
+                .collect(Collectors.toList());
+
         sentenceMapEntries.sort(Comparator.comparing(Entry::getKey));
+
         sentenceMapEntries.stream().forEach(entry -> {
             String word = entry.getKey() >= 2 ? "words" : "word";
-            data.add(new StatisticFindingData(entry.getKey() + " " + word, entry.getValue() - 1));
+            data.add(new StatisticFindingData(entry.getKey() + " " + word, entry.getValue()));
         });
 
-        return (T) new StatisticFinding(StatisticFindingType.SENTENCE_COMPLEXITY, data, false);
+        return new StatisticFinding(StatisticFindingType.SENTENCE_COMPLEXITY, data, false);
     }
 
     @Override

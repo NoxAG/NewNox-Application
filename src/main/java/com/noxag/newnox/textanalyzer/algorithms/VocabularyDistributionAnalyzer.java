@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
@@ -40,8 +41,8 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(VocabularyDistributionAnalyzer.class.getName());
     private static final String VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH = "src/main/resources/analyzer-conf/vocabularydistributionanalyzer-blacklist.csv";
     private List<String> vocabularyDistributionExceptions;
-    private static final int MAX_STATISTIC_DATA_FINDINGS = 20;
     private static final String ERROR_MESSAGE_FINDINGS_COULD_NOT_BE_CREATE = "Findings could not be create.";
+    private static final int MAX_STATISTIC_DATA_FINDINGS = 15;
 
     public VocabularyDistributionAnalyzer() {
         this(VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH);
@@ -54,11 +55,20 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
     @Override
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
+        List<PDFPage> pages = new ArrayList<>();
+        List<TextPositionSequence> words = new ArrayList<>();
         try {
-            findings.add(generateStatisticFinding(mapWordsWithFrequency(doc)));
+            pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
+            words = PDFTextExtractionUtil.extractWords(pages);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, ERROR_MESSAGE_FINDINGS_COULD_NOT_BE_CREATE, e);
             e.printStackTrace();
+        }
+        Map<String, Long> wordFrequencyMap = mapWordsWithFrequency(words);
+        if (wordFrequencyMap.isEmpty()) {
+            findings.add(new CommentaryFinding("No words found", this.getUIName(), 0, 0));
+        } else {
+            findings.add(generateStatisticFinding(wordFrequencyMap));
         }
         return findings;
     }
@@ -80,17 +90,12 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
         return new StatisticFinding(StatisticFindingType.VOCABULARY_DISTRIBUTION, data);
     }
 
-    public Map<String, Long> mapWordsWithFrequency(PDDocument doc) throws IOException {
-        List<PDFPage> pages = new ArrayList<>();
-        List<TextPositionSequence> words = new ArrayList<>();
-        pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
-        words = PDFTextExtractionUtil.extractWords(pages);
-
+    public Map<String, Long> mapWordsWithFrequency(List<TextPositionSequence> words) {
         List<String> matchesAsString = words.stream().filter(word -> !PDFTextAnalyzerUtil.isPunctuationMark(word))
                 .map(TextPositionSequence::toString).map(String::toLowerCase).collect(Collectors.toList());
 
         Map<String, Long> matchesGroupedByName = matchesAsString.stream()
-                .filter(word -> !vocabularyDistributionExceptions.contains(word))
+                .filter(word -> !vocabularyDistributionExceptions.contains(word) && !isInteger(word))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         return matchesGroupedByName;
     }
@@ -108,6 +113,15 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
             LOGGER.log(Level.WARNING, "Configuration file could not be read", e);
         }
         return vocabularyDistributionExceptions;
+    }
+
+    private boolean isInteger(String string) {
+        try {
+            Integer.parseInt(string);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }

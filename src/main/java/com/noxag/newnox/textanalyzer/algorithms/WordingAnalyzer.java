@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
@@ -62,8 +63,12 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
             LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
         List<TextPositionSequence> matches = findMatches(pages, wordingBlacklist);
-        findings.addAll(generateTextFindings(matches));
-        findings.add(generateStatisticFinding(matches));
+        if (matches.isEmpty()) {
+            findings.add(new CommentaryFinding("No ill wording found", this.getUIName(), 0, 0));
+        } else {
+            findings.addAll(generateTextFindings(matches));
+            findings.add(generateStatisticFinding(matches));
+        }
         return findings;
     }
 
@@ -86,7 +91,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
         return textFindings;
     }
 
-    private <T extends Finding> T generateStatisticFinding(List<TextPositionSequence> matches) {
+    private Finding generateStatisticFinding(List<TextPositionSequence> matches) {
         List<StatisticFindingData> data = new ArrayList<>();
 
         List<String> matchesAsLowercase = matches.stream().map(TextPositionSequence::toString).map(String::toLowerCase)
@@ -97,7 +102,7 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
         matchesGroupedByName.entrySet().stream()
                 .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
 
-        return (T) new StatisticFinding(StatisticFindingType.WORDING, data);
+        return new StatisticFinding(StatisticFindingType.WORDING, data);
     }
 
     private List<String> readWordingBlackListFile(String wordingBlacklistPath) {

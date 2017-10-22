@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
@@ -35,9 +36,12 @@ public class PaginationAnalyzer implements TextanalyzerAlgorithm {
         try {
             pages = PDFTextExtractionUtil.extractText(doc);
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not strip text from document", e);
+            LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
         findings.addAll(getPaginationMistakes(pages));
+        if (findings.isEmpty()) {
+            findings.add(new CommentaryFinding("No pagination mistakes found", this.getUIName(), 0, 0));
+        }
         return findings;
     }
 

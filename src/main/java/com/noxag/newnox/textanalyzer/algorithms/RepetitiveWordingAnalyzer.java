@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
@@ -29,17 +30,17 @@ import com.opencsv.CSVReader;
  *
  */
 
-public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
+public class RepetitiveWordingAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(CommonAbbreviationAnalyzer.class.getName());
-    private static final String REPETITIV_WORDING_EXCEPTION_PATH = "src/main/resources/analyzer-conf/repetitiv-wording-exceptions.csv";
+    private static final String REPETITIVE_WORDING_EXCEPTION_PATH = "src/main/resources/analyzer-conf/repetitive-wording-exceptions.csv";
 
     private static final int AMOUNT_OF_WORDS_TO_COMPARE = 20;
     private static final int ALLOWED_REPETITIONS_BY_DEFAULT = 2;
 
     private Map<String, Integer> repretitivWordingExceptions;
 
-    public RepetitivWordingAnalyzer() {
-        repretitivWordingExceptions = readRepetitiveWordingExceptionFile(REPETITIV_WORDING_EXCEPTION_PATH);
+    public RepetitiveWordingAnalyzer() {
+        repretitivWordingExceptions = readRepetitiveWordingExceptionFile(REPETITIVE_WORDING_EXCEPTION_PATH);
     }
 
     @Override
@@ -51,14 +52,18 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not strip text from document", e);
         }
-        return getRepetitionsInWordBlock(pages);
+        List<Finding> findings = getRepetitionsInWordBlock(pages);
+        if (findings.isEmpty()) {
+            findings.add(new CommentaryFinding("No word repetitions found", this.getUIName(), 0, 0));
+        }
+        return findings;
     }
 
     private List<Finding> getRepetitionsInWordBlock(List<PDFPage> pages) {
         List<TextPositionSequence> wordInPDF = PDFTextExtractionUtil.extractWords(pages);
         List<Finding> findings = new ArrayList<>();
 
-        Map<String, Integer> repetitivWordMap = new HashMap<>();
+        Map<String, Integer> repetitiveWordMap = new HashMap<>();
         // This var saves last 20 words as TextPositionSequence, which were
         // analyzed in HashMap
         List<TextPositionSequence> actuallyWordBlock = new ArrayList<>();
@@ -66,21 +71,22 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
         wordInPDF.stream().filter(word -> !PDFTextAnalyzerUtil.isPunctuationMark(word) && !isInteger(word.toString()))
                 .forEach(nextWord -> {
                     if (actuallyWordBlock.size() < AMOUNT_OF_WORDS_TO_COMPARE) {
-                        repetitivWordMap.put(nextWord.toString(), calculateValueOfKey(nextWord, repetitivWordMap));
+                        repetitiveWordMap.put(nextWord.toString(), calculateValueOfKey(nextWord, repetitiveWordMap));
                         actuallyWordBlock.add(nextWord);
                     } else {
-                        removeKeyOutOfMap(repetitivWordMap, actuallyWordBlock.get(0).toString());
-                        repetitivWordMap.put(nextWord.toString(), calculateValueOfKey(nextWord, repetitivWordMap));
+                        removeKeyOutOfMap(repetitiveWordMap, actuallyWordBlock.get(0).toString());
+                        repetitiveWordMap.put(nextWord.toString(), calculateValueOfKey(nextWord, repetitiveWordMap));
                         actuallyWordBlock.remove(0);
                         actuallyWordBlock.add(nextWord);
                     }
-                    findings.addAll(addRepetitiveWordsToFindings(repetitivWordMap, actuallyWordBlock));
+                    findings.addAll(addRepetitiveWordsToFindings(repetitiveWordMap, actuallyWordBlock));
                 });
         return findings;
     }
 
-    private Integer calculateValueOfKey(TextPositionSequence nextWord, Map<String, Integer> repetitivWordMap) {
-        return (repetitivWordMap.containsKey(nextWord.toString()) ? repetitivWordMap.get(nextWord.toString()) + 1 : 1);
+    private Integer calculateValueOfKey(TextPositionSequence nextWord, Map<String, Integer> repetitiveWordMap) {
+        return (repetitiveWordMap.containsKey(nextWord.toString()) ? repetitiveWordMap.get(nextWord.toString()) + 1
+                : 1);
     }
 
     private void removeKeyOutOfMap(Map<String, Integer> map, String key) {
@@ -90,10 +96,10 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
         }
     }
 
-    private List<Finding> addRepetitiveWordsToFindings(Map<String, Integer> repetitivWordMap,
+    private List<Finding> addRepetitiveWordsToFindings(Map<String, Integer> repetitiveWordMap,
             List<TextPositionSequence> actuallyWordBlock) {
         List<Finding> findings = new ArrayList<>();
-        repetitivWordMap.entrySet().stream().filter(entry -> {
+        repetitiveWordMap.entrySet().stream().filter(entry -> {
             return getAllowedRepetitionsForEntry(entry);
         }).forEach(repetitiveEntry -> {
             findings.addAll(getAllPositionSequencesThroughString(actuallyWordBlock, repetitiveEntry));
@@ -115,7 +121,7 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
         actuallyWordBlock.stream().filter(wordsOfBlock -> wordsOfBlock.toString().equals(repetitiveEntry.getKey()))
                 .forEach(entryPositionSequence -> {
                     foundPositionSequences
-                            .add(new TextFinding(entryPositionSequence, TextFindingType.REPETITIV_WORDING));
+                            .add(new TextFinding(entryPositionSequence, TextFindingType.REPETITIVE_WORDING));
                 });
         return foundPositionSequences;
     }
@@ -149,7 +155,7 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
 
     @Override
     public String getUIName() {
-        return "Mark repetitiv words";
+        return "Mark repetitive words";
     }
 
 }

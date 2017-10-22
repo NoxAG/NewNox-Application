@@ -45,21 +45,34 @@ public class PDFTextPositionSequenceStripper extends PDFTextStripper {
             divideWriteStringCall(text, textPositions);
             return;
         }
-        words.add(new TextPositionSequence(textPositions, currentPage));
+        if (!textPositions.isEmpty()) {
+            words.add(new TextPositionSequence(textPositions, currentPage));
+        }
     }
 
     private void divideWriteStringCall(String text, List<TextPosition> textPositions) throws IOException {
-        int lastTextIndex = textPositions.size();
-        List<TextPosition> firstPositions = textPositions.subList(0, lastTextIndex - 1);
-        List<TextPosition> punctuationPosition = textPositions.subList(lastTextIndex - 1, lastTextIndex);
-        String firstText = text.substring(0, lastTextIndex - 1);
-        String punctuationText = text.substring(lastTextIndex - 1, lastTextIndex);
+        int punctuationMarkIndex = PDFTextAnalyzerUtil.getPunctuationMarkIndex(textPositions);
+
+        List<TextPosition> firstPositions = textPositions.subList(0, punctuationMarkIndex);
+        List<TextPosition> punctuationPosition = textPositions.subList(punctuationMarkIndex, punctuationMarkIndex + 1);
+
+        String firstText = text.substring(0, punctuationMarkIndex);
+        String punctuationText = text.substring(punctuationMarkIndex, punctuationMarkIndex + 1);
+
         writeString(firstText, firstPositions);
         writeString(punctuationText, punctuationPosition);
+        if (punctuationMarkIndex + 1 < textPositions.size()) {
+            List<TextPosition> lastPositions = textPositions.subList(punctuationMarkIndex + 1, textPositions.size());
+            String lastText = text.substring(punctuationMarkIndex + 1, textPositions.size());
+            writeString(lastText, lastPositions);
+        }
+
     }
 
     private boolean containsPunctutationMark(List<TextPosition> textPositions) {
-        return textPositions.size() > 1 && PDFTextAnalyzerUtil.containsPunctuationMark(textPositions);
+        boolean erstens = textPositions.size() > 1;
+        boolean zweitesns = PDFTextAnalyzerUtil.containsPunctuationMark(textPositions);
+        return erstens && zweitesns;
     }
 
     @Override

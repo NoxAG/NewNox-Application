@@ -4,19 +4,28 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
 import com.noxag.newnox.textanalyzer.data.StatisticFindingData;
+import com.noxag.newnox.textanalyzer.data.TextFinding;
+import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
+import com.noxag.newnox.textanalyzer.data.pdf.PDFLine;
+import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
+import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
 import com.opencsv.CSVReader;
 
@@ -43,35 +52,97 @@ public class CommonAbbreviationAnalyzer implements TextanalyzerAlgorithm {
     @Override
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
-        String documentText = "";
+        List<PDFPage> pages = new ArrayList<>();
+        List<TextPositionSequence> words = new ArrayList<>();
         try {
-            documentText = PDFTextExtractionUtil.runTextStripper(doc).toLowerCase();
+            pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
+            words = PDFTextExtractionUtil.extractWords(pages);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not strip text from document", e);
         }
-        findings.add(generateStatisticFinding(findMatches(documentText, abbreviationList)));
+        List<PDFLine> matches = findMatches(words, abbreviationList);
+        if (matches.isEmpty()) {
+            findings.add(new CommentaryFinding("No abbreviations found", this.getUIName(), 0, 0));
+        } else {
+            findings.add(generateStatisticFinding(matches));
+            findings.addAll(generateTextFindings(matches));
+        }
         return findings;
     }
 
-    private Map<String, Integer> findMatches(String documentText, List<String> abbreviationList) {
-        Map<String, Integer> matches = new HashMap<>();
-        abbreviationList.stream().forEach(abbreviation -> {
-            String[] documentSplited = documentText.split(getAbbreviationRegex(abbreviation));
-            matches.put(abbreviation, (documentSplited.length - 1));
-        });
+    private List<Finding> generateTextFindings(List<PDFLine> matches) {
+        return matches.stream().map(line -> new TextFinding(line, TextFindingType.COMMON_ABBREVIATION))
+                .collect(Collectors.toList());
+    }
+
+    private List<PDFLine> findMatches(List<TextPositionSequence> words, List<String> abbreviationList) {
+        List<PDFLine> matches = new ArrayList<>();
+        ListIterator<TextPositionSequence> wordsIterator = words.stream()
+                .collect(Collectors.toCollection(LinkedList::new)).listIterator();
+
+        while (wordsIterator.hasNext()) {
+            TextPositionSequence currentWord = wordsIterator.next();
+
+            abbreviationList.stream().forEach(abbreviation -> {
+                List<String> abbreviationParts = divideAbbreviation(abbreviation);
+                List<TextPositionSequence> wordsToCompare = prependTo(currentWord,
+                        getNextWords(wordsIterator, abbreviationParts.size() - 1));
+
+                List<String> stringsToCompare = wordsToCompare.stream().map(TextPositionSequence::toString)
+                        .map(String::toLowerCase).collect(Collectors.toList());
+                if (abbreviationParts.equals(stringsToCompare)) {
+                    matches.add(new PDFLine(wordsToCompare));
+                }
+            });
+        }
 
         return matches;
     }
 
-    private <T extends Finding> T generateStatisticFinding(Map<String, Integer> matches) {
-        List<StatisticFindingData> data = new ArrayList<>();
-        matches.entrySet().stream().filter(entry -> entry.getValue() >= 1)
-                .forEachOrdered(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
-        return (T) new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION, data);
+    private List<TextPositionSequence> prependTo(TextPositionSequence currentWord,
+            List<TextPositionSequence> nextWords) {
+        List<TextPositionSequence> allWords = new ArrayList<>();
+        allWords.add(currentWord);
+        allWords.addAll(nextWords);
+        return allWords;
     }
 
-    private String getAbbreviationRegex(String abbreviation) {
-        return abbreviation.toLowerCase();
+    private List<String> divideAbbreviation(String abbreviation) {
+        List<String> words = new ArrayList<>();
+        List<String> abbreviationWithoutDot = Arrays.asList(abbreviation.split("\\."));
+        abbreviationWithoutDot.forEach(abbreviationPart -> {
+            words.add(abbreviationPart);
+            words.add(".");
+        });
+        return words;
+    }
+
+    private List<TextPositionSequence> getNextWords(ListIterator<TextPositionSequence> wordsIterator,
+            int abbreviationWordCount) {
+        List<TextPositionSequence> nextWords = new ArrayList<>();
+        for (int i = 0; i < abbreviationWordCount; i++) {
+            if (wordsIterator.hasNext()) {
+                nextWords.add(wordsIterator.next());
+            }
+        }
+        for (int i = 0; i < nextWords.size(); i++) {
+            wordsIterator.previous();
+        }
+        return nextWords;
+    }
+
+    private Finding generateStatisticFinding(List<PDFLine> matches) {
+        List<StatisticFindingData> data = new ArrayList<>();
+
+        List<String> abbreviationMatches = matches.stream().map(PDFLine::toString).map(String::toLowerCase)
+                .collect(Collectors.toList());
+        Map<String, Long> matchesGroupeByCount = abbreviationMatches.stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        matchesGroupeByCount.entrySet()
+                .forEach(entry -> data.add(new StatisticFindingData(entry.getKey(), entry.getValue())));
+
+        return new StatisticFinding(StatisticFindingType.COMMON_ABBREVIATION, data);
     }
 
     @Override
@@ -85,7 +156,8 @@ public class CommonAbbreviationAnalyzer implements TextanalyzerAlgorithm {
             CSVReader reader = new CSVReader(new FileReader(abbreviationListPath));
             String[] line;
             while ((line = reader.readNext()) != null) {
-                Arrays.stream(line).forEach(abbreviationList::add);
+                Arrays.stream(line).map(str -> str.replaceAll(" ", "")).map(String::toLowerCase)
+                        .forEach(abbreviationList::add);
             }
             reader.close();
         } catch (IOException e) {

@@ -30,7 +30,7 @@ public class PDFTextMarker {
     }
 
     private static final Logger LOGGER = Logger.getLogger(PDFTextMarker.class.getName());
-    private static final PDColor DEFAULT_COLOR = PDFColors.YELLOW;
+    private static final PDColor DEFAULT_COLOR = PDFColors.GOLD;
     private static final String DEFAULT_SUB_TYPE = PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
 
     /**
@@ -87,58 +87,52 @@ public class PDFTextMarker {
         }
     }
 
-    private static PDColor toColor(TextFindingType type) {
+    public static PDColor toColor(TextFindingType type) {
         if (type == null) {
-            return PDFColors.RED;
+            return DEFAULT_COLOR;
         }
         switch (type) {
         case WORDING:
-            return PDFColors.RED;
+            return PDFColors.CRIMSON;
         case SENTENCE_COMPLEXITY:
-            return PDFColors.MAGENTA;
-        case REPETITIV_WORDING:
             return PDFColors.ORANGE;
+        case REPETITIVE_WORDING:
+            return PDFColors.GOLD;
         case PAGINATION:
-            return PDFColors.VIOLET;
+            return PDFColors.MAROON;
+        case COMMON_ABBREVIATION:
+            return PDFColors.DARK_ORANGE;
         case BIBLIOGRAPHY:
-            return PDFColors.RED;
+            return PDFColors.CRIMSON;
         case POSITIVE_BIBLIOGRAPHY:
             return PDFColors.GREEN;
-        case TABLE_OF_CONTENT:
-            return PDFColors.ORANGE;
-        case LIST_OF_ABBREVIATIONS:
-            return PDFColors.GREY;
         case LINE_SPACING:
-            return PDFColors.VERY_LIGHT_GREY;
-        case TABLE_OF_FIGURES:
-            return PDFColors.DEEP_PINK;
+            return PDFColors.MOCCASIN;
         case FONT_SIZE:
-            return PDFColors.CYAN;
+            return PDFColors.CHOCOLATE;
         case FONT_TYPE:
-            return PDFColors.CYAN_BLUE;
+            return PDFColors.BROWN;
         default:
             return DEFAULT_COLOR;
         }
     }
 
-    private static String toTextMarkupSubType(TextFindingType type) {
+    public static String toTextMarkupSubType(TextFindingType type) {
         if (type == null) {
-            return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
+            return DEFAULT_SUB_TYPE;
         }
         switch (type) {
         case WORDING:
             return PDAnnotationTextMarkup.SUB_TYPE_STRIKEOUT;
         case SENTENCE_COMPLEXITY:
             return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
-        case REPETITIV_WORDING:
+        case REPETITIVE_WORDING:
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
         case PAGINATION:
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
-        case TABLE_OF_CONTENT:
+        case FONT_SIZE:
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
-        case LIST_OF_ABBREVIATIONS:
-            return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
-        case TABLE_OF_FIGURES:
+        case FONT_TYPE:
             return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
         default:
             return DEFAULT_SUB_TYPE;

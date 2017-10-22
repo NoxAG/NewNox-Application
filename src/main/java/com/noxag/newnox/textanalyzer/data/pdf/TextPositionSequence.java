@@ -1,6 +1,5 @@
 package com.noxag.newnox.textanalyzer.data.pdf;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.text.TextPosition;
@@ -13,7 +12,7 @@ import com.noxag.newnox.textanalyzer.util.PDFTextAnalyzerUtil;
  * @author Tobias.Schmidt@de.ibm.com
  *
  */
-public class TextPositionSequence implements CharSequence, PDFObject {
+public class TextPositionSequence implements CharSequence {
     final List<TextPosition> textPositions;
     final int start;
     final int end;
@@ -130,20 +129,20 @@ public class TextPositionSequence implements CharSequence, PDFObject {
         return this.toString().contains(sequence);
     }
 
-    @Override
-    public TextPositionSequence getTextPositionSequence() {
-        return this;
-    }
-
-    @Override
-    public List<TextPositionSequence> getWords() {
-        ArrayList<TextPositionSequence> res = new ArrayList<TextPositionSequence>();
-        res.add(this);
-        return res;
-    }
-
     public boolean isPunctuationMark() {
         return PDFTextAnalyzerUtil.isPunctuationMark(this);
+    }
+
+    public boolean isNotPunctuationMark() {
+        return !this.isPunctuationMark();
+    }
+
+    public boolean isBulletPoint() {
+        return PDFTextAnalyzerUtil.isBulletPoint(this);
+    }
+
+    public boolean isNotBulletPoint() {
+        return !this.isBulletPoint();
     }
 
 }

@@ -55,8 +55,8 @@ public class StatisticPane extends BorderPane {
         this(barChart, new ArrayList<CommentaryFinding>());
     }
 
-    public StatisticPane(List<BarChart<String, Number>> barChart, List<CommentaryFinding> commentaryFindings) {
-        charts = barChart;
+    public StatisticPane(List<BarChart<String, Number>> barCharts, List<CommentaryFinding> commentaryFindings) {
+        charts = barCharts;
         commentFindings = commentaryFindings;
 
         initIncrButton();

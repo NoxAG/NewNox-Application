@@ -123,7 +123,23 @@ public class PDFTextExtractionUtil {
         return paragraphs;
     }
 
+    /**
+     * Returns all pages that contain actual content (no table of content etc.)
+     * <br>
+     * Only reduces the page list if it is not reduce to more than half of the
+     * previous size
+     * 
+     */
     public static List<PDFPage> extractContentPages(List<PDFPage> pages) {
+        List<PDFPage> contentPages = reducetoContentPages(pages);
+        if (contentPages.size() == 0 || ((float) contentPages.size() / (float) pages.size()) < 0.5) {
+            return pages;
+        }
+        return contentPages;
+
+    }
+
+    private static List<PDFPage> reducetoContentPages(List<PDFPage> pages) {
         return pages.stream().filter(PDFPage::isContentPage).collect(Collectors.toList());
     }
 
@@ -148,14 +164,18 @@ public class PDFTextExtractionUtil {
     }
 
     /**
-     * This method only returns content pages and removes every line that is
-     * actual content like headlines and pagenumbers, etc.
+     * This method only returns content pages and removes every line that is not
+     * real content like headlines and page numbers, etc. <br>
+     * Only reduces the page list if it is not reduce to more than half of the
+     * previous size
      * 
      * @param pages
      */
     public static List<PDFPage> reduceToContent(List<PDFPage> pages) {
-        List<PDFPage> contentPages = extractContentPages(pages);
-
+        List<PDFPage> contentPages = reducetoContentPages(pages);
+        if (contentPages.size() == 0 || ((float) contentPages.size() / (float) pages.size()) < 0.5) {
+            return pages;
+        }
         double minContentFontSize = 10;
         double maxContentFontSize = 14;
         List<PDFPage> reducedContent = new ArrayList<>();
@@ -188,5 +208,7 @@ public class PDFTextExtractionUtil {
 
     private PDFTextExtractionUtil() {
         // hide constructor, because this is a completely static class
+
     }
+
 }
