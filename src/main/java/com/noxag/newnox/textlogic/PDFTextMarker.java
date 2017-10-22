@@ -87,7 +87,7 @@ public class PDFTextMarker {
         }
     }
 
-    private static PDColor toColor(TextFindingType type) {
+    public static PDColor toColor(TextFindingType type) {
         if (type == null) {
             return PDFColors.RED;
         }
@@ -104,14 +104,10 @@ public class PDFTextMarker {
             return PDFColors.RED;
         case POSITIVE_BIBLIOGRAPHY:
             return PDFColors.GREEN;
-        case TABLE_OF_CONTENT:
-            return PDFColors.ORANGE;
         case LIST_OF_ABBREVIATIONS:
             return PDFColors.GREY;
         case LINE_SPACING:
             return PDFColors.VERY_LIGHT_GREY;
-        case TABLE_OF_FIGURES:
-            return PDFColors.DEEP_PINK;
         case FONT_SIZE:
             return PDFColors.CYAN;
         case FONT_TYPE:
@@ -121,7 +117,7 @@ public class PDFTextMarker {
         }
     }
 
-    private static String toTextMarkupSubType(TextFindingType type) {
+    public static String toTextMarkupSubType(TextFindingType type) {
         if (type == null) {
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
         }
@@ -134,11 +130,7 @@ public class PDFTextMarker {
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
         case PAGINATION:
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
-        case TABLE_OF_CONTENT:
-            return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
         case LIST_OF_ABBREVIATIONS:
-            return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
-        case TABLE_OF_FIGURES:
             return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
         default:
             return DEFAULT_SUB_TYPE;
