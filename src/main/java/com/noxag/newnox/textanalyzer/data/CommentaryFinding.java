@@ -16,7 +16,6 @@ public class CommentaryFinding extends Finding {
     }
 
     public CommentaryFinding(String comment, String type, int page, int line) {
-        this();
         setComment(comment);
         setType(type);
         setPage(page);

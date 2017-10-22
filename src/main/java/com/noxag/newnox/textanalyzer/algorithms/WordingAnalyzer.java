@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
@@ -62,8 +63,12 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
             LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
         List<TextPositionSequence> matches = findMatches(pages, wordingBlacklist);
-        findings.addAll(generateTextFindings(matches));
-        findings.add(generateStatisticFinding(matches));
+        if (matches.isEmpty()) {
+            findings.add(new CommentaryFinding("No ill wording found", this.getUIName(), 0, 0));
+        } else {
+            findings.addAll(generateTextFindings(matches));
+            findings.add(generateStatisticFinding(matches));
+        }
         return findings;
     }
 

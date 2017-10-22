@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
@@ -53,10 +54,19 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
     @Override
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
+        List<PDFPage> pages = new ArrayList<>();
+        List<TextPositionSequence> words = new ArrayList<>();
         try {
-            findings.add(generateStatisticFinding(mapWordsWithFrequency(doc)));
+            pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
+            words = PDFTextExtractionUtil.extractWords(pages);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        Map<String, Long> wordFrequencyMap = mapWordsWithFrequency(words);
+        if (wordFrequencyMap.isEmpty()) {
+            findings.add(new CommentaryFinding("No words found", this.getUIName(), 0, 0));
+        } else {
+            findings.add(generateStatisticFinding(wordFrequencyMap));
         }
         return findings;
     }
@@ -78,12 +88,7 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
         return new StatisticFinding(StatisticFindingType.VOCABULARY_DISTRIBUTION, data);
     }
 
-    public Map<String, Long> mapWordsWithFrequency(PDDocument doc) throws IOException {
-        List<PDFPage> pages = new ArrayList<>();
-        List<TextPositionSequence> words = new ArrayList<>();
-        pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
-        words = PDFTextExtractionUtil.extractWords(pages);
-
+    public Map<String, Long> mapWordsWithFrequency(List<TextPositionSequence> words) {
         List<String> matchesAsString = words.stream().filter(word -> !PDFTextAnalyzerUtil.isPunctuationMark(word))
                 .map(TextPositionSequence::toString).map(String::toLowerCase).collect(Collectors.toList());
 

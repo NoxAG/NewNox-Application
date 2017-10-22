@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
@@ -48,6 +49,9 @@ public class FontAnalyzer implements TextanalyzerAlgorithm {
         }
         findings.addAll(getWordsWithCorruptFontSize(contentWords));
         findings.addAll(getWordsWithCorruptFontType(contentWords));
+        if (findings.isEmpty()) {
+            findings.add(new CommentaryFinding("No font deviations found", this.getUIName(), 0, 0));
+        }
         return findings;
     }
 
@@ -115,6 +119,9 @@ public class FontAnalyzer implements TextanalyzerAlgorithm {
         List<TextPositionSequence> words = new ArrayList<>();
         // if second word same posY as firstWord --> return combination
         // else return first word and combine second and third
+        if (textPositions.isEmpty()) {
+            return textPositions;
+        }
         TextPositionSequence firstWord = textPositions.get(0);
         if (textPositions.size() == 1) {
             words.add(firstWord);

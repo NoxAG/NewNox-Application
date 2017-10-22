@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
 import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
@@ -51,7 +52,11 @@ public class RepetitivWordingAnalyzer implements TextanalyzerAlgorithm {
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not strip text from document", e);
         }
-        return getRepetitionsInWordBlock(pages);
+        List<Finding> findings = getRepetitionsInWordBlock(pages);
+        if (findings.isEmpty()) {
+            findings.add(new CommentaryFinding("No word repetitions found", this.getUIName(), 0, 0));
+        }
+        return findings;
     }
 
     private List<Finding> getRepetitionsInWordBlock(List<PDFPage> pages) {

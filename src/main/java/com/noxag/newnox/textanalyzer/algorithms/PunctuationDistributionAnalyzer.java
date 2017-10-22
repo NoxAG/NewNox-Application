@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
@@ -41,6 +42,9 @@ public class PunctuationDistributionAnalyzer implements TextanalyzerAlgorithm {
         }
         List<TextPositionSequence> punctuationMarks = findMatches(pages);
         findings.add(generateStatisticFinding(punctuationMarks));
+        if (findings.isEmpty()) {
+            findings.add(new CommentaryFinding("No punctuation marks found", this.getUIName(), 0, 0));
+        }
         return findings;
     }
 
