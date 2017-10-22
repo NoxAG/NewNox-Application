@@ -68,4 +68,10 @@ public class PDFLine implements PDFObject {
         }
     }
 
+    @Override
+    public String toString() {
+        return words.stream().map(TextPositionSequence::toString).reduce(String::concat)
+                .orElseGet(() -> super.toString());
+    }
+
 }

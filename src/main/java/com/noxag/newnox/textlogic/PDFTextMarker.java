@@ -89,7 +89,7 @@ public class PDFTextMarker {
 
     private static PDColor toColor(TextFindingType type) {
         if (type == null) {
-            return PDFColors.RED;
+            return DEFAULT_COLOR;
         }
         switch (type) {
         case WORDING:
@@ -123,7 +123,7 @@ public class PDFTextMarker {
 
     private static String toTextMarkupSubType(TextFindingType type) {
         if (type == null) {
-            return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
+            return DEFAULT_SUB_TYPE;
         }
         switch (type) {
         case WORDING:
