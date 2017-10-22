@@ -1,6 +1,7 @@
 package com.noxag.newnox.textanalyzer.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.noxag.newnox.textanalyzer.data.pdf.PDFLine;
@@ -24,16 +25,24 @@ public class TextFinding extends Finding {
         this(textPositionSequence, null);
     }
 
+    public TextFinding(PDFLine line) {
+        this(line, null);
+    }
+
     public TextFinding(TextPositionSequence textPositionSequence, TextFindingType type) {
         this.textPositionSequences = new ArrayList<>();
         this.textPositionSequences.add(textPositionSequence);
         this.type = type;
     }
 
+    public TextFinding(PDFLine lines, TextFindingType type) {
+        this(new ArrayList<PDFLine>(Arrays.asList(lines)), type);
+    }
+
     public TextFinding(List<PDFLine> lines, TextFindingType type) {
-        this.textPositionSequences = new ArrayList<>();
         this.type = type;
-        lines.stream().forEach(line -> this.textPositionSequences.add(line.getTextPositionSequence()));
+        this.textPositionSequences = new ArrayList<>();
+        lines.stream().map(PDFLine::getTextPositionSequence).forEach(textPositionSequences::add);
 
     }
 

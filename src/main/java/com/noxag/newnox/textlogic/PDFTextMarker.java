@@ -89,7 +89,7 @@ public class PDFTextMarker {
 
     public static PDColor toColor(TextFindingType type) {
         if (type == null) {
-            return PDFColors.RED;
+            return DEFAULT_COLOR;
         }
         switch (type) {
         case WORDING:
@@ -119,7 +119,7 @@ public class PDFTextMarker {
 
     public static String toTextMarkupSubType(TextFindingType type) {
         if (type == null) {
-            return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
+            return DEFAULT_SUB_TYPE;
         }
         switch (type) {
         case WORDING:
@@ -131,6 +131,10 @@ public class PDFTextMarker {
         case PAGINATION:
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
         case LIST_OF_ABBREVIATIONS:
+            return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
+        case FONT_SIZE:
+            return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
+        case FONT_TYPE:
             return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
         default:
             return DEFAULT_SUB_TYPE;

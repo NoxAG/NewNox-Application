@@ -137,4 +137,12 @@ public class TextPositionSequence implements CharSequence {
         return !this.isPunctuationMark();
     }
 
+    public boolean isBulletPoint() {
+        return PDFTextAnalyzerUtil.isBulletPoint(this);
+    }
+
+    public boolean isNotBulletPoint() {
+        return !this.isBulletPoint();
+    }
+
 }
