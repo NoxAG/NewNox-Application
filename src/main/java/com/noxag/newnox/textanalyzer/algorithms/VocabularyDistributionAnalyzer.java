@@ -41,7 +41,7 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(VocabularyDistributionAnalyzer.class.getName());
     private static final String VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH = "src/main/resources/analyzer-conf/vocabularydistributionanalyzer-blacklist.csv";
     private List<String> vocabularyDistributionExceptions;
-    private static final int MAX_STATISTIC_DATA_FINDINGS = 20;
+    private static final int MAX_STATISTIC_DATA_FINDINGS = 15;
 
     public VocabularyDistributionAnalyzer() {
         this(VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH);
@@ -93,7 +93,7 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
                 .map(TextPositionSequence::toString).map(String::toLowerCase).collect(Collectors.toList());
 
         Map<String, Long> matchesGroupedByName = matchesAsString.stream()
-                .filter(word -> !vocabularyDistributionExceptions.contains(word))
+                .filter(word -> !vocabularyDistributionExceptions.contains(word) && !isInteger(word))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         return matchesGroupedByName;
     }
@@ -111,6 +111,15 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
             LOGGER.log(Level.WARNING, "Configuration file could not be read", e);
         }
         return vocabularyDistributionExceptions;
+    }
+
+    private boolean isInteger(String string) {
+        try {
+            Integer.parseInt(string);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }
