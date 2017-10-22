@@ -67,10 +67,11 @@ public class TextFinding extends Finding {
     }
 
     public enum TextFindingType {
-        COMMON_ABBREVIATION("Abbreviations"), WORDING("Wording"), SENTENCE_COMPLEXITY("Sentence Complexity"), REPETITIVE_WORDING(
-                "Repetitiv Wording"), PAGINATION("Pagination"), BIBLIOGRAPHY("References to Bibliography without Entry"), POSITIVE_BIBLIOGRAPHY(
-                                "Found Reference in Bibliography"), LIST_OF_ABBREVIATIONS("List of Abbreviations"), FONT_SIZE(
-                                                "Font Size"), FONT_TYPE("Font Type"), LINE_SPACING("Line Spacing");
+        PAGINATION("Pagination"), WORDING("Wording"), FONT_TYPE("Font Type"), FONT_SIZE(
+                "Font Size"), COMMON_ABBREVIATION("Abbreviations"), BIBLIOGRAPHY(
+                        "References to Bibliography without Entry"), POSITIVE_BIBLIOGRAPHY(
+                                "Found Reference in Bibliography"), LINE_SPACING("Line Spacing"), SENTENCE_COMPLEXITY(
+                                        "Sentence Complexity"), REPETITIVE_WORDING("Repetitiv Wording");
         String fieldDescriptor;
 
         TextFindingType(String value) {

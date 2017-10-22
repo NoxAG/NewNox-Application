@@ -33,7 +33,7 @@ import javafx.scene.text.Text;
  */
 
 public class PDFPane extends VBox {
-    private static final String LEGEND_BACKGROUND = "#A2B5CD";
+    private static final String LEGEND_BACKGROUND = "#8c8c8c";
     private ScrollPane scrollPane;
     private StackPane pdfLegendStack;
     private BorderPane fileLocationPane;

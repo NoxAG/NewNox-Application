@@ -30,7 +30,7 @@ public class PDFTextMarker {
     }
 
     private static final Logger LOGGER = Logger.getLogger(PDFTextMarker.class.getName());
-    private static final PDColor DEFAULT_COLOR = PDFColors.YELLOW;
+    private static final PDColor DEFAULT_COLOR = PDFColors.GOLD;
     private static final String DEFAULT_SUB_TYPE = PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
 
     /**
@@ -93,25 +93,25 @@ public class PDFTextMarker {
         }
         switch (type) {
         case WORDING:
-            return PDFColors.RED;
+            return PDFColors.CRIMSON;
         case SENTENCE_COMPLEXITY:
-            return PDFColors.MAGENTA;
-        case REPETITIVE_WORDING:
             return PDFColors.ORANGE;
+        case REPETITIVE_WORDING:
+            return PDFColors.GOLD;
         case PAGINATION:
-            return PDFColors.VIOLET;
+            return PDFColors.MAROON;
+        case COMMON_ABBREVIATION:
+            return PDFColors.DARK_ORANGE;
         case BIBLIOGRAPHY:
-            return PDFColors.RED;
+            return PDFColors.CRIMSON;
         case POSITIVE_BIBLIOGRAPHY:
             return PDFColors.GREEN;
-        case LIST_OF_ABBREVIATIONS:
-            return PDFColors.GREY;
         case LINE_SPACING:
-            return PDFColors.VERY_LIGHT_GREY;
+            return PDFColors.MOCCASIN;
         case FONT_SIZE:
-            return PDFColors.CYAN;
+            return PDFColors.CHOCOLATE;
         case FONT_TYPE:
-            return PDFColors.CYAN_BLUE;
+            return PDFColors.BROWN;
         default:
             return DEFAULT_COLOR;
         }
@@ -130,8 +130,6 @@ public class PDFTextMarker {
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
         case PAGINATION:
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
-        case LIST_OF_ABBREVIATIONS:
-            return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
         case FONT_SIZE:
             return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
         case FONT_TYPE:

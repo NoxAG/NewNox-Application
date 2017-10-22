@@ -132,10 +132,10 @@ public class PDFTextExtractionUtil {
      */
     public static List<PDFPage> extractContentPages(List<PDFPage> pages) {
         List<PDFPage> contentPages = reducetoContentPages(pages);
-        if ((contentPages.size() / pages.size()) >= 0.5) {
-            return contentPages;
+        if (contentPages.size() == 0 || ((float) contentPages.size() / (float) pages.size()) < 0.5) {
+            return pages;
         }
-        return pages;
+        return contentPages;
 
     }
 
@@ -173,7 +173,7 @@ public class PDFTextExtractionUtil {
      */
     public static List<PDFPage> reduceToContent(List<PDFPage> pages) {
         List<PDFPage> contentPages = reducetoContentPages(pages);
-        if (contentPages.size() / pages.size() >= 0.5) {
+        if (contentPages.size() == 0 || ((float) contentPages.size() / (float) pages.size()) < 0.5) {
             return pages;
         }
         double minContentFontSize = 10;
@@ -208,5 +208,7 @@ public class PDFTextExtractionUtil {
 
     private PDFTextExtractionUtil() {
         // hide constructor, because this is a completely static class
+
     }
+
 }
