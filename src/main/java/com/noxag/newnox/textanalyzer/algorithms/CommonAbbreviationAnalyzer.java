@@ -22,6 +22,7 @@ import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
 import com.noxag.newnox.textanalyzer.data.StatisticFindingData;
 import com.noxag.newnox.textanalyzer.data.TextFinding;
+import com.noxag.newnox.textanalyzer.data.TextFinding.TextFindingType;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFLine;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
@@ -70,7 +71,8 @@ public class CommonAbbreviationAnalyzer implements TextanalyzerAlgorithm {
     }
 
     private List<Finding> generateTextFindings(List<PDFLine> matches) {
-        return matches.stream().map(line -> new TextFinding(line)).collect(Collectors.toList());
+        return matches.stream().map(line -> new TextFinding(line, TextFindingType.COMMON_ABBREVIATION))
+                .collect(Collectors.toList());
     }
 
     private List<PDFLine> findMatches(List<TextPositionSequence> words, List<String> abbreviationList) {
