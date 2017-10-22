@@ -15,6 +15,7 @@ import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.pdf.PDFPage;
+import com.noxag.newnox.textanalyzer.data.pdf.PDFParagraph;
 import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 import com.noxag.newnox.textanalyzer.util.PDFTextAnalyzerUtil;
 import com.noxag.newnox.textanalyzer.util.PDFTextExtractionUtil;
@@ -42,7 +43,7 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
         CommentaryFinding commentaryFinding;
-        if (compareString(generateLowerCaseString(getNotContentPages(doc)))) {
+        if (compareString(splitPagesIntoParagraphs(getNotContentPages(doc)))) {
             commentaryFinding = new CommentaryFinding("Declaration of sincerity found", "DeclarationOfSincerity",
                     getPageNumberWhereAufrichtigkeitserklaerung(getNotContentPages(doc)), 0);
             findings.add(commentaryFinding);
@@ -56,11 +57,23 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
     public static List<PDFPage> getNotContentPages(PDDocument doc) {
         List<PDFPage> pages = new ArrayList<>();
         try {
-            pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
+            pages = PDFTextExtractionUtil.extractText(doc);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return pages.stream().filter(page -> !page.isContentPage()).collect(Collectors.toList());
+    }
+
+    public List<PDFParagraph> splitPagesIntoParagraphs(List<PDFPage> pages) {
+        List<PDFParagraph> paragraphs = new ArrayList<>();
+        pages.stream().forEach(page -> {
+            page.getArticles().stream().forEach(article -> {
+                article.getParagraphs().stream().forEach(paragraph -> {
+                    paragraphs.add(paragraph);
+                });
+            });
+        });
+        return paragraphs;
     }
 
     public static int getPageNumberWhereAufrichtigkeitserklaerung(List<PDFPage> pages) {
@@ -76,11 +89,8 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
                 .map(TextPositionSequence::toString).map(String::toLowerCase).collect(Collectors.toList());
     }
 
-    public boolean compareString(List<String> words) {
-        if (aufrichtigkeitserklaerungHints.stream().anyMatch(words::contains)) {
-            return true;
-        }
-        return false;
+    public boolean compareString(List<PDFParagraph> paragraph) {
+        return aufrichtigkeitserklaerungHints.stream().allMatch(paragraph::contains);
     }
 
     private List<String> readAufrichtigkeitserklaerungIdentificationListFile(
@@ -107,3 +117,6 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
     }
 
 }
+
+// statt jedes wort in ein string, sondern in liste von paragraphen, und dann
+// schauen, ob ein paragraph alles enthält
