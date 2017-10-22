@@ -41,6 +41,7 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(VocabularyDistributionAnalyzer.class.getName());
     private static final String VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH = "src/main/resources/analyzer-conf/vocabularydistributionanalyzer-blacklist.csv";
     private List<String> vocabularyDistributionExceptions;
+    private static final String ERROR_MESSAGE_FINDINGS_COULD_NOT_BE_CREATE = "Findings could not be create.";
     private static final int MAX_STATISTIC_DATA_FINDINGS = 15;
 
     public VocabularyDistributionAnalyzer() {
@@ -60,6 +61,7 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
             pages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
             words = PDFTextExtractionUtil.extractWords(pages);
         } catch (IOException e) {
+            LOGGER.log(Level.WARNING, ERROR_MESSAGE_FINDINGS_COULD_NOT_BE_CREATE, e);
             e.printStackTrace();
         }
         Map<String, Long> wordFrequencyMap = mapWordsWithFrequency(words);
