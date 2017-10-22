@@ -41,7 +41,7 @@ public class FontAnalyzer implements TextanalyzerAlgorithm {
         try {
             List<PDFPage> contentPages = PDFTextExtractionUtil.reduceToContent(PDFTextExtractionUtil.extractText(doc));
             contentWords = PDFTextExtractionUtil.extractWords(contentPages);
-            contentWords = contentWords.stream().filter(TextPositionSequence::isNotPunctuationMark)
+            contentWords = contentWords.stream().filter(TextPositionSequence::isNotBulletPoint)
                     .collect(Collectors.toList());
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not strip text from document", e);
@@ -125,7 +125,7 @@ public class FontAnalyzer implements TextanalyzerAlgorithm {
         float res = Math.abs(firstWord.getFirstTextPosition().getY() - secondWord.getFirstTextPosition().getY());
         if (firstWord.getPageIndex() == secondWord.getPageIndex()
                 && Math.abs(firstWord.getFirstTextPosition().getY() - secondWord.getFirstTextPosition().getY()) <= 1
-                && Math.abs(firstWord.getLastTextPosition().getX() - secondWord.getFirstTextPosition().getX()) <= 50) {
+                && Math.abs(firstWord.getLastTextPosition().getX() - secondWord.getFirstTextPosition().getX()) <= 15) {
             TextPositionSequence newFirstWord = new PDFLine(firstWord, secondWord).getTextPositionSequence();
             if (textPositions.size() > 2) {
                 List<TextPositionSequence> newTextPositions = new ArrayList<>();

@@ -22,6 +22,7 @@ import com.noxag.newnox.textanalyzer.data.pdf.TextPositionSequence;
 public class PDFTextAnalyzerUtil {
     private static String[] punctuationMarks = { ",", ".", ":", ";", "!", "?", "(", ")", "-", "–", "—", "\"", "'",
             "\u2022", "\u2023", "\u25E6", "\u2043", "\u2219" };
+    private static String[] bulletPoints = { "\u2022", "\u2023", "\u25E6", "\u2043", "\u2219" };
 
     public static int getPunctuationMarkIndex(List<TextPosition> textPositions) {
         int index = 0;
@@ -40,8 +41,19 @@ public class PDFTextAnalyzerUtil {
         });
     }
 
+    public static boolean containsBulletPoint(List<TextPosition> textPositions) {
+        return textPositions.stream().anyMatch(textPosition -> {
+            return Arrays.stream(bulletPoints).anyMatch(textPosition.toString()::contains);
+        });
+    }
+
     public static boolean isPunctuationMark(TextPositionSequence posSequence) {
         return posSequence.getTextPositions().size() == 1 && containsPunctuationMark(posSequence.getTextPositions());
+    }
+
+    public static boolean isBulletPoint(TextPositionSequence textPositionSequence) {
+        return textPositionSequence.getTextPositions().size() == 1
+                && containsBulletPoint(textPositionSequence.getTextPositions());
     }
 
     /**
@@ -127,4 +139,5 @@ public class PDFTextAnalyzerUtil {
     private PDFTextAnalyzerUtil() {
         // hide constructor, because this is a completely static class
     }
+
 }

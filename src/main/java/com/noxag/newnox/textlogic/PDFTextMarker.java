@@ -140,6 +140,10 @@ public class PDFTextMarker {
             return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
         case TABLE_OF_FIGURES:
             return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
+        case FONT_SIZE:
+            return PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
+        case FONT_TYPE:
+            return PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE;
         default:
             return DEFAULT_SUB_TYPE;
         }
