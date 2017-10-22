@@ -210,7 +210,6 @@ public class MainController {
         try {
             return PDDocument.load(file);
         } catch (IOException e) {
-            // TODO: error propagation
             LOGGER.log(Level.WARNING, "PDF document could not be loaded", e);
             return null;
         }
