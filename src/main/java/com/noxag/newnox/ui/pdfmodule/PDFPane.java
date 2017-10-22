@@ -72,7 +72,7 @@ public class PDFPane extends VBox {
 
     private ScrollPane createScrollPane() {
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setStyle("-fx-background: #CCCCCC;");
+        scrollPane.setStyle("-fx-background: #CCCCCC; -fx-focus-color: transparent;");
         scrollPane.setContent(createPDFPane());
 
         return scrollPane;
@@ -99,7 +99,7 @@ public class PDFPane extends VBox {
 
     private ScrollPane createLegendScrollPane() {
         ScrollPane legendScrollPane = new ScrollPane();
-        legendScrollPane.setStyle("-fx-background: " + LEGEND_BACKGROUND + ";");
+        legendScrollPane.setStyle("-fx-background: " + LEGEND_BACKGROUND + "; -fx-focus-color: transparent;");
         TilePane textAnalyzerLegend = createTextAnalyzerLegendPane();
         legendScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
         legendScrollPane.setContent(textAnalyzerLegend);
