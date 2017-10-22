@@ -22,8 +22,8 @@ import com.noxag.newnox.textanalyzer.algorithms.AkademischeAufrichtigkeitserklae
 import com.noxag.newnox.textanalyzer.algorithms.BibliographyAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.CommonAbbreviationAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.FontAnalyzer;
-import com.noxag.newnox.textanalyzer.algorithms.PaginationAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.LineSpacingAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.PaginationAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.PunctuationDistributionAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.RepetitivWordingAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.SentenceComplexityAnalyzer;
@@ -210,7 +210,6 @@ public class MainController {
         try {
             return PDDocument.load(file);
         } catch (IOException e) {
-            // TODO: error propagation
             LOGGER.log(Level.WARNING, "PDF document could not be loaded", e);
             return null;
         }

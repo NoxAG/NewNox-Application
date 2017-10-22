@@ -91,7 +91,7 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
 
     public boolean compareString(List<PDFParagraph> paragraphs) {
         for (PDFParagraph paragraph : paragraphs) {
-            if (aufrichtigkeitserklaerungHints.stream().allMatch(paragraph.toString()::contains)) {
+            if (aufrichtigkeitserklaerungHints.stream().allMatch(paragraph.toString().toLowerCase()::contains)) {
                 return true;
             }
         }
