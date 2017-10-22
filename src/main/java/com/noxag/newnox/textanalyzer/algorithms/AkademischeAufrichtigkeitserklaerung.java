@@ -43,9 +43,10 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
     public List<Finding> run(PDDocument doc) {
         List<Finding> findings = new ArrayList<>();
         CommentaryFinding commentaryFinding;
-        if (compareString(splitPagesIntoParagraphs(getNotContentPages(doc)))) {
+        int foundPage = compareString(splitPagesIntoParagraphs(getNotContentPages(doc)));
+        if (foundPage != 0) {
             commentaryFinding = new CommentaryFinding("Declaration of sincerity found", "DeclarationOfSincerity",
-                    getPageNumberWhereAufrichtigkeitserklaerung(getNotContentPages(doc)), 0);
+                    foundPage, 0);
             findings.add(commentaryFinding);
             return findings;
         }
@@ -59,6 +60,7 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
         try {
             pages = PDFTextExtractionUtil.extractText(doc);
         } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Could not get pages from doc.", e);
             e.printStackTrace();
         }
         return pages.stream().filter(page -> !page.isContentPage()).collect(Collectors.toList());
@@ -76,11 +78,6 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
         return paragraphs;
     }
 
-    public static int getPageNumberWhereAufrichtigkeitserklaerung(List<PDFPage> pages) {
-        PDFPage PageNumberWhereAufrichtigkeitserklaerung = pages.get(0);
-        return PageNumberWhereAufrichtigkeitserklaerung.getPageIndex();
-    }
-
     public List<String> generateLowerCaseString(List<PDFPage> pages) {
         List<TextPositionSequence> words = new ArrayList<>();
         words = PDFTextExtractionUtil.extractWords(pages);
@@ -89,13 +86,19 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
                 .map(TextPositionSequence::toString).map(String::toLowerCase).collect(Collectors.toList());
     }
 
-    public boolean compareString(List<PDFParagraph> paragraphs) {
+    public int compareString(List<PDFParagraph> paragraphs) {
         for (PDFParagraph paragraph : paragraphs) {
-            if (aufrichtigkeitserklaerungHints.stream().allMatch(paragraph.toString().toLowerCase()::contains)) {
-                return true;
+            List<String> wordListOfParagraph = new ArrayList<>();
+            paragraph.getLines().stream().forEach(line -> {
+                line.getWords().stream().forEach(word -> {
+                    wordListOfParagraph.add(word.toString().toLowerCase());
+                });
+            });
+            if (aufrichtigkeitserklaerungHints.stream().allMatch(wordListOfParagraph::contains)) {
+                return paragraph.getFirstLine().getFirstWord().getPageIndex();
             }
         }
-        return false;
+        return 0;
     }
 
     private List<String> readAufrichtigkeitserklaerungIdentificationListFile(
