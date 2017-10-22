@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
@@ -59,8 +60,12 @@ public class CommonAbbreviationAnalyzer implements TextanalyzerAlgorithm {
             LOGGER.log(Level.WARNING, "Could not strip text from document", e);
         }
         List<PDFLine> matches = findMatches(words, abbreviationList);
-        findings.add(generateStatisticFinding(matches));
-        findings.addAll(generateTextFindings(matches));
+        if (matches.isEmpty()) {
+            findings.add(new CommentaryFinding("No abbreviations found", this.getUIName(), 0, 0));
+        } else {
+            findings.add(generateStatisticFinding(matches));
+            findings.addAll(generateTextFindings(matches));
+        }
         return findings;
     }
 

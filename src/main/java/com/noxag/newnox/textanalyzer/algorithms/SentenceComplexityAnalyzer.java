@@ -18,6 +18,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.TextPosition;
 
 import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
+import com.noxag.newnox.textanalyzer.data.CommentaryFinding;
 import com.noxag.newnox.textanalyzer.data.Finding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding;
 import com.noxag.newnox.textanalyzer.data.StatisticFinding.StatisticFindingType;
@@ -46,8 +47,12 @@ public class SentenceComplexityAnalyzer implements TextanalyzerAlgorithm {
             LOGGER.log(Level.WARNING, "Could not extract text from document", e);
         }
         Map<PDFParagraph, Integer> sentences = getComplexity(getSentences(pages));
-        findings.addAll(generateTextFindings(sentences));
-        findings.add(generateStatisticFinding(sentences));
+        if (sentences.entrySet().isEmpty()) {
+            findings.add(new CommentaryFinding("No sentences found", this.getUIName(), 0, 0));
+        } else {
+            findings.add(generateStatisticFinding(sentences));
+            findings.addAll(generateTextFindings(sentences));
+        }
         return findings;
     }
 
