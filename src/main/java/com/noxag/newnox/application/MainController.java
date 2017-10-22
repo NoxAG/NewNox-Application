@@ -25,7 +25,7 @@ import com.noxag.newnox.textanalyzer.algorithms.FontAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.PaginationAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.LineSpacingAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.PunctuationDistributionAnalyzer;
-import com.noxag.newnox.textanalyzer.algorithms.RepetitivWordingAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.RepetitiveWordingAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.SentenceComplexityAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.VocabularyDistributionAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.WordingAnalyzer;
@@ -248,7 +248,7 @@ public class MainController {
         this.textanalyzerAlgorithms.add(new WordingAnalyzer());
         this.textanalyzerAlgorithms.add(new SentenceComplexityAnalyzer());
         this.textanalyzerAlgorithms.add(new BibliographyAnalyzer());
-        this.textanalyzerAlgorithms.add(new RepetitivWordingAnalyzer());
+        this.textanalyzerAlgorithms.add(new RepetitiveWordingAnalyzer());
         this.textanalyzerAlgorithms.add(new FontAnalyzer());
         this.textanalyzerAlgorithms.add(new PaginationAnalyzer());
         this.textanalyzerAlgorithms.add(new LineSpacingAnalyzer());
