@@ -34,6 +34,7 @@ public class PDFColors {
     public static final PDColor WHITE = new PDColor(new float[] { 1, 1, 1 }, PDDeviceRGB.INSTANCE);
     public static final PDColor LIGHT_GREY = new PDColor(new float[] { 0.753f, 0.753f, 0.753f }, PDDeviceRGB.INSTANCE);
     public static final PDColor VERY_LIGHT_GREY = new PDColor(new float[] { 0.9f, 0.9f, 0.9f }, PDDeviceRGB.INSTANCE);
+    public static final PDColor SKY_BLUE = new PDColor(new float[] { 0.529f, 0.808f, 1 }, PDDeviceRGB.INSTANCE);
 
     private PDFColors() {
         // hide constructor, because this is a completely static class

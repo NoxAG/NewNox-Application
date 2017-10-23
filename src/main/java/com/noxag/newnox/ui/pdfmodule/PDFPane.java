@@ -33,7 +33,6 @@ import javafx.scene.text.Text;
  */
 
 public class PDFPane extends VBox {
-    private static final String LEGEND_BACKGROUND = "#8c8c8c";
     private ScrollPane scrollPane;
     private StackPane pdfLegendStack;
     private BorderPane fileLocationPane;
@@ -99,7 +98,7 @@ public class PDFPane extends VBox {
 
     private ScrollPane createLegendScrollPane() {
         ScrollPane legendScrollPane = new ScrollPane();
-        legendScrollPane.setStyle("-fx-background: " + LEGEND_BACKGROUND + "; -fx-focus-color: transparent;");
+        legendScrollPane.setStyle("-fx-focus-color: transparent; -fx-border-color: darkgrey; -fx-border-width: 2px");
         TilePane textAnalyzerLegend = createTextAnalyzerLegendPane();
         legendScrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
         legendScrollPane.setContent(textAnalyzerLegend);
@@ -165,9 +164,9 @@ public class PDFPane extends VBox {
 
     private void createOnHoverEvents(HBox invisiblePane, ScrollPane legendScrollPane) {
         invisiblePane.hoverProperty().addListener((observable, oldValue, show) -> {
-            if (textMarkupOverlay.size() != 0) {
-                legendScrollPane.setVisible(true);
-            }
+            // if (textMarkupOverlay.size() != 0) {
+            legendScrollPane.setVisible(true);
+            // }
         });
 
         scrollPane.hoverProperty().addListener((observable, oldValue, show) -> {

@@ -107,7 +107,7 @@ public class PDFTextMarker {
         case POSITIVE_BIBLIOGRAPHY:
             return PDFColors.GREEN;
         case LINE_SPACING:
-            return PDFColors.MOCCASIN;
+            return PDFColors.SKY_BLUE;
         case FONT_SIZE:
             return PDFColors.CHOCOLATE;
         case FONT_TYPE:
