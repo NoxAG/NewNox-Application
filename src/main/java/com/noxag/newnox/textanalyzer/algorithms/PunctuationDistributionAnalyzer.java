@@ -87,9 +87,9 @@ public class PunctuationDistributionAnalyzer implements TextanalyzerAlgorithm {
             return "braces";
         case "-":
             return "dash";
-        case "â€“":
+        case "–":
             return "dash";
-        case "â€”":
+        case "—":
             return "dash";
         case "\"":
             return "quotation Marks";
