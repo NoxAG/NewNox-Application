@@ -70,7 +70,7 @@ public class PDFLine implements PDFObject {
 
     @Override
     public String toString() {
-        return words.stream().map(TextPositionSequence::toString).reduce(String::concat)
+        return words.stream().map(TextPositionSequence::toString).map(str -> str + " ").reduce(String::concat)
                 .orElseGet(() -> super.toString());
     }
 

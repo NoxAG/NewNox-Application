@@ -131,9 +131,7 @@ public class PDFTextAnalyzerUtil {
 
     private static List<TextPositionSequence> findWord(List<TextPositionSequence> words,
             Function<String, Integer> compareTo) {
-
         return words.stream().filter(word -> compareTo.apply(word.toString()) == 0).collect(Collectors.toList());
-
     }
 
     private PDFTextAnalyzerUtil() {

@@ -46,6 +46,11 @@ public class TextFinding extends Finding {
 
     }
 
+    public TextFinding(TextFindingType type, List<TextPositionSequence> textPositionSequences) {
+        this.type = type;
+        this.textPositionSequences = textPositionSequences;
+    }
+
     public List<TextPositionSequence> getTextPositionSequences() {
         return textPositionSequences;
     }
@@ -67,7 +72,7 @@ public class TextFinding extends Finding {
     }
 
     public enum TextFindingType {
-        PAGINATION("Pagination"), WORDING("Wording"), FONT_TYPE("Font Type"), FONT_SIZE(
+        FOREIGN_WORDS("Foreign Word"), PAGINATION("Pagination"), WORDING("Wording"), FONT_TYPE("Font Type"), FONT_SIZE(
                 "Font Size"), COMMON_ABBREVIATION("Abbreviations"), BIBLIOGRAPHY(
                         "References to Bibliography without Entry"), POSITIVE_BIBLIOGRAPHY(
                                 "Found Reference in Bibliography"), LINE_SPACING("Line Spacing"), SENTENCE_COMPLEXITY(

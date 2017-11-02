@@ -21,6 +21,7 @@ import com.noxag.newnox.textanalyzer.TextanalyzerAlgorithm;
 import com.noxag.newnox.textanalyzer.algorithms.AkademischeAufrichtigkeitserklaerung;
 import com.noxag.newnox.textanalyzer.algorithms.BibliographyAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.CommonAbbreviationAnalyzer;
+import com.noxag.newnox.textanalyzer.algorithms.CommonForeignWordAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.FontAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.LineSpacingAnalyzer;
 import com.noxag.newnox.textanalyzer.algorithms.PaginationAnalyzer;
@@ -257,6 +258,7 @@ public class MainController {
         this.statisticanalyzerAlgorithms = new ArrayList<>();
         this.statisticanalyzerAlgorithms.add(new VocabularyDistributionAnalyzer());
         this.statisticanalyzerAlgorithms.add(new CommonAbbreviationAnalyzer());
+        this.statisticanalyzerAlgorithms.add(new CommonForeignWordAnalyzer());
         this.statisticanalyzerAlgorithms.add(new PunctuationDistributionAnalyzer());
         this.statisticanalyzerAlgorithms.add(new AkademischeAufrichtigkeitserklaerung());
     }
