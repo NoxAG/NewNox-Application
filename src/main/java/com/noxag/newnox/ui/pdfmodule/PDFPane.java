@@ -111,6 +111,7 @@ public class PDFPane extends VBox {
 
     private TilePane createTextAnalyzerLegendPane() {
         TilePane textAnalyzerLegendPane = new TilePane();
+        textAnalyzerLegendPane.setPrefColumns((int) Math.ceil(textAnalyzer.size() / 2.0));
         textAnalyzer.stream().forEach(analyzer -> {
             Text analyzerText = new Text(analyzer.getFieldDescriptor());
             String strikeout = "false", underline = "false";
