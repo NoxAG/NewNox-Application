@@ -44,7 +44,6 @@ public class StatisticFinding extends Finding {
         this.Sort = shouldSort;
         assignChartName(this.type);
         assignAxisLabel(this.type);
-        assignDataLineLabel(this.type);
     }
 
     public StatisticFindingType getType() {
@@ -123,6 +122,9 @@ public class StatisticFinding extends Finding {
         case SENTENCE_COMPLEXITY:
             this.chartName = StatisticFindingConstants.SENTENCE_COMPLEXITY_TITLE;
             break;
+        case FOREIGN_WORDS:
+            this.chartName = StatisticFindingConstants.FOREIGN_TITLE;
+            break;
         }
     }
 
@@ -152,28 +154,9 @@ public class StatisticFinding extends Finding {
             this.xAxisLabel = StatisticFindingConstants.SENTENCE_COMPLEXITY_XLABEL;
             this.yAxisLabel = StatisticFindingConstants.SENTENCE_COMPLEXITY_YLABEL;
             break;
-        }
-    }
-
-    private void assignDataLineLabel(StatisticFindingType typ) {
-        switch (typ) {
-        case VOCABULARY_DISTRIBUTION:
-            this.chartName = StatisticFindingConstants.VOCABULARY_DATALINE;
-            break;
-        case PUNCTUATION_DISTRIBUTION:
-            this.chartName = StatisticFindingConstants.PUNCTUATION_DATALINE;
-            break;
-        case COMMON_ABBREVIATION:
-            this.chartName = StatisticFindingConstants.ABBREVIATION_DATALINE;
-            break;
-        case COMMON_FOREIGN_WORD:
-            this.chartName = StatisticFindingConstants.FOREIGN_DATALINE;
-            break;
-        case WORDING:
-            this.chartName = StatisticFindingConstants.WORDING_DATALINE;
-            break;
-        case SENTENCE_COMPLEXITY:
-            this.chartName = StatisticFindingConstants.SENTENCE_COMPLEXITY_DATALINE;
+        case FOREIGN_WORDS:
+            this.xAxisLabel = StatisticFindingConstants.FOREIGN_XLABEL;
+            this.yAxisLabel = StatisticFindingConstants.FOREIGN_YLABEL;
             break;
         }
     }
