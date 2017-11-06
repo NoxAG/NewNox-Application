@@ -245,12 +245,12 @@ public class MainController {
 
     private void initTextanalyzerAlgorithms() {
         this.textanalyzerAlgorithms = new ArrayList<>();
+        this.textanalyzerAlgorithms.add(new LineSpacingAnalyzer());
         this.textanalyzerAlgorithms.add(new WordingAnalyzer());
         this.textanalyzerAlgorithms.add(new SentenceComplexityAnalyzer());
         this.textanalyzerAlgorithms.add(new RepetitiveWordingAnalyzer());
         this.textanalyzerAlgorithms.add(new FontAnalyzer());
         this.textanalyzerAlgorithms.add(new PaginationAnalyzer());
-        this.textanalyzerAlgorithms.add(new LineSpacingAnalyzer());
         this.textanalyzerAlgorithms.add(new BibliographyAnalyzer());
     }
 

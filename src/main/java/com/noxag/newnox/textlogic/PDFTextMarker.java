@@ -3,7 +3,6 @@ package com.noxag.newnox.textlogic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -29,7 +28,6 @@ public class PDFTextMarker {
         // hide constructor, because this is a completely static class
     }
 
-    private static final Logger LOGGER = Logger.getLogger(PDFTextMarker.class.getName());
     private static final PDColor DEFAULT_COLOR = PDFColors.GOLD;
     private static final String DEFAULT_SUB_TYPE = PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT;
 
@@ -112,6 +110,8 @@ public class PDFTextMarker {
             return PDFColors.CHOCOLATE;
         case FONT_TYPE:
             return PDFColors.BROWN;
+        case FOREIGN_WORDS:
+            return PDFColors.DARK_OLIVE_GREEN;
         default:
             return DEFAULT_COLOR;
         }

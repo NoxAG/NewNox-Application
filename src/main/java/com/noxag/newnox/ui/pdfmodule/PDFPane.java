@@ -28,7 +28,7 @@ import javafx.scene.text.Text;
 /**
  * This class represents the PDFPane for the User Interface
  * 
- * @author Lars.Dittert@de.ibm.com
+ * @author Lars.Dittert@de.ibm.com, Pascal.Schroeder@de.ibm.com
  *
  */
 
@@ -165,9 +165,9 @@ public class PDFPane extends VBox {
 
     private void createOnHoverEvents(HBox invisiblePane, ScrollPane legendScrollPane) {
         invisiblePane.hoverProperty().addListener((observable, oldValue, show) -> {
-            // if (textMarkupOverlay.size() != 0) {
-            legendScrollPane.setVisible(true);
-            // }
+            if (textMarkupOverlay.size() != 0) {
+                legendScrollPane.setVisible(true);
+            }
         });
 
         scrollPane.hoverProperty().addListener((observable, oldValue, show) -> {
