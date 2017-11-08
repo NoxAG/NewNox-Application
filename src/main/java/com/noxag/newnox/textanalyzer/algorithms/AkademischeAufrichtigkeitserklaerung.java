@@ -1,7 +1,9 @@
 package com.noxag.newnox.textanalyzer.algorithms;
 
-import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,12 +33,13 @@ import com.opencsv.CSVReader;
 
 public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(AkademischeAufrichtigkeitserklaerung.class.getName());
-    private static final String AUFRICHTIGKEITSERKLAERUNG_IDENTIFICATION_LIST_PATH = "src/main/resources/analyzer-conf/aufrichtigkeitserklaerung-hints.csv";
+    private static final String AUFRICHTIGKEITSERKLAERUNG_IDENTIFICATION_LIST_PATH = "config/aufrichtigkeitserklaerung-hints.csv";
     private List<String> aufrichtigkeitserklaerungHints;
 
     public AkademischeAufrichtigkeitserklaerung() {
-        aufrichtigkeitserklaerungHints = readAufrichtigkeitserklaerungIdentificationListFile(
-                AUFRICHTIGKEITSERKLAERUNG_IDENTIFICATION_LIST_PATH);
+        aufrichtigkeitserklaerungHints = this
+                .readAufrichtigkeitserklaerungIdentificationListFile(AkademischeAufrichtigkeitserklaerung.class
+                        .getResource(AUFRICHTIGKEITSERKLAERUNG_IDENTIFICATION_LIST_PATH));
     }
 
     @Override
@@ -102,10 +105,11 @@ public class AkademischeAufrichtigkeitserklaerung implements TextanalyzerAlgorit
     }
 
     private List<String> readAufrichtigkeitserklaerungIdentificationListFile(
-            String aufrichtigkeitserklaerungIdentificationListPath) {
+            URL aufrichtigkeitserklaerungIdentificationListURL) {
         List<String> aufrichtigkeitserklaerungIdentificationList = new ArrayList<>();
         try {
-            CSVReader reader = new CSVReader(new FileReader(aufrichtigkeitserklaerungIdentificationListPath));
+            CSVReader reader = new CSVReader(new BufferedReader(
+                    new InputStreamReader(aufrichtigkeitserklaerungIdentificationListURL.openStream())));
             String[] line;
             while ((line = reader.readNext()) != null) {
                 Arrays.stream(line).forEach(identification -> {

@@ -1,7 +1,9 @@
 package com.noxag.newnox.textanalyzer.algorithms;
 
-import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -38,15 +40,12 @@ import com.opencsv.CSVReader;
  */
 public class CommonAbbreviationAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(CommonAbbreviationAnalyzer.class.getName());
-    private static final String ABBREVIATION_LIST_PATH = "src/main/resources/analyzer-conf/common-abbreviation-list.csv";
+    private static final String ABBREVIATION_LIST_PATH = "config/common-abbreviation-list.csv";
     private List<String> abbreviationList;
 
     public CommonAbbreviationAnalyzer() {
-        this(ABBREVIATION_LIST_PATH);
-    }
-
-    public CommonAbbreviationAnalyzer(String abbreviationListPath) {
-        this.abbreviationList = readAbreviationListFile(abbreviationListPath);
+        abbreviationList = this
+                .readAbreviationListFile(CommonAbbreviationAnalyzer.class.getResource(ABBREVIATION_LIST_PATH));
     }
 
     @Override
@@ -150,10 +149,11 @@ public class CommonAbbreviationAnalyzer implements TextanalyzerAlgorithm {
         return "Search for abbreviations";
     }
 
-    private List<String> readAbreviationListFile(String abbreviationListPath) {
+    private List<String> readAbreviationListFile(URL abbreviationListURL) {
         List<String> abbreviationList = new ArrayList<>();
         try {
-            CSVReader reader = new CSVReader(new FileReader(abbreviationListPath));
+            CSVReader reader = new CSVReader(
+                    new BufferedReader(new InputStreamReader(abbreviationListURL.openStream())));
             String[] line;
             while ((line = reader.readNext()) != null) {
                 Arrays.stream(line).map(str -> str.replaceAll(" ", "")).map(String::toLowerCase)

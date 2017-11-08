@@ -3,8 +3,10 @@
  */
 package com.noxag.newnox.textanalyzer.algorithms;
 
-import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,17 +41,14 @@ import com.opencsv.CSVReader;
  */
 public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(VocabularyDistributionAnalyzer.class.getName());
-    private static final String VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH = "src/main/resources/analyzer-conf/vocabularydistributionanalyzer-blacklist.csv";
+    private static final String VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH = "config/vocabularydistributionanalyzer-blacklist.csv";
     private List<String> vocabularyDistributionExceptions;
     private static final String ERROR_MESSAGE_FINDINGS_COULD_NOT_BE_CREATE = "Findings could not be create.";
     private static final int MAX_STATISTIC_DATA_FINDINGS = 15;
 
     public VocabularyDistributionAnalyzer() {
-        this(VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH);
-    }
-
-    public VocabularyDistributionAnalyzer(String vocabularyDistributionExceptionsPath) {
-        this.vocabularyDistributionExceptions = readExceptionsFile(vocabularyDistributionExceptionsPath);
+        vocabularyDistributionExceptions = this.readExceptionsFile(
+                VocabularyDistributionAnalyzer.class.getResource(VOCABULARY_DISTRIBUTION_EXCEPTIONS_PATH));
     }
 
     @Override
@@ -100,10 +99,11 @@ public class VocabularyDistributionAnalyzer implements TextanalyzerAlgorithm {
         return matchesGroupedByName;
     }
 
-    private List<String> readExceptionsFile(String vocabularyDistributionExceptionsPath) {
+    private List<String> readExceptionsFile(URL vocabularyDistributionExceptionsURL) {
         List<String> vocabularyDistributionExceptions = new ArrayList<>();
         try {
-            CSVReader reader = new CSVReader(new FileReader(vocabularyDistributionExceptionsPath));
+            CSVReader reader = new CSVReader(
+                    new BufferedReader(new InputStreamReader(vocabularyDistributionExceptionsURL.openStream())));
             String[] line;
             while ((line = reader.readNext()) != null) {
                 Arrays.stream(line).map(String::toLowerCase).forEach(vocabularyDistributionExceptions::add);

@@ -38,7 +38,7 @@ public class StatisticPane extends BorderPane {
     private static final double TABLE_VIEW_WIDTH_FACTOR = 0.8;
     private static final double TABLE_VIEW_HEIGHT_FACTOR = 0.9;
 
-    private static final String DHBW_LOGO_PATH = "file:src/main/resources/dhbwLogo.png";
+    private static final String DHBW_LOGO_PATH = "dhbwLogo.png";
 
     private Button incrementButton, decrementButton;
     private Pagination pager;
@@ -131,7 +131,7 @@ public class StatisticPane extends BorderPane {
         HBox page = new HBox();
         page.setAlignment(Pos.CENTER);
 
-        Image dhbwImg = new Image(DHBW_LOGO_PATH);
+        Image dhbwImg = new Image(this.getClass().getResourceAsStream(DHBW_LOGO_PATH));
         ImageView dhbwImgView = new ImageView(dhbwImg);
         dhbwImgView.setPreserveRatio(true);
 
