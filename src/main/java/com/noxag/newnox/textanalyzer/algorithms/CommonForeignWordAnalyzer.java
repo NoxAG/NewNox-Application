@@ -1,9 +1,7 @@
 package com.noxag.newnox.textanalyzer.algorithms;
 
-import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -34,15 +32,15 @@ import com.opencsv.CSVReader;
 public class CommonForeignWordAnalyzer implements TextanalyzerAlgorithm {
 
     private static final Logger LOGGER = Logger.getLogger(CommonForeignWordAnalyzer.class.getName());
-    private static final String FOREIGN_WORDS_PATH = "config/common-foreign-words.csv";
+    private static final String FOREIGN_WORDS_PATH = "src/main/resources/analyzer-conf/common-foreign-words.csv";
     private List<String> foreignWords;
 
     public CommonForeignWordAnalyzer() {
-        foreignWords = this.readForeignWordFile(CommonForeignWordAnalyzer.class.getResource(FOREIGN_WORDS_PATH));
+        this(FOREIGN_WORDS_PATH);
     }
 
     public CommonForeignWordAnalyzer(String foreignWordsPath) {
-
+        this.foreignWords = readForeignWordFile(foreignWordsPath);
     }
 
     @Override
@@ -135,10 +133,10 @@ public class CommonForeignWordAnalyzer implements TextanalyzerAlgorithm {
         return str + " ";
     }
 
-    private List<String> readForeignWordFile(URL foreignWordsURL) {
+    private List<String> readForeignWordFile(String foreignWordsPath) {
         List<String> foreignWords = new ArrayList<>();
         try {
-            CSVReader reader = new CSVReader(new BufferedReader(new InputStreamReader(foreignWordsURL.openStream())));
+            CSVReader reader = new CSVReader(new FileReader(foreignWordsPath));
             String[] line;
             while ((line = reader.readNext()) != null) {
                 Arrays.stream(line).map(String::toLowerCase).forEach(foreignWords::add);

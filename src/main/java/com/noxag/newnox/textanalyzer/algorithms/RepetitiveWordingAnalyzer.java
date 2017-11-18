@@ -1,9 +1,7 @@
 package com.noxag.newnox.textanalyzer.algorithms;
 
-import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +32,7 @@ import com.opencsv.CSVReader;
 
 public class RepetitiveWordingAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(CommonAbbreviationAnalyzer.class.getName());
-    private static final String REPETITIVE_WORDING_EXCEPTION_PATH = "config/repetitive-wording-exceptions.csv";
+    private static final String REPETITIVE_WORDING_EXCEPTION_PATH = "src/main/resources/analyzer-conf/repetitive-wording-exceptions.csv";
 
     private static final int AMOUNT_OF_WORDS_TO_COMPARE = 20;
     private static final int ALLOWED_REPETITIONS_BY_DEFAULT = 2;
@@ -42,8 +40,7 @@ public class RepetitiveWordingAnalyzer implements TextanalyzerAlgorithm {
     private Map<String, Integer> repretitivWordingExceptions;
 
     public RepetitiveWordingAnalyzer() {
-        repretitivWordingExceptions = this.readRepetitiveWordingExceptionFile(
-                RepetitiveWordingAnalyzer.class.getResource(REPETITIVE_WORDING_EXCEPTION_PATH));
+        repretitivWordingExceptions = readRepetitiveWordingExceptionFile(REPETITIVE_WORDING_EXCEPTION_PATH);
     }
 
     @Override
@@ -129,11 +126,10 @@ public class RepetitiveWordingAnalyzer implements TextanalyzerAlgorithm {
         return foundPositionSequences;
     }
 
-    private Map<String, Integer> readRepetitiveWordingExceptionFile(URL repetitiveWordingExceptionURL) {
+    private Map<String, Integer> readRepetitiveWordingExceptionFile(String repetitiveWordingExceptionPath) {
         Map<String, Integer> exceptionMap = new HashMap<>();
         try {
-            CSVReader reader = new CSVReader(
-                    new BufferedReader(new InputStreamReader(repetitiveWordingExceptionURL.openStream())));
+            CSVReader reader = new CSVReader(new FileReader(repetitiveWordingExceptionPath));
 
             String[] line;
             while ((line = reader.readNext()) != null) {

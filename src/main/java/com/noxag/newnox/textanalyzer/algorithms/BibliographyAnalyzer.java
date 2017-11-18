@@ -1,9 +1,7 @@
 package com.noxag.newnox.textanalyzer.algorithms;
 
-import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,13 +30,12 @@ import com.opencsv.CSVReader;
  */
 public class BibliographyAnalyzer implements TextanalyzerAlgorithm {
     private static final Logger LOGGER = Logger.getLogger(CommonAbbreviationAnalyzer.class.getName());
-    private static final String BIBLIOGRAPHY_IDENTIFICATION_LIST_PATH = "config/bibliography-identifications.csv";
+    private static final String BIBLIOGRAPHY_IDENTIFICATION_LIST_PATH = "src/main/resources/analyzer-conf/bibliography-identifications.csv";
 
     private List<String> bibliographyHints;
 
     public BibliographyAnalyzer() {
-        bibliographyHints = this.readBibliographyIdentificationListFile(
-                BibliographyAnalyzer.class.getResource(BIBLIOGRAPHY_IDENTIFICATION_LIST_PATH));
+        bibliographyHints = readBibliographyIdentificationListFile(BIBLIOGRAPHY_IDENTIFICATION_LIST_PATH);
     }
 
     @Override
@@ -143,11 +140,10 @@ public class BibliographyAnalyzer implements TextanalyzerAlgorithm {
         return bibliographyReferences;
     }
 
-    private List<String> readBibliographyIdentificationListFile(URL bibliographyIdentificationListURL) {
+    private List<String> readBibliographyIdentificationListFile(String bibliographyIdentificationListPath) {
         List<String> bibliographyIdentificationList = new ArrayList<>();
         try {
-            CSVReader reader = new CSVReader(
-                    new BufferedReader(new InputStreamReader(bibliographyIdentificationListURL.openStream())));
+            CSVReader reader = new CSVReader(new FileReader(bibliographyIdentificationListPath));
             String[] line;
             while ((line = reader.readNext()) != null) {
                 Arrays.stream(line).forEach(identification -> {

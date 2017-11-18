@@ -1,9 +1,7 @@
 package com.noxag.newnox.textanalyzer.algorithms;
 
-import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,11 +42,15 @@ import com.opencsv.CSVReader;
 public class WordingAnalyzer implements TextanalyzerAlgorithm {
 
     private static final Logger LOGGER = Logger.getLogger(WordingAnalyzer.class.getName());
-    private static final String BLACKLIST_PATH = "config/wording-blacklist.csv";
+    private static final String BLACKLIST_PATH = "src/main/resources/analyzer-conf/wording-blacklist.csv";
     private List<String> wordingBlacklist;
 
     public WordingAnalyzer() {
-        wordingBlacklist = this.readWordingBlackListFile(WordingAnalyzer.class.getResource(BLACKLIST_PATH));
+        this(BLACKLIST_PATH);
+    }
+
+    public WordingAnalyzer(String wordingBlacklistPath) {
+        this.wordingBlacklist = readWordingBlackListFile(wordingBlacklistPath);
     }
 
     @Override
@@ -103,11 +105,10 @@ public class WordingAnalyzer implements TextanalyzerAlgorithm {
         return new StatisticFinding(StatisticFindingType.WORDING, data);
     }
 
-    private List<String> readWordingBlackListFile(URL wordingBlacklistURL) {
+    private List<String> readWordingBlackListFile(String wordingBlacklistPath) {
         List<String> wordingBlacklist = new ArrayList<>();
         try {
-            CSVReader reader = new CSVReader(
-                    new BufferedReader(new InputStreamReader(wordingBlacklistURL.openStream())));
+            CSVReader reader = new CSVReader(new FileReader(wordingBlacklistPath));
             String[] line;
             while ((line = reader.readNext()) != null) {
                 Arrays.stream(line).forEach(wordingBlacklist::add);
